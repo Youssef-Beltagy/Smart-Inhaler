@@ -1,0 +1,18 @@
+First locate the STM32 folders.
+C:\User\username\STM32Cube\Repository\STM32Cube_FW_WB_V1.10.1
+
+Now find this folder, and follow the steps.
+C:\STM32Cube_FW_WB_V1.10.1\P-NUCLEO-WB55.Nucleo\Projects\Applications\BLE\BLE_HeartRate
+
+1. Download ST BLE Sensor mobile app on the android phone
+2. Drag folder in and replace original (BLE_HeartRate)
+3. Click on BLE_HeartRate
+4. Click on STM32CubeIDE
+5. Click on .project
+6. Click OK, and Finish, then OK.
+7. Project should open, can access files from the left side on the vertical bar. 
+8. Navigate for build to see if you have no errors. (Hammer Icon)
+9. Click Debug configuration (bug) -> debug as
+10. After connecting development board to computer, click OK.
+11. Open the ST BLE Sensor mobile app, select "Connect one Device"
+12. Click HRSTM
