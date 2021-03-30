@@ -6,7 +6,7 @@
     android:padding="6dp">
 
     <TextView
-        android:id="@+id/word"
+        android:id="@+id/iue_textview"
         style="@style/generic_word_content" />
 
 </LinearLayout>

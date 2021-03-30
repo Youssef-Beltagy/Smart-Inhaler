@@ -4,14 +4,30 @@
 
     <!-- ******************************* Permissions start ************************************* -->
 
-    <!-- TODO: Change to BLE when switching to the inhaler electronics -->
+    <!-- TODO: Change to BLE when switching to the inhaler electronics + delete admin -->
     <!-- Allows applications to discover and pair bluetooth devices. -->
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <!-- Allows applications to connect to paired bluetooth devices -->
     <uses-permission android:name="android.permission.BLUETOOTH" />
 
+    <!-- To discover devices | todo: not sure it is necessary + ensure necessity-->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <!--Requires that the phone be BLE capable for the app to be installed-->
+    <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>
+
+    <!--to use a foreground service-->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+
+    <!--There is a good chance we need this permission. https://developer.android.com/reference/android/Manifest.permission#ACCESS_BACKGROUND_LOCATION
+
+    But is an annoying permission to ask. for.-->
+
+
+
     <!-- Permissions end -->
 
+    <!--todo: confirm whether we want supportsRtl to be true or false.-->
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -30,20 +46,31 @@
             </intent-filter>
         </receiver>
 
-        <activity
-            android:name=".DiaryEntryActivity"
-            android:label="Diary Entry"
-            android:parentActivityName=".MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.ybeltagy.breathe.MainActivity" />
-        </activity>
+<!--        &lt;!&ndash;todo: clean and remove chicken&ndash;&gt;-->
+<!--        &lt;!&ndash;android:description="string resource"&ndash;&gt;-->
+<!--        <service android:name=".BLEService"-->
+<!--            android:directBootAware="true"-->
+<!--            android:enabled="true"-->
+<!--            android:exported="false"-->
+<!--            android:foregroundServiceType="connectedDevice"-->
+<!--            android:label="Chicken-BLE connected" >-->
+<!--        </service>-->
 
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".DiaryEntryActivity"
+            android:label="@string/diary_label"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.ybeltagy.breathe.MainActivity" />
         </activity>
 
         <meta-data

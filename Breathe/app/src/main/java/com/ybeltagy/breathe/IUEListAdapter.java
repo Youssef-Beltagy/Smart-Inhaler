@@ -11,20 +11,18 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.LinkedList;
+import java.util.List;
 
 /**
  * This class prepares and updates the IUE data to be displayed in the RecyclerView in the Main
  * Activity.
- *
- * @author Sarah Panther
  */
 public class IUEListAdapter
         extends RecyclerView.Adapter<IUEListAdapter.IUEViewHolder> {
 
     // Placeholder list
     // TODO: to be replaced with data source of inhaler usage event (IUE) objects
-    private final LinkedList<String> iueEntries;
+    private final List<String> iueEntries;
 
     // Inflater
     private final LayoutInflater iueInflater;
@@ -32,7 +30,7 @@ public class IUEListAdapter
     // Logging
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
-    public IUEListAdapter(Context context, LinkedList<String> iueEntryList) {
+    public IUEListAdapter(Context context, List<String> iueEntryList) {
         iueInflater = LayoutInflater.from(context);
         this.iueEntries = iueEntryList;
     }
@@ -40,14 +38,14 @@ public class IUEListAdapter
     @NonNull
     @Override
     public IUEViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = iueInflater.inflate(R.layout.wordlist_item, parent, false);
+        View itemView = iueInflater.inflate(R.layout.iue_item, parent, false);
         return new IUEViewHolder(itemView, this);
     }
 
     @Override
     public void onBindViewHolder(@NonNull IUEViewHolder holder, int position) {
-        String current = iueEntries.get(position);
-        holder.iueItemView.setText(current);
+        // Will probably use a custom set method in the future, so I abstracted that into the holder.
+        holder.updateView(iueEntries.get(position));
     }
 
     @Override
@@ -64,7 +62,7 @@ public class IUEListAdapter
 
         public IUEViewHolder(@NonNull View itemView, IUEListAdapter adapter) {
             super(itemView);
-            iueItemView = itemView.findViewById(R.id.word);
+            iueItemView = itemView.findViewById(R.id.iue_textview);
             this.iueListAdapter = adapter;
 
             iueItemView.setOnClickListener(this);
@@ -72,10 +70,23 @@ public class IUEListAdapter
 
         @Override
         public void onClick(View v) {
+
+            // In the future, we might want to start an activity for results.
             Intent intent = new Intent(this.iueItemView.getContext(), DiaryEntryActivity.class);
             this.iueItemView.getContext().startActivity(intent);
 
+            //todo delete later
             Log.d(LOG_TAG, "Diary entry activity launched!");
+        }
+
+        /**
+         * Updates the view using {@code obj}.
+         * @param obj
+         */
+        public void updateView(Object obj){
+
+            iueItemView.setText((String) obj);
+
         }
     }
 }

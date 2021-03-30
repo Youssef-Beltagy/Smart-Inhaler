@@ -6,247 +6,215 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
-        android:layout_width="411dp"
-        android:layout_height="300dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+    <!--todo: if possible, I (Youssef) would like to use a circular status bar to save space.-->
+    <!--fixme: I'm (Youssef) currently ignoring the context description warnings because it doesn't seem worthwhile to make resources for it -->
+    <TextView
+        android:id="@+id/doses_textview"
+        style="@style/generic_word_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/default_margin"
+        android:text="@string/placeholder_text"
+        app:layout_constraintBaseline_toBaselineOf="@+id/doses_header_textview"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="match_parent"
-        android:layout_height="145dp"
-        app:layout_constraintBottom_toTopOf="@+id/recyclerView"
+    <ProgressBar
+        android:id="@+id/doses_progressbar"
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="@dimen/default_margin"
+        android:layout_marginEnd="@dimen/default_margin"
+        app:layout_constraintBottom_toBottomOf="@+id/doses_header_textview"
+        app:layout_constraintEnd_toStartOf="@+id/doses_header_textview"
+        app:layout_constraintStart_toEndOf="@+id/doses_textview"
+        app:layout_constraintTop_toTopOf="@+id/doses_header_textview"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/doses_header_textview"
+        style="@style/pane_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/default_margin"
+        android:layout_marginEnd="@dimen/default_margin"
+        android:text="@string/nebulizer_label"
+        android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- todo: use a compound drawable in a TextView instead of vertical linear layouts with an image and text for better performance.
+        But make sure to automatically resize the images. Right now, the image sizes are hard-coded.
+
+        or consider displaying the text over an image: https://stackoverflow.com/questions/5242951/android-text-over-image
+
+        todo: add textviews as necessary later. If you will not, then extract the images from the vertical linear layouts and delete those layouts-->
+    <LinearLayout
+        android:id="@+id/weather_icons_linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/default_margin"
+        android:layout_marginTop="@dimen/default_margin"
+        android:layout_marginEnd="@dimen/default_margin"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.634">
+        app:layout_constraintTop_toBottomOf="@+id/doses_header_textview">
 
-        <ImageView
-            android:id="@+id/aqi_icon"
-            android:layout_width="@dimen/forecast_data_icon_width"
-            android:layout_height="@dimen/forecast_data_icon_height"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.045"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.781"
-            app:srcCompat="@drawable/_39_wind" />
+        <!-- Spacer views to organize the icons and text-->
+        <View
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
 
-        <ImageView
-            android:id="@+id/temperature_icon"
-            android:layout_width="@dimen/forecast_data_icon_width"
-            android:layout_height="@dimen/forecast_data_icon_height"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.263"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.745"
-            app:srcCompat="@drawable/_21_hot_temperature" />
-
-        <ImageView
-            android:id="@+id/precipitation_icon"
-            android:layout_width="@dimen/forecast_data_icon_width"
-            android:layout_height="@dimen/forecast_data_icon_height"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.92"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.769"
-            app:srcCompat="@drawable/_05_rain" />
-
-        <ImageView
-            android:id="@+id/pollen_icon"
-            android:layout_width="@dimen/forecast_data_icon_width"
-            android:layout_height="@dimen/forecast_data_icon_height"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.741"
-            app:srcCompat="@drawable/flower" />
-
-        <ImageView
-            android:id="@+id/humidity_icon"
-            android:layout_width="@dimen/forecast_data_icon_width"
-            android:layout_height="@dimen/forecast_data_icon_height"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.711"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.746"
-            app:srcCompat="@drawable/humidity" />
-
-        <TextView
-            android:id="@+id/textView"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="TextView"
-            app:layout_constraintBottom_toTopOf="@+id/aqi_icon"
-            app:layout_constraintEnd_toEndOf="@+id/aqi_icon"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="@+id/aqi_icon"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
 
-        <TextView
-            android:id="@+id/textView4"
+            <ImageView
+                android:id="@+id/aqi_imageview"
+                android:layout_width="@dimen/forecast_data_icon_width"
+                android:layout_height="@dimen/forecast_data_icon_height"
+                app:srcCompat="@drawable/_39_wind" />
+
+            <TextView
+                android:id="@+id/aqi_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/placeholder_text" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
-            android:text="TextView"
-            app:layout_constraintBottom_toTopOf="@+id/temperature_icon"
-            app:layout_constraintEnd_toEndOf="@+id/temperature_icon"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/temperature_icon"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.615" />
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
 
-        <TextView
-            android:id="@+id/textView5"
+            <ImageView
+                android:id="@+id/temperature_imageview"
+                android:layout_width="@dimen/forecast_data_icon_width"
+                android:layout_height="@dimen/forecast_data_icon_height"
+                app:srcCompat="@drawable/_21_hot_temperature" />
+
+            <TextView
+                android:id="@+id/temperature_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/placeholder_text" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="9dp"
-            android:text="TextView"
-            app:layout_constraintBottom_toTopOf="@+id/pollen_icon"
-            app:layout_constraintEnd_toEndOf="@+id/pollen_icon"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/pollen_icon"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.761" />
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
 
-        <TextView
-            android:id="@+id/textView6"
+            <ImageView
+                android:id="@+id/precipitation_imageview"
+                android:layout_width="@dimen/forecast_data_icon_width"
+                android:layout_height="@dimen/forecast_data_icon_height"
+                app:srcCompat="@drawable/_05_rain" />
+
+            <TextView
+                android:id="@+id/percipitation_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/placeholder_text" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="TextView"
-            app:layout_constraintBottom_toTopOf="@+id/humidity_icon"
-            app:layout_constraintEnd_toEndOf="@+id/humidity_icon"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/humidity_icon"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.533" />
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
 
-        <TextView
-            android:id="@+id/textView7"
+            <ImageView
+                android:id="@+id/pollen_imageview"
+                android:layout_width="@dimen/forecast_data_icon_width"
+                android:layout_height="@dimen/forecast_data_icon_height"
+                app:srcCompat="@drawable/flower" />
+
+            <TextView
+                android:id="@+id/pollen_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/placeholder_text" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="TextView"
-            app:layout_constraintBottom_toTopOf="@+id/precipitation_icon"
-            app:layout_constraintEnd_toEndOf="@+id/precipitation_icon"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/precipitation_icon"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.516" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
+
+            <ImageView
+                android:id="@+id/humidity_imageview"
+                android:layout_width="@dimen/forecast_data_icon_width"
+                android:layout_height="@dimen/forecast_data_icon_height"
+                app:srcCompat="@drawable/humidity" />
+
+            <TextView
+                android:id="@+id/humidity_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/placeholder_text" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+    </LinearLayout>
 
     <View
         android:id="@+id/divider"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="?android:attr/listDivider"
-        app:layout_constraintBottom_toTopOf="@+id/textView3"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
-        app:layout_constraintVertical_bias="0.394" />
-
-    <ProgressBar
-        android:id="@+id/determinateProgressBar"
-        style="@android:style/Widget.ProgressBar.Horizontal"
-        android:layout_width="171dp"
-        android:layout_height="46dp"
-        app:layout_constraintBottom_toTopOf="@+id/divider2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.308"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.64" />
-
-    <View
-        android:id="@+id/divider2"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginBottom="20dp"
-        android:background="?android:attr/listDivider"
-        app:layout_constraintBottom_toTopOf="@+id/weather_forecast_header"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
-
+        app:layout_constraintTop_toBottomOf="@+id/weather_icons_linearLayout" />
 
     <TextView
-        android:id="@+id/medicine_status_header"
+        android:id="@+id/diary_header_textview"
         style="@style/pane_header"
-        android:layout_width="140dp"
-        android:text="@string/nebulizer_label"
-        android:textAlignment="center"
-        app:layout_constraintBottom_toTopOf="@+id/divider2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/determinateProgressBar"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
-
-    <TextView
-        android:id="@+id/weather_forecast_header"
-        style="@style/pane_header"
-        android:text="@string/breath_forecast_label"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0"
-
-        />
-
-    <TextView
-        android:id="@+id/textView3"
-        style="@style/pane_header"
+        android:layout_marginStart="@dimen/default_margin"
+        android:layout_marginTop="@dimen/default_margin"
         android:text="@string/diary_label"
-        app:layout_constraintBottom_toTopOf="@+id/recyclerView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintTop_toBottomOf="@id/divider" />
 
-    <TextView
-        android:id="@+id/doses_taken_label"
-        style="@style/generic_word_content"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="22dp"
-        android:text="@string/null_medicine_label"
-        app:layout_constraintBottom_toTopOf="@+id/divider2"
-        app:layout_constraintEnd_toStartOf="@+id/determinateProgressBar"
-        app:layout_constraintHorizontal_bias="0.888"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.8" />
-
-    <ImageView
-        android:id="@+id/forecast_icon"
-        android:layout_width="86dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="20dp"
-        android:layout_weight="1"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
-        app:layout_constraintEnd_toEndOf="@+id/weather_forecast_header"
-        app:layout_constraintHorizontal_bias="0.569"
-        app:layout_constraintStart_toStartOf="@+id/weather_forecast_header"
-        app:layout_constraintTop_toBottomOf="@+id/divider2"
-        app:layout_constraintVertical_bias="0.0"
-        app:srcCompat="@drawable/_24_windy" />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/diary_recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/default_margin"
+        android:layout_marginBottom="@dimen/default_margin"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/diary_header_textview" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
