@@ -1,0 +1,11 @@
+# Repository .gitignore
+# This .gitignore specifies the files that should be ignored in all of the repository.
+# Some folders have projects inside them and they have an additional .gitignore file for that folder and its children.
+
+
+# Ignore these android files
+*.iml
+.gradle
+.DS_Store
+.externalNativeBuild
+.cxx
