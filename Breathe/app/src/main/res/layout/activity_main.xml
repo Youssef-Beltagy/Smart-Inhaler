@@ -129,7 +129,7 @@
                 app:srcCompat="@drawable/_05_rain" />
 
             <TextView
-                android:id="@+id/percipitation_textview"
+                android:id="@+id/precipitation_textview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/placeholder_text" />
