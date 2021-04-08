@@ -22,3 +22,8 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+ext{
+    // As of March 25, 2021, defines current stable release of Room for build.gradle (:app)
+    roomVersion = '2.2.6'
+}
