@@ -25,9 +25,10 @@ android {
     useLibrary 'android.test.runner'
     useLibrary 'android.test.base'
     useLibrary 'android.test.mock'
+
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility sourceCompatibility
+        targetCompatibility targetCompatibility
     }
 }
 
@@ -37,7 +38,7 @@ dependencies {
     // Test dependencies
     implementation 'androidx.room:room-runtime:2.2.6'
     testImplementation "com.google.truth:truth:1.1.2"
-    testImplementation 'junit:junit:4.13.1'
+    testImplementation 'junit:junit:4.13.2'
 
     // Required for instrumented tests
     // Core library
@@ -60,6 +61,12 @@ dependencies {
     annotationProcessor 'androidx.room:room-compiler:2.2.6'
 
     // UI dependencies
-    implementation 'androidx.recyclerview:recyclerview:1.1.0'
+    implementation 'androidx.recyclerview:recyclerview:1.2.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+
+    // nRF Library
+    implementation 'no.nordicsemi.android:ble:2.2.4'
+
+    // nRF Library support for live data (not used now but potentially useful)
+    implementation 'no.nordicsemi.android:ble-livedata:2.2.4'
 }

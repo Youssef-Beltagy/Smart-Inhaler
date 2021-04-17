@@ -46,15 +46,15 @@
             </intent-filter>
         </receiver>
 
-<!--        &lt;!&ndash;todo: clean and remove chicken&ndash;&gt;-->
-<!--        &lt;!&ndash;android:description="string resource"&ndash;&gt;-->
-<!--        <service android:name=".BLEService"-->
-<!--            android:directBootAware="true"-->
-<!--            android:enabled="true"-->
-<!--            android:exported="false"-->
-<!--            android:foregroundServiceType="connectedDevice"-->
-<!--            android:label="Chicken-BLE connected" >-->
-<!--        </service>-->
+        <!--todo: clean and remove chicken-->
+        <!--android:description="string resource"-->
+        <service android:name=".BLEService"
+            android:directBootAware="true"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="connectedDevice"
+            android:label="Chicken-BLE connected" >
+        </service>
 
         <activity
             android:name=".MainActivity">
