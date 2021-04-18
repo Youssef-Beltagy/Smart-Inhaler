@@ -1,5 +1,5 @@
 /*
-    Written by Youssef Beltagy, the Chicken Lord
+    Written by Youssef Beltagy
     
     Based on the sample code that is written by Neil Kolban,
     ported to Arduino ESP32 by Evandro Copercini, and updated by chegewara.
@@ -52,19 +52,22 @@ BLEServer *serverPtr = nullptr;
 BLECharacteristic *wearableDataCharacteristicPtr = nullptr;
 
 bool deviceConnected = false;
+bool advertising = false;
 uint32_t lastNotificationTime;
 uint32_t minNotificationDelay = 20000; // 20 seconds
 
 // The temperature and humidity sensor I used is DHT11.
-// You can get if from Adafruit here: https://www.adafruit.com/product/386
+// You can get it from Adafruit here: https://www.adafruit.com/product/386
 // I recommend getting it in a kit or from another supplier to save money.
-// I connected the sensor the pin 5 of the esp32.
+// I connected the sensor to pin 5 of the esp32.
 DHT dht(5, DHT11);
 
 
 //WearableData contract struct.
-//This struct represents a single WearableData entry. It is ten bytes big.
-// Weirdly, Sizeof returns 12
+//This struct represents a single WearableData entry. It is ten bytes.
+//Sizeof returns 12 (probably because esp32 is a 32-bit MCU so its memory is allocated in 4-byte blocks)
+//In little Endian, you will find the temperature in the first four bytes. The humidity is the following four bytes.
+//then a byte for the character (UTF-8) and another for the digit.
 struct WearableData{
   float temperature;// 4 bytes - little endian
   float humidity;   // 4 bytes - little endian
@@ -72,6 +75,7 @@ struct WearableData{
   char  digit;      // 1 byte
 };
 
+//TODO: consider making a characteristic object.
 WearableData* wearableDataPtr;
 
 // Updates the values of the WearableData objected pointed to by wearableDataPtr
@@ -122,7 +126,9 @@ class ServerCallbacks : public BLEServerCallbacks
     #ifdef WEARABLE_SENSOR_DEBUG
     Serial.println("Established Connection");
     #endif
+
     deviceConnected = true;
+    advertising = false;
   };
 
   void onDisconnect(BLEServer *serverPtr)
@@ -132,9 +138,6 @@ class ServerCallbacks : public BLEServerCallbacks
     #endif
 
     deviceConnected = false;
-
-    delay(500);                    // give the bluetooth stack a chance to get things ready
-    serverPtr->startAdvertising(); // restart advertising
 
     #ifdef WEARABLE_SENSOR_DEBUG
     Serial.println("Advertising");
@@ -147,7 +150,7 @@ class WearableDataCharacteristicCallBackHandler : public BLECharacteristicCallba
 {
 public:
 
-  // On read, get the data and get the size of the data. Then update the value of the characteristic.
+  // On read, update the Wearable data.
   void onRead(BLECharacteristic *ptr)
   {
     updateWearableData(wearableDataPtr);
@@ -171,11 +174,9 @@ void setup()
   wearableDataPtr = new WearableData();
 
   // Create the BLE Device
-  BLEDevice::init("Wearable Sensor");
+  BLEDevice::init("Wearable Sensor"); // device name
+  BLEDevice::setEncryptionLevel(ESP_BLE_SEC_ENCRYPT); // To demand bonding
 
-  //-----------------FIXME
-  //BLEDevice::setEncryptionLevel(ESP_BLE_SEC_ENCRYPT);
-  //BLEDevice::setSecurityCallbacks();
 
   // Create the BLE Server
   serverPtr = BLEDevice::createServer();
@@ -195,7 +196,7 @@ void setup()
 
   wearableDataCharacteristicPtr->setCallbacks(new WearableDataCharacteristicCallBackHandler());
 
-  wearableDataCharacteristicPtr->addDescriptor(new BLE2902());
+  wearableDataCharacteristicPtr->addDescriptor(new BLE2902()); // needed for notifications and indications
 
   // Start the service
   pService->start();
@@ -203,37 +204,19 @@ void setup()
   // Start advertising
   BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
 
-  // ---------------------------------- TODO: possibly add advertisement data
-  // BLEAdvertisementData advertisementData;
-  // // set Advertisement data.
-
-  // pAdvertising->setAdvertisementData(advertisementData);
-
-  BLEAdvertisementData oAdvertisementData = BLEAdvertisementData();
+  BLEAdvertisementData advertisementData = BLEAdvertisementData();
   
-  oAdvertisementData.setCompleteServices(BLEUUID(SERVICE_UUID));
-  
-  pAdvertising->setAdvertisementData(oAdvertisementData);
-
-  // TODO: Advertise Service UUID addServiceUUID
-  // FIXME: follow best practices for adverising packets: https://reelyactive.github.io/diy/best-practices-ble-identifiers/
-  // TODO: Make custom BLE characteristic
-  // TODO: What do the flags mean.
-  // TODO: What is the scan response?
-  // ------------------------------------------
+  advertisementData.setCompleteServices(BLEUUID(SERVICE_UUID)); // add the service ID to the advertisement data.
+  //advertisementData.setFlags(ESP_BLE_ADV_FLAG_GEN_DISC | ESP_BLE_ADV_FLAG_DMT_CONTROLLER_SPT | ESP_BLE_ADV_FLAG_DMT_HOST_SPT); // changing the flags didn't solve the autoconnect problem.
+  pAdvertising->setAdvertisementData(advertisementData);
 
   pAdvertising->addServiceUUID(SERVICE_UUID);
   pAdvertising->setScanResponse(true); // the SERVICE_UUID only appears if this is true
   pAdvertising->setMinPreferred(0x0); // set value to 0x00 to not advertise this parameter. TODO: Consider changing this parameter as necessary.
   
-  
-  // Serial.print("connect: ");
-  // Serial.println(serverPtr->connect(BLEAddress("D0:04:01:14:AE:22")));
-  
+    
   BLEDevice::startAdvertising();
-
-  //TODO: Add advertising data
-  //TODO: Possibly add characteristic descriptions
+  advertising = true;
 
   #ifdef WEARABLE_SENSOR_DEBUG
   Serial.println("Awaiting a client connection...");
@@ -243,149 +226,21 @@ void setup()
 void loop()
 {
   if(deviceConnected && millis() - lastNotificationTime > minNotificationDelay){
-    
-    //TODO: update the data before notifying
-    //TODO: test indications
 
     // Notify the last updated values.
+    #ifdef  WEARABLE_SENSOR_DEBUG
+    Serial.println("Attempt to send Notification");
+    #endif
     updateWearableData(wearableDataPtr);
     wearableDataCharacteristicPtr->setValue((uint8_t*) wearableDataPtr, sizeof(WearableData));
     wearableDataCharacteristicPtr->notify();
     lastNotificationTime = millis();
-    #ifdef  WEARABLE_SENSOR_DEBUG
-    Serial.println("Attempted to send Notification");
-    #endif
   }
+
+  if(!deviceConnected && !advertising){
+    delay(500);
+    BLEDevice::startAdvertising();
+    advertising = true;
+  }
+
 }
-
-
-/*
-
-
-/*
-    Based on Neil Kolban example for IDF: https://github.com/nkolban/esp32-snippets/blob/master/cpp_utils/tests/BLE%20Tests/SampleServer.cpp
-    Ported to Arduino ESP32 by Evandro Copercini
-*/
-
-#include <BLEDevice.h>
-#include <BLEUtils.h>
-#include <BLEServer.h>
-
-// See the following for generating UUIDs:
-// https://www.uuidgenerator.net/
-
-#define SERVICE_UUID        "4fafc201-1fb5-459e-8fcc-c5c9c331914b"
-#define CHARACTERISTIC_UUID "beb5483e-36e1-4688-b7f5-ea07361b26a8"
-
-#define LOOP_DELAY 100
-
-
-float blePairTimeOut = 0;
-
-class MySecurity : public BLESecurityCallbacks {
-  
-  bool onConfirmPIN(uint32_t pin){
-    Serial.println("onConfirmPIN");
-    if (blePairTimeOut > 0){
-      return true;  
-    }
-    else{
-      return false;
-    }
-  }
-  
-  uint32_t onPassKeyRequest(){
-    Serial.println("onPassKeyRequest");
-        ESP_LOGI(LOG_TAG, "PassKeyRequest");
-    return 133700;
-  }
-
-  void onPassKeyNotify(uint32_t pass_key){
-    Serial.println("onPassKeyNotify");
-        ESP_LOGI(LOG_TAG, "On passkey Notify number:%d", pass_key);
-  }
-
-  bool onSecurityRequest(){
-    Serial.println("onSecurityRequest");
-      ESP_LOGI(LOG_TAG, "On Security Request");
-    return true;
-  }
-
-  void onAuthenticationComplete(esp_ble_auth_cmpl_t cmpl){
-    Serial.println("onAuthenticationComplete");
-    ESP_LOGI(LOG_TAG, "Starting BLE work!");
-    if(cmpl.success){
-      Serial.println("onAuthenticationComplete -> success");
-      uint16_t length;
-      esp_ble_gap_get_whitelist_size(&length);
-      ESP_LOGD(LOG_TAG, "size: %d", length);
-    }
-    else{
-      Serial.println("onAuthenticationComplete -> fail");
-    }
-  }
-};
-
-void setup() {
-    
-
-    
-  Serial.begin(115200);
-  Serial.println("Starting BLE work!");
-
-  BLEDevice::init("ESP32 TW");
-  BLEDevice::setEncryptionLevel(ESP_BLE_SEC_ENCRYPT);
-  /*
-   * Required in authentication process to provide displaying and/or input passkey or yes/no butttons confirmation
-   */
-  BLEDevice::setSecurityCallbacks(new MySecurity());
-  BLEServer *pServer = BLEDevice::createServer();
-  
-  //public services
-  BLEService *pService = pServer->createService(SERVICE_UUID);
-  BLECharacteristic *pCharacteristic = pService->createCharacteristic(
-                                         CHARACTERISTIC_UUID,
-                                         BLECharacteristic::PROPERTY_READ |
-                                         BLECharacteristic::PROPERTY_WRITE
-                                       );
-
-  pCharacteristic->setValue("Hello World says Neil");
-  pCharacteristic->setCallbacks("
-  pService->start();
-  BLEAdvertising *pAdvertising = pServer->getAdvertising();
-  pAdvertising->start();
-
-
-
-  
-  BLESecurity *pSecurity = new BLESecurity();
-  pSecurity->setAuthenticationMode(ESP_LE_AUTH_REQ_SC_MITM_BOND); //ESP_LE_AUTH_REQ_SC_ONLY
-  pSecurity->setCapability(ESP_IO_CAP_KBDISP);
-  pSecurity->setInitEncryptionKey(ESP_BLE_ENC_KEY_MASK | ESP_BLE_ID_KEY_MASK);
-  Serial.println("Characteristic defined! Now you can read it in your phone!");
-}
-
-void loop() {
-  // put your main code here, to run repeatedly:
-    int val = hallRead();
-  // print the results to the serial monitor:
-  //Serial.print("sensor = ");
-  
-  if (val > 100 ) {
-    // turn LED on:
-    Serial.println("BLE ACTIVE");
-    blePairTimeOut = 10;
-    
-  } else {
-    // turn LED off:
-  }
-  
-  delay(LOOP_DELAY);
-  if (blePairTimeOut > 0){
-    blePairTimeOut = blePairTimeOut - LOOP_DELAY/1000;
-  }
-}
-
-
-
-*/
