@@ -1,9 +1,8 @@
 package com.ybeltagy.breathe;
 
-import android.os.Build;
+import android.annotation.SuppressLint;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -37,7 +36,7 @@ public class WearableData {
      * Perhaps in the future, the smart pin will send a timestamp with its data but for our current
      * team, this is not necessary.
      */
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    @SuppressLint("NewApi")
     public WearableData() {
         wearableDataTimeStamp = Instant.now();
     }

@@ -1,17 +1,37 @@
 package com.ybeltagy.breathe;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+
+import android.bluetooth.BluetoothDevice;
+import android.content.Intent;
+import android.os.Build;
+import android.os.ParcelUuid;
+import android.util.Log;
+import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import android.os.Bundle;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+
+import android.content.Context; // fixme: delete! just for testing
+
+import no.nordicsemi.android.support.v18.scanner.BluetoothLeScannerCompat;
+import no.nordicsemi.android.support.v18.scanner.ScanCallback;
+import no.nordicsemi.android.support.v18.scanner.ScanFilter;
+import no.nordicsemi.android.support.v18.scanner.ScanResult;
+import no.nordicsemi.android.support.v18.scanner.ScanSettings;
+
+import static androidx.core.content.ContextCompat.startForegroundService;
 
 /**
  * This activity contains the main logic of the Breathe app. It renders the UI and registers a
@@ -74,5 +94,86 @@ public class MainActivity extends AppCompatActivity {
         iueRecyclerView.setAdapter(iueListAdapter);
         // set layout manager for recyclerView
         iueRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+    }
+
+    public void testWearableData(View view) {
+        //Fixme: inline thread is just as a demo. Remove and use executorservice later.
+        Context context = this;
+
+        (new Thread() {
+            public void run() {
+                WearableData wearableData = WearableBLEService.getWearableData();
+                String temp = "No data";
+
+                if(wearableData != null) temp = "\nTemp = " + wearableData.getTemperature() + "\nHumidity: " + wearableData.getHumidity() +
+                        "\nCharacter: " + wearableData.getCharacter() + "\nDigit" + wearableData.getDigit();
+                Log.d("MainActivity",temp);
+
+//                final String toastString = temp;
+//                ContextCompat.getMainExecutor(context).execute(()  -> {
+//                    Toast.makeText(context, toastString, Toast.LENGTH_LONG);
+//                });
+            }
+        }).start();
+    }
+
+    //FIXME: continue
+    public void scanForWearableSensor(View view) {
+        BluetoothLeScannerCompat scanner = BluetoothLeScannerCompat.getScanner();
+        ScanSettings settings = new ScanSettings.Builder()
+                .setLegacy(false) // Not sure
+                .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
+                .setReportDelay(0)
+                .setUseHardwareBatchingIfSupported(true)
+                .setCallbackType(ScanSettings.CALLBACK_TYPE_FIRST_MATCH)
+                .setMatchMode(ScanSettings.MATCH_MODE_AGGRESSIVE)
+                .setNumOfMatches(ScanSettings.MATCH_NUM_ONE_ADVERTISEMENT)
+                .build();
+        List<ScanFilter> filters = new ArrayList<>();
+
+
+        //TODO: research context
+        Context context = this;
+
+        //TODO: put the UUID in a better place
+        filters.add(new ScanFilter.Builder().setServiceUuid(ParcelUuid.fromString("25380284-e1b6-489a-bbcf-97d8f7470aa4")).build());
+        scanner.startScan(filters, settings, new ScanCallback() {
+            /**
+             * Callback when a BLE advertisement has been found.
+             *
+             * @param callbackType Determines how this callback was triggered. Could be one of
+             *                     {@link ScanSettings#CALLBACK_TYPE_ALL_MATCHES},
+             *                     {@link ScanSettings#CALLBACK_TYPE_FIRST_MATCH} or
+             *                     {@link ScanSettings#CALLBACK_TYPE_MATCH_LOST}
+             * @param result       A Bluetooth LE scan result.
+             */
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void onScanResult(int callbackType, @NonNull ScanResult result) {
+                super.onScanResult(callbackType, result);
+
+                Log.d("main", "found: " + result.getDevice().toString());
+
+                // refactor
+                Intent foregroundServiceIntent = new Intent(context, WearableBLEService.class);
+                foregroundServiceIntent.putExtra(BluetoothDevice.EXTRA_DEVICE, result.getDevice());
+                startForegroundService(foregroundServiceIntent);
+
+                // FIXME: I'm not sure I'm stopping the scanning the correct way.
+                BluetoothLeScannerCompat scanner = BluetoothLeScannerCompat.getScanner();
+                scanner.stopScan(new ScanCallback() {
+                    /**
+                     * Callback when scan could not be started.
+                     *
+                     * @param errorCode Error code (one of SCAN_FAILED_*) for scan failure.
+                     */
+                    @Override
+                    public void onScanFailed(int errorCode) {
+                        super.onScanFailed(errorCode);
+                    }
+                });
+
+            }
+        });
     }
 }

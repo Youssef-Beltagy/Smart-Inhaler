@@ -41,14 +41,14 @@
             android:enabled="true"
             android:exported="true">
             <intent-filter>
+                <!--Listen for Bluetooth connections only-->
                 <action android:name="android.bluetooth.device.action.ACL_CONNECTED" />
-                <action android:name="android.bluetooth.device.action.ACL_DISCONNECTED" />
             </intent-filter>
         </receiver>
 
         <!--todo: clean and remove chicken-->
         <!--android:description="string resource"-->
-        <service android:name=".BLEService"
+        <service android:name=".WearableBLEService"
             android:directBootAware="true"
             android:enabled="true"
             android:exported="false"

@@ -27,8 +27,8 @@ android {
     useLibrary 'android.test.mock'
 
     compileOptions {
-        sourceCompatibility sourceCompatibility
-        targetCompatibility targetCompatibility
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
@@ -69,4 +69,8 @@ dependencies {
 
     // nRF Library support for live data (not used now but potentially useful)
     implementation 'no.nordicsemi.android:ble-livedata:2.2.4'
+
+    // For BLE Scanning
+    implementation 'no.nordicsemi.android.support.v18:scanner:1.4.3'
+
 }

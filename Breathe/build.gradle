@@ -26,4 +26,6 @@ task clean(type: Delete) {
 ext{
     // As of March 25, 2021, defines current stable release of Room for build.gradle (:app)
     roomVersion = '2.2.6'
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }

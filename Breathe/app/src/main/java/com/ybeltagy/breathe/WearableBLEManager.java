@@ -1,36 +1,33 @@
 package com.ybeltagy.breathe;
 
 
+import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
 import android.content.Context;
-import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.UUID;
 
 import no.nordicsemi.android.ble.BleManager;
+import no.nordicsemi.android.ble.callback.DataReceivedCallback;
+import no.nordicsemi.android.ble.data.Data;
 
 // todo: fix logs.
-
+// todo: consider making a singleton
 public class WearableBLEManager extends BleManager {
     final static UUID SERVICE_UUID = UUID.fromString("25380284-e1b6-489a-bbcf-97d8f7470aa4");
-    final static UUID TEMP_CHAR   = UUID.fromString("c3856cfa-4af6-4d0d-a9a0-5ed875d937cc");
-    final static UUID HUMID_CHAR  = UUID.fromString("e36d8858-cac3-4b03-9356-98b40fdd122e");
-    final static UUID CHAR_CHAR   = UUID.fromString("03192130-212a-48c9-b058-ee4dace59d26");
-    final static UUID DIG__CHAR  = UUID.fromString("71eec950-3841-4984-83fa-0cfd8b9c901f");
+    final static UUID WEARABLE_DATA_CHAR = UUID.fromString("c3856cfa-4af6-4d0d-a9a0-5ed875d937cc");
 
     private static final String tag = "WearableBLEManager";
 
     // Client characteristics
-    private BluetoothGattCharacteristic temperatureCharacteristic = null;
-    private BluetoothGattCharacteristic humidityCharacteristic = null;
-    private BluetoothGattCharacteristic characterCharacteristic = null;
-    private BluetoothGattCharacteristic digitCharacteristic = null;
-
+    private BluetoothGattCharacteristic wearableDataCharacteristic = null;
 
     WearableBLEManager(@NonNull final Context context) {
         super(context);
@@ -60,24 +57,15 @@ public class WearableBLEManager extends BleManager {
         public boolean isRequiredServiceSupported(@NonNull final BluetoothGatt gatt) {
             final BluetoothGattService service = gatt.getService(SERVICE_UUID);
 
-            if(service == null) return false;
+            if (service == null) return false;
 
-            temperatureCharacteristic = service.getCharacteristic(TEMP_CHAR);
-            humidityCharacteristic = service.getCharacteristic(HUMID_CHAR);
-            characterCharacteristic = service.getCharacteristic(CHAR_CHAR);
-            digitCharacteristic = service.getCharacteristic(DIG__CHAR);
+            wearableDataCharacteristic = service.getCharacteristic(WEARABLE_DATA_CHAR);
 
-            if(temperatureCharacteristic == null
-                || humidityCharacteristic == null
-                || characterCharacteristic == null
-                || digitCharacteristic == null)
-                    return false;
+            if (wearableDataCharacteristic == null)
+                return false;
 
-            // Ensure all characteristics have a read property.
-            return (temperatureCharacteristic.getProperties() &
-                    humidityCharacteristic.getProperties() &
-                    characterCharacteristic.getProperties() &
-                    digitCharacteristic.getProperties() &
+            // Ensure wearableData characteristic has a read property.
+            return (wearableDataCharacteristic.getProperties() &
                     BluetoothGattCharacteristic.PROPERTY_READ) != 0;
         }
 
@@ -98,80 +86,52 @@ public class WearableBLEManager extends BleManager {
                     .done(callback -> log(Log.INFO, "Target initialized - callback" + callback.toString()))
                     .enqueue();
             // You may easily enqueue more operations here like such:
-            readCharacteristic(temperatureCharacteristic)
-                    .done(value -> log(Log.INFO, "Temp: " + value))
-                    .enqueue();
-            readCharacteristic(humidityCharacteristic)
-                    .done(value -> log(Log.INFO, "Humidity: " + value))
-                    .enqueue();
-            readCharacteristic(characterCharacteristic)
-                    .done(value -> log(Log.INFO, "Char: " + value ))
-                    .enqueue();
-            readCharacteristic(digitCharacteristic)
-                    .done(value -> log(Log.INFO, "Digit: " + value))
-                    .enqueue();
-            // Set a callback for your notifications. You may also use waitForNotification(...).
-            // Both callbacks will be called when notification is received.
-//            setNotificationCallback(firstCharacteristic, callback);
-//            // If you need to send very long data using Write Without Response, use split()
-//            // or define your own splitter in split(DataSplitter splitter, WriteProgressCallback cb).
-//            writeCharacteristic(secondCharacteristic, "Very, very long data that will no fit into MTU")
-//                    .split()
-//                    .enqueue();
+
+            // TODO: to meet a stretch goal, you may need to enable Ble notificaionts/indications here.
         }
 
         @Override
         protected void onDeviceDisconnected() {
             // Device disconnected. Release your references here.
-            temperatureCharacteristic = null;
-            humidityCharacteristic = null;
-            characterCharacteristic = null;
-            digitCharacteristic = null;
+            wearableDataCharacteristic = null;
         }
     }
 
-    // Define your API.
+    public WearableData getWeatherData() {
+        if (wearableDataCharacteristic == null)
+            return null;
 
-//    private abstract class FluxHandler implements ProfileDataCallback {
-//        @Override
-//        public void onDataReceived(@NonNull final BluetoothDevice device, @NonNull final Data data) {
-//            // Some validation?
-//            if (data.size() != 1) {
-//                onInvalidDataReceived(device, data);
-//                return;
-//            }
-//            onFluxCapacitorEngaged();
-//        }
-//
-//        abstract void onFluxCapacitorEngaged();
-//    }
-//
-//    /** Initialize time machine. */
-//    public void enableFluxCapacitor(final int year) {
-//        waitForNotification(firstCharacteristic)
-//                .trigger(
-//                        writeCharacteristic(secondCharacteristic, new FluxJumpRequest(year))
-//                                .done(device -> log(Log.INDO, "Power on command sent"))
-//                )
-//                .with(new FluxHandler() {
-//                    public void onFluxCapacitorEngaged() {
-//                        log(Log.WARN, "Flux Capacitor enabled! Going back to the future in 3 seconds!");
-//
-//                        sleep(3000).enqueue();
-//                        write(secondCharacteristic, "Hold on!".getBytes())
-//                                .done(device -> log(Log.WARN, "It's " + year + "!"))
-//                                .fail((device, status) -> "Not enough flux? (status: " + status + ")")
-//                                .enqueue();
-//                    }
-//                })
-//                .enqueue();
-//    }
+        final WearableData wearableData = new WearableData();
 
-    /**
-     * Aborts time travel. Call during 3 sec after enabling Flux Capacitor and only if you don't
-     * like 2020.
-     */
-//    public void abort() {
-//        cancelQueue();
-//    }
+        try{
+            readCharacteristic(wearableDataCharacteristic)
+                    .with(new DataReceivedCallback() {
+                        @Override
+                        public void onDataReceived(@NonNull BluetoothDevice device, @NonNull Data data) {
+
+                            ByteBuffer buf = ByteBuffer.wrap(data.getValue()).order(ByteOrder.LITTLE_ENDIAN);
+                            wearableData.setTemperature(buf.getFloat()); // Actually use floats
+                            wearableData.setHumidity(buf.getFloat());
+
+                            wearableData.setCharacter(
+                                    (char)((buf.get()-65) + 'A')
+                            );
+                            wearableData.setDigit(
+                                    (char)((buf.get()-48) + '0')
+                            );
+
+                            log(Log.INFO, "Temperature: " + wearableData.getTemperature());
+                            log(Log.INFO, "Humidity: " + wearableData.getHumidity());
+                            log(Log.INFO, "Character: " + wearableData.getCharacter());
+                            log(Log.INFO, "Digit: " + wearableData.getDigit());
+                        }
+                    }).await();
+        }catch (Exception e){
+            log(0, e.toString());
+            return null;
+        }
+
+        return wearableData;
+    }
+    
 }
