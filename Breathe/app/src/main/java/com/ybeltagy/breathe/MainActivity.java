@@ -22,7 +22,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import android.content.Context; // fixme: delete! just for testing
+import android.content.Context;
 import android.widget.Toast;
 
 import com.ybeltagy.breathe.ble.BLEScanner;
@@ -73,6 +73,17 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
+    /**
+     * Dispatch onResume() to fragments.  Note that for better inter-operation
+     * with older versions of the platform, at the point of this call the
+     * fragments attached to the activity are <em>not</em> resumed.
+     */
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // TODO: consider making an onResume that handles request codes.
+    }
+
     // render the Progress Bar for the medicine status in first pane (top of the screen)
     private void renderMedStatusView(List<String> eventList, int totalDosesInCaniser) {
         ProgressBar medicineStatusBar = findViewById(R.id.doses_progressbar);
@@ -99,8 +110,13 @@ public class MainActivity extends AppCompatActivity {
         iueRecyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
+
+    /**
+     * A testing method just for development.
+     * @param view
+     */
     public void testWearableData(View view) {
-        //Fixme: inline thread is just as a demo. Remove and use executorservice later.
+        //Fixme: inline thread is just a demo. Remove and use executorservice later.
         Context context = this;
 
         (new Thread() {
@@ -116,38 +132,57 @@ public class MainActivity extends AppCompatActivity {
         }).start();
     }
 
+    /**
+     * Starts a scan for a wearable sensor device. The wearable includes its service UUID in its advertisements.
+     * The service UUID of the wearable sensor is used to filter for it.
+     * @param view
+     */
     public void scanForWearableSensor(View view) {
 
         if(!hasLocationPermissions()) return;
-        //FIXME: continue
 
-        //TODO: I'm not sure this is the best way
-        // Ensure that BLE is enabled.
-        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-
-        if (bluetoothAdapter == null) {
-            Toast.makeText(getApplicationContext(), "This device not support bluetooth", Toast.LENGTH_SHORT).show();
-        } else {
-            if (!bluetoothAdapter.isEnabled()) {
-                //todo: it will be nice if the user can go back to our app after BLUETOOTH is enabled.
-                //refer to: https://google-developer-training.github.io/android-developer-fundamentals-course-concepts-v2/unit-1-get-started/lesson-2-activities-and-intents/2-1-c-activities-and-intents/2-1-c-activities-and-intents.html#passingdatabetweenactivities
-                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                startActivityForResult(enableBtIntent, 0);
-            }
-        }
+        if(!isBluetoothEnabled()) return;
 
         BLEScanner.scanForWearableSensor(this);
     }
 
-    //fixme: move somewhere else
+    /**
+     * Returns true if the app has ACCESS_FINE_LOCATION permission. If not, it requests it from the user and returns false.
+     * @return true if app has ACCESS_FINE_LOCATION permission
+     */
     private boolean hasLocationPermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) { // I'm not sure about the android versions.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (getApplicationContext().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[] { Manifest.permission.ACCESS_FINE_LOCATION }, 0);
-                // fixme: similarly to enabling bluetooth.
                 return false;
             }
         }
         return true;
+    }
+
+    /**
+     * Returns true if Bluetooth is enabled. Otherwise, requests the user to enable it and returns false.
+     * @return true if Bluetooth is enabled.
+     */
+    private boolean isBluetoothEnabled(){
+
+        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+        // There is no Bluetooth adapter (i.e, the device doesn't support bluetooth)
+        if (bluetoothAdapter == null) {
+            Toast.makeText(getApplicationContext(), "This device does not support bluetooth", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        // Bluetooth is supported and enabled.
+        if(bluetoothAdapter.isEnabled()) {
+            return true;
+        }
+
+        // Bluetooth is supported but not enabled.
+        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+        startActivityForResult(enableBtIntent, 0);
+
+        return false;
     }
 }

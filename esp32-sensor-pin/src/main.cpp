@@ -1,6 +1,4 @@
-/*
-    Written by Youssef Beltagy
-    
+/*    
     Based on the sample code that is written by Neil Kolban,
     ported to Arduino ESP32 by Evandro Copercini, and updated by chegewara.
     
@@ -75,7 +73,7 @@ struct WearableData{
   char  digit;      // 1 byte
 };
 
-//TODO: consider making a characteristic object.
+//TODO: consider making a characteristic Class.
 WearableData* wearableDataPtr;
 
 // Updates the values of the WearableData objected pointed to by wearableDataPtr
@@ -212,11 +210,12 @@ void setup()
 
   pAdvertising->addServiceUUID(SERVICE_UUID);
   pAdvertising->setScanResponse(true); // the SERVICE_UUID only appears if this is true
-  pAdvertising->setMinPreferred(0x0); // set value to 0x00 to not advertise this parameter. TODO: Consider changing this parameter as necessary.
+  pAdvertising->setMinPreferred(0x0); // set value to 0x00 to not advertise this parameter.
   
-    
-  BLEDevice::startAdvertising();
+  
   advertising = true;
+  deviceConnected = false;
+  BLEDevice::startAdvertising();
 
   #ifdef WEARABLE_SENSOR_DEBUG
   Serial.println("Awaiting a client connection...");

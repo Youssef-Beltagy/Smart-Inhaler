@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.os.Build;
 
 import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 
 import com.ybeltagy.breathe.MainActivity;
 import com.ybeltagy.breathe.R;
@@ -34,7 +33,7 @@ public class BLENotification {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
             // TODO: change to IMPORTANCE_NONE later and observe the behavior.
-            NotificationChannel channel = new NotificationChannel(BLE_NOTIFICATION_CHANNEL_ID, BLE_NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationChannel channel = new NotificationChannel(BLE_NOTIFICATION_CHANNEL_ID, BLE_NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_NONE);
             channel.setDescription(BLE_NOTIFICATION_CHANNEL_DESCRIPTION);
 
             // Register the channel with the system; you can't change the importance or other notification behaviors after this
@@ -63,7 +62,7 @@ public class BLENotification {
                 .setContentTitle(BLE_SERVICE_NOTIFICATION_TITLE)
                 .setContentText(BLE_SERVICE_NOTIFICATION_DESCRIPTION)
                 .setContentIntent(pendingOpenAppIntent)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT); // todo: change to priority min and observe the behavior
+                .setPriority(NotificationCompat.PRIORITY_MIN);
 
         return builder.build(); // return the built notification object
     }

@@ -7,21 +7,20 @@ import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
+import static androidx.core.content.ContextCompat.startForegroundService;
+
 public class BluetoothStateReceiver extends BroadcastReceiver {
     /**
      * Debugging tag
      */
     private static final String tag = "BluetoothStateReceiver";
 
+    // Listens to https://developer.android.com/reference/android/bluetooth/BluetoothAdapter#ACTION_STATE_CHANGED
     /**
-     * If a BLE connection is made, tell the service to connect with the devices.
-     * If a BLE connectioin is lost, disconnect from all devices.
+     * Tell the BLEService when Bluetooth is enabled or disabled.
      * @param context
      * @param intent
      */
-
-    //fixme: clean this file.
-    // https://developer.android.com/reference/android/bluetooth/BluetoothAdapter#ACTION_STATE_CHANGED
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
@@ -35,11 +34,13 @@ public class BluetoothStateReceiver extends BroadcastReceiver {
         Toast.makeText(context, "Action: " + action + " S: " + state, Toast.LENGTH_SHORT);
 
         if (state == BluetoothAdapter.STATE_ON) {
-            // TODO: connect the devices
-            //BLEService.connectDevices(); //
+            Intent bluetoothEnabledIntent = new Intent(context, BLEService.class);
+            bluetoothEnabledIntent.setAction(BLEFinals.ACTION_BLUETOOTH_ENABLED);
+            startForegroundService(context, bluetoothEnabledIntent);
         }else if (state == BluetoothAdapter.STATE_OFF){
-            // TODO: disconnect the devices
-            //BLEService.disconnectDevices(); // not sure if this is necessary.
+            Intent bluetoothDisabledIntent = new Intent(context, BLEService.class);
+            bluetoothDisabledIntent.setAction(BLEFinals.ACTION_BLUETOOTH_DISABLED);
+            startForegroundService(context, bluetoothDisabledIntent);
         }
     }
 

@@ -4,8 +4,9 @@
 
     <!-- ******************************* Permissions start ************************************* -->
 
-    <!-- TODO: Change to BLE when switching to the inhaler electronics + delete admin -->
-    <!-- Allows applications to discover and pair bluetooth devices. -->
+    <!-- Allows applications to discover and pair bluetooth devices.
+    Only necessary because we use scanning. Once peripheral can bond through
+    the Android settings, this permission will no longer be required.-->
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <!-- Allows applications to connect to paired bluetooth devices -->
     <uses-permission android:name="android.permission.BLUETOOTH" />
@@ -37,22 +38,20 @@
         android:supportsRtl="true"
         android:theme="@style/BreatheAppTheme">
 
+        <!--Detect when the phone is booted or this app is updated.
+            Both were tested and successfully worked.-->
         <receiver
             android:name=".ble.BeginReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
-                <!--Listen for Bluetooth connections only-->
-                <!--<action android:name="android.bluetooth.device.action.ACL_CONNECTED" />-->
-                <!--I'm not sure the firs one is necessary. Ask for Sarah's opinion-->
                 <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
             </intent-filter>
         </receiver>
 
-        <!--todo: clean and remove chicken-->
-        <!--android:description="string resource"-->
+        <!--This service attempts to establish a connection with the wearable sensor.-->
         <service android:name=".ble.BLEService"
             android:directBootAware="true"
             android:enabled="true"

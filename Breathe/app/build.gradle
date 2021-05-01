@@ -25,7 +25,6 @@ android {
     useLibrary 'android.test.runner'
     useLibrary 'android.test.base'
     useLibrary 'android.test.mock'
-
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -37,7 +36,6 @@ dependencies {
 
     // Test dependencies
     implementation 'androidx.room:room-runtime:2.2.6'
-    implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
     testImplementation "com.google.truth:truth:1.1.2"
     testImplementation 'junit:junit:4.13.2'
 

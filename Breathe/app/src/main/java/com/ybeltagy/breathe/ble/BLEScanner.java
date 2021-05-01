@@ -21,55 +21,23 @@ import no.nordicsemi.android.support.v18.scanner.ScanSettings;
 
 import static androidx.core.content.ContextCompat.startForegroundService;
 
-//TODO: consider using a localBroadcast or a broadcast that is directed towards our broadcast receiver.
-//This is apparently a good performance improvement and a best practice.
-
-//TODO consider storing the Bluetooth device in shared preferences
-//TODO consider adding support for multiple devices
-
-//fixme: put constants in a utility class.
-
-//TODO: how safe is it to pass a context object around?
-//TODO: request to open BLE and Location services
-
-//TODO: attempt to stop scanning when a device is found
-
+/**
+ * Manages scanning for the wearable sensor and the smart inhaler.
+ */
 public class BLEScanner{
-
-    /**
-     * Scans for a BLEDevice and makes a Broadcast when it finds one.
-     */
-
-    //fixme: consider storing a bluetooth adapter or other references as a performance improvement.
 
     private static final String tag = "BLEScanner";
 
+    /**
+     * Are we scanning right now or not?
+     */
     private volatile static boolean scanningForWearable = false;
 
-    //TODO: Consider making a centralized threadpool for everything Repo+DB+BLE
-    //TODO: discuss program/code organization with Sarah
-    //Ensure that two timers can happen concurrenty.
+    /**
+     * Used to make a timer.
+     */
     private static final ScheduledExecutorService executorTimer = Executors.newSingleThreadScheduledExecutor();
 
-    //TODO: consider deleting
-    //Only executed once when the program is loaded.
-    static {
-        Log.d(tag, "static block scanningForWearable = false");
-        scanningForWearable = false;
-    }
-
-    //fixme: assess the necessity of synchronized.
-    //It is not a big deal, but I'm a little worried about concurrency.
-    public static boolean isScanningForWearable() {
-        return scanningForWearable;
-    }
-
-    public static void setScanningForWearable(boolean scanningForWearable) {
-        BLEScanner.scanningForWearable = scanningForWearable;
-    }
-
-    //FIXME: continue
-    //FIXME: comment on parameters.
     public static void scanForWearableSensor(Context context) {
 
         if (isScanningForWearable()){
@@ -77,38 +45,85 @@ public class BLEScanner{
             return; // Already scanning for the wearable.
         }
 
+        // Initialize a scanner
         BluetoothLeScannerCompat scanner = BluetoothLeScannerCompat.getScanner();
 
         ScanSettings settings = new ScanSettings.Builder()
-                .setLegacy(false) // Not sure
+                .setLegacy(false)
+                // Accept both legacy and new Bluetooth advertisementsnot 100% sure about its necessity right now.
+                // The wearable sensor uses legacy advertisement
                 .setScanMode(no.nordicsemi.android.support.v18.scanner.ScanSettings.SCAN_MODE_LOW_LATENCY)
+                // A powerful but power consuming scan.
                 .setReportDelay(0)
+                // Report results immediately
                 .setUseHardwareBatchingIfSupported(true)
+                // If hardware batching is supported, use it (default is true).
                 .setCallbackType(no.nordicsemi.android.support.v18.scanner.ScanSettings.CALLBACK_TYPE_FIRST_MATCH)
+                // Report a device on first advertisement packet you find that matches the filter.
                 .setMatchMode(no.nordicsemi.android.support.v18.scanner.ScanSettings.MATCH_MODE_AGGRESSIVE)
+                // Determine a match even with a week signal and few advertisment packets.
                 .setNumOfMatches(no.nordicsemi.android.support.v18.scanner.ScanSettings.MATCH_NUM_ONE_ADVERTISEMENT)
+                // Match one advertisement per filter (only match one wearable sensor)
+                // todo: It will be useful if the behavior of the app is tested when two smart-wearables are advertising.
                 .build();
 
+        // Make a filter that looks for the service UUID of the wearable Sensor.
+        // I modified the wearable sensor so it advertises its service UUID.
         List<ScanFilter> filters = new ArrayList<>();
-
         filters.add(new ScanFilter.Builder().setServiceUuid(ParcelUuid.fromString((BLEFinals.WEARABLE_SERVICE_UUID_STRING))).build());
 
         BLEScannerCallback callback = new BLEScannerCallback(context);
 
-        scanner.startScan(filters, settings, callback);
-        setScanningForWearable(true);
-
+        // schedule a thread to stop the scanner.
         executorTimer.schedule(new Runnable() {
-            @Override
-            public void run() {//TODO: consider synchronizing.
-                if (isScanningForWearable()) {
-                    Log.d(tag, "Stopping scanning");
-                    scanner.stopScan(callback);
-                    setScanningForWearable(false);
-                }
-            }}
-            , 30, TimeUnit.SECONDS);
+                                   @Override
+                                   public void run() {
+                                       Log.d(tag, "In Scanner Timer");
+                                       stopScanning(scanner, callback);
+                                   }}
+                , BLEFinals.SCANNER_TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
+        scanner.startScan(filters, settings, callback); // start the scan asynchronously.
+        setScanningForWearable(true); // remember that the app is currently scanning
+
+    }
+
+    /**
+     * returns the value of scanningForWearable which represents whether the device is currently scanning or not.
+     * @return value of scanningForWearable.
+     */
+    public static boolean isScanningForWearable(){
+        return scanningForWearable;
+    }
+
+    /**
+     * Sets the value of scanningForWearable wich represents whether the device is currently scanning or not.
+     * @param scanningForWearable
+     */
+    private static void setScanningForWearable(boolean scanningForWearable) {
+        // It seems unnecessary to sycnhronize this method because only
+        // one thread should modify this boolean at a time.
+        BLEScanner.scanningForWearable = scanningForWearable;
+    }
+
+    /**
+     * resets scanningForWearable to false and returns the previous value of scanning for wearable.
+     * This method is as static synchronized method.
+     * @return the previous value of scanning for wearable
+     */
+    private static synchronized boolean resetScanningForWearable() {
+        boolean oldScanningForWearable = scanningForWearable;
+        scanningForWearable = false;
+        return oldScanningForWearable;
+    }
+
+    private static void stopScanning(BluetoothLeScannerCompat scanner, ScanCallback callback){
+        Log.d(tag, "In stopScanning");
+        if (resetScanningForWearable()) {
+            Log.d(tag, "In stopScanning: terminating scan");
+            scanner.stopScan(callback);
+            setScanningForWearable(false);
+        }
     }
 
     private static class BLEScannerCallback extends ScanCallback{
@@ -120,9 +135,9 @@ public class BLEScanner{
         }
 
 
-        //TODO: assess the feasibility of stopping a scan after a successful callback.
         /**
-         * Callback when a BLE advertisement has been found.
+         * Callback when a BLE advertisement has been found. Since the scanner filters on the wearable sensor UUID,
+         * a wearable sensor was found.
          *
          * @param callbackType Determines how this callback was triggered. Could be one of
          *                     {@link no.nordicsemi.android.support.v18.scanner.ScanSettings#CALLBACK_TYPE_ALL_MATCHES},
@@ -136,13 +151,11 @@ public class BLEScanner{
 
             Log.d(tag, "found: " + result.getDevice().toString());
 
-            // refactor
-
+            // Pass the discovered device to the BLE service
             Intent intent = new Intent(scannerContext, BLEService.class);
             intent.setAction(BLEFinals.ACTION_CONNECT_TO_WEARABLE);
-            // Set the optional additional information in extra field.
             intent.putExtra(BLEFinals.WEARABLE_BLUETOOTH_DEVICE_KEY, result.getDevice());
-            startForegroundService(scannerContext, intent); //FIXME why does it take a context too?
+            startForegroundService(scannerContext, intent);
 
         }
     }

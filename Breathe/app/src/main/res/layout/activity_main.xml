@@ -219,7 +219,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/scan_wearable_button" />
 
-    <!-- delete later. Leave hardcoded string-->
+    <!--TODO: consider moving to a settings page-->
     <Button
         android:id="@+id/scan_wearable_button"
         android:layout_width="wrap_content"
