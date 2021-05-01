@@ -207,7 +207,7 @@ void setup()
   BLEAdvertisementData advertisementData = BLEAdvertisementData();
   
   advertisementData.setCompleteServices(BLEUUID(SERVICE_UUID)); // add the service ID to the advertisement data.
-  //advertisementData.setFlags(ESP_BLE_ADV_FLAG_GEN_DISC | ESP_BLE_ADV_FLAG_DMT_CONTROLLER_SPT | ESP_BLE_ADV_FLAG_DMT_HOST_SPT); // changing the flags didn't solve the autoconnect problem.
+  advertisementData.setFlags(ESP_BLE_ADV_FLAG_GEN_DISC | ESP_BLE_ADV_FLAG_DMT_CONTROLLER_SPT | ESP_BLE_ADV_FLAG_DMT_HOST_SPT); // changing the flags didn't solve the autoconnect problem.
   pAdvertising->setAdvertisementData(advertisementData);
 
   pAdvertising->addServiceUUID(SERVICE_UUID);

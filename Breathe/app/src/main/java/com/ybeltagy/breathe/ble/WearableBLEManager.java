@@ -1,4 +1,4 @@
-package com.ybeltagy.breathe;
+package com.ybeltagy.breathe.ble;
 
 
 import android.bluetooth.BluetoothDevice;
@@ -9,6 +9,8 @@ import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+
+import com.ybeltagy.breathe.WearableData;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -21,8 +23,13 @@ import no.nordicsemi.android.ble.data.Data;
 // todo: fix logs.
 // todo: consider making a singleton
 public class WearableBLEManager extends BleManager {
-    final static UUID SERVICE_UUID = UUID.fromString("25380284-e1b6-489a-bbcf-97d8f7470aa4");
-    final static UUID WEARABLE_DATA_CHAR = UUID.fromString("c3856cfa-4af6-4d0d-a9a0-5ed875d937cc");
+
+    /**
+     * Represents the wearable sensor.
+     */
+
+    public final static UUID SERVICE_UUID = UUID.fromString(BLEFinals.WEARABLE_SERVICE_UUID_STRING);
+    public final static UUID WEARABLE_DATA_CHAR = UUID.fromString(BLEFinals.WEARABLE_DATA_CHAR_STRING);
 
     private static final String tag = "WearableBLEManager";
 
@@ -112,7 +119,6 @@ public class WearableBLEManager extends BleManager {
                             ByteBuffer buf = ByteBuffer.wrap(data.getValue()).order(ByteOrder.LITTLE_ENDIAN);
                             wearableData.setTemperature(buf.getFloat()); // Actually use floats
                             wearableData.setHumidity(buf.getFloat());
-
                             wearableData.setCharacter(
                                     (char)((buf.get()-65) + 'A')
                             );

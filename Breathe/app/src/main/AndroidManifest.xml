@@ -19,8 +19,9 @@
     <!--to use a foreground service-->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 
-    <!--There is a good chance we need this permission. https://developer.android.com/reference/android/Manifest.permission#ACCESS_BACKGROUND_LOCATION
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
+    <!--There is a good chance we need this permission. https://developer.android.com/reference/android/Manifest.permission#ACCESS_BACKGROUND_LOCATION
     But is an annoying permission to ask. for.-->
 
 
@@ -37,23 +38,27 @@
         android:theme="@style/BreatheAppTheme">
 
         <receiver
-            android:name=".BLEConnectionReceiver"
+            android:name=".ble.BeginReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
                 <!--Listen for Bluetooth connections only-->
-                <action android:name="android.bluetooth.device.action.ACL_CONNECTED" />
+                <!--<action android:name="android.bluetooth.device.action.ACL_CONNECTED" />-->
+                <!--I'm not sure the firs one is necessary. Ask for Sarah's opinion-->
+                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
             </intent-filter>
         </receiver>
 
         <!--todo: clean and remove chicken-->
         <!--android:description="string resource"-->
-        <service android:name=".WearableBLEService"
+        <service android:name=".ble.BLEService"
             android:directBootAware="true"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="connectedDevice"
-            android:label="Chicken-BLE connected" >
+            android:label="BLE service" >
         </service>
 
         <activity
