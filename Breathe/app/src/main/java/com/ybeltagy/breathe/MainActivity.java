@@ -73,17 +73,6 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    /**
-     * Dispatch onResume() to fragments.  Note that for better inter-operation
-     * with older versions of the platform, at the point of this call the
-     * fragments attached to the activity are <em>not</em> resumed.
-     */
-    @Override
-    protected void onResume() {
-        super.onResume();
-        // TODO: consider making an onResume that handles request codes.
-    }
-
     // render the Progress Bar for the medicine status in first pane (top of the screen)
     private void renderMedStatusView(List<String> eventList, int totalDosesInCaniser) {
         ProgressBar medicineStatusBar = findViewById(R.id.doses_progressbar);
@@ -124,8 +113,9 @@ public class MainActivity extends AppCompatActivity {
                 WearableData wearableData = BLEService.getWearableData();
                 String temp = "No data";
 
-                if(wearableData != null) temp = "\nTemp = " + wearableData.getTemperature() + "\nHumidity: " + wearableData.getHumidity() +
-                        "\nCharacter: " + wearableData.getCharacter() + "\nDigit" + wearableData.getDigit();
+                if(wearableData != null) temp = "Wearable Data!" +
+                        "\nTemp = " + wearableData.getTemperature() + "\nHumidity: " + wearableData.getHumidity() +
+                        "\nCharacter: " + wearableData.getCharacter() + "\nDigit: " + wearableData.getDigit();
 
                 Log.d(tag,temp);
             }

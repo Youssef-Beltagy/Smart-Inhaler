@@ -75,6 +75,7 @@ public class WearableBLEManager extends BleManager {
                                     (char)((buf.get()-48) + '0')
                             );
 
+                            Log.d(tag, "Wearable Data!");
                             Log.d(tag, "Temperature: " + wearableData.getTemperature());
                             Log.d(tag, "Humidity: " + wearableData.getHumidity());
                             Log.d(tag, "Character: " + wearableData.getCharacter());
