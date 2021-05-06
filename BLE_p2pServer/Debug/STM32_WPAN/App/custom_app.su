@@ -1,0 +1,7 @@
+custom_app.c:104:6:Custom_STM_App_Notification	16	static
+custom_app.c:158:6:Custom_APP_Notification	16	static
+custom_app.c:195:6:Custom_APP_Init	8	static
+custom_app.c:227:6:Custom_Time_Update_Char	8	static
+custom_app.c:236:6:Custom_Time_Send_Notification	16	static
+custom_app.c:260:13:CUSTOM_APP_context_Init	4	static
+custom_app.c:267:13:CUSTOM_TemperatureChange_Timer_Callback	8	static

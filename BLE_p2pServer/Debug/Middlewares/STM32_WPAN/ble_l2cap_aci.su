@@ -1,0 +1,9 @@
+ble_l2cap_aci.c:22:12:aci_l2cap_connection_parameter_update_req	320	static
+ble_l2cap_aci.c:56:12:aci_l2cap_connection_parameter_update_resp	320	static
+ble_l2cap_aci.c:101:12:aci_l2cap_coc_connect	320	static
+ble_l2cap_aci.c:137:12:aci_l2cap_coc_connect_confirm	568	static
+ble_l2cap_aci.c:177:12:aci_l2cap_coc_reconf	320	static
+ble_l2cap_aci.c:210:12:aci_l2cap_coc_reconf_confirm	312	static
+ble_l2cap_aci.c:234:12:aci_l2cap_coc_disconnect	312	static
+ble_l2cap_aci.c:255:12:aci_l2cap_coc_flow_control	312	static
+ble_l2cap_aci.c:279:12:aci_l2cap_coc_tx_data	312	static
