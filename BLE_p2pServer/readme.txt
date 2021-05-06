@@ -8,13 +8,7 @@
   * @brief   Description of the BLE_p2pServer application
   ******************************************************************************
   *
-  * Copyright (c) 2019 STMicroelectronics. All rights reserved.
-  *
-  * This software component is licensed by ST under Ultimate Liberty license 
-  * SLA0044, the "License"; You may not use this file except in compliance with 
-  * the License. You may obtain a copy of the License at:
-  *                               www.st.com/SLA0044
-  *
+  * this is an edit
   ******************************************************************************
   @endverbatim
 
@@ -26,7 +20,6 @@ Two STM32WB55xx boards are used, one acting as GATT client, and one as GATT serv
 For example, BLE_P2PClient application is downloaded in a USB DONGLE board (MB1293C) and BLE_p2pServer application in a Nucleo board (MB1355C).
 The client could be located in a phone also, using the ST BLE Sensor application instead of the MB1293C board. 
 
-	
 @par Keywords
 
 Connectivity, BLE, IPCC, HSEM, RTC, UART, PWR, BLE protocol, BLE pairing, BLE profile, Dual core
