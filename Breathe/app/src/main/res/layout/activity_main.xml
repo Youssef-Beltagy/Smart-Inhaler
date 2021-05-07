@@ -229,7 +229,7 @@
         android:text="Scan for Wearable"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/diary_header_textview"
-        android:onClick="scanForWearableSensor"/>
+        android:onClick="onScanButtonClick"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/diary_recyclerview"

@@ -67,12 +67,12 @@ public class WearableBLEManager extends BleManager {
 
                             // get the character (converts from UTF-8 in the message to Java's UTF-16)
                             wearableData.setCharacter(
-                                    (char)((buf.get()-65) + 'A')
+                                    (char)buf.get()
                             );
 
                             // get the digit (converts from UTF-8 in the message to Java's UTF-16)
                             wearableData.setDigit(
-                                    (char)((buf.get()-48) + '0')
+                                    (char)buf.get()
                             );
 
                             Log.d(tag, "Wearable Data!");

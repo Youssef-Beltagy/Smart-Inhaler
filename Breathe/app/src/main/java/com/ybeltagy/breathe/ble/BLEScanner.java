@@ -28,12 +28,6 @@ public class BLEScanner{
 
     private static final String tag = "BLEScanner";
 
-    //Todo: After you press the scan button and you get the permission, it restarts the scan.
-    //foreground vs background -> make the service and if necessary, make it a foreground one.
-    //information flow
-    //permissions
-    //Integrating with
-
     /**
      * Are we scanning right now or not?
      */
@@ -70,8 +64,8 @@ public class BLEScanner{
 
         synchronized (BLEScanner.class){
 
+            // Confirm the state didn't change.
             if (getScanningForWearable() != NOT_SCANNING){
-                Log.d(tag, "already scanning");
                 return; // Already scanning for the wearable.
             }
 
@@ -82,23 +76,24 @@ public class BLEScanner{
         BluetoothLeScannerCompat scanner = BluetoothLeScannerCompat.getScanner();
 
         ScanSettings settings = new ScanSettings.Builder()
-                .setLegacy(false)
                 // Accept both legacy and new Bluetooth advertisementsnot 100% sure about its necessity right now.
                 // The wearable sensor uses legacy advertisement
-                .setScanMode(no.nordicsemi.android.support.v18.scanner.ScanSettings.SCAN_MODE_LOW_LATENCY)
+                .setLegacy(false)
                 // A powerful but power consuming scan.
-                .setReportDelay(0)
+                .setScanMode(no.nordicsemi.android.support.v18.scanner.ScanSettings.SCAN_MODE_LOW_LATENCY)
                 // Report results immediately
-                .setUseHardwareBatchingIfSupported(true)
+                .setReportDelay(0)
                 // If hardware batching is supported, use it (default is true).
-                .setCallbackType(no.nordicsemi.android.support.v18.scanner.ScanSettings.CALLBACK_TYPE_FIRST_MATCH)
+                .setUseHardwareBatchingIfSupported(true)
                 // Report a device on first advertisement packet you find that matches the filter.
-                .setMatchMode(no.nordicsemi.android.support.v18.scanner.ScanSettings.MATCH_MODE_AGGRESSIVE)
+                .setCallbackType(no.nordicsemi.android.support.v18.scanner.ScanSettings.CALLBACK_TYPE_FIRST_MATCH)
                 // Determine a match even with a weak signal and few advertisement packets.
-                .setNumOfMatches(no.nordicsemi.android.support.v18.scanner.ScanSettings.MATCH_NUM_ONE_ADVERTISEMENT)
+                .setMatchMode(no.nordicsemi.android.support.v18.scanner.ScanSettings.MATCH_MODE_AGGRESSIVE)
                 // Match one advertisement per filter (only match one wearable sensor)
-                // todo: It will be useful if the behavior of the app is tested when two smart-wearables are advertising.
+                .setNumOfMatches(no.nordicsemi.android.support.v18.scanner.ScanSettings.MATCH_NUM_ONE_ADVERTISEMENT)
                 .build();
+        // todo: It will be useful if the behavior of the app is tested when two smart-wearables are advertising.
+
 
         // Make a filter that looks for the service UUID of the wearable Sensor.
         // I modified the wearable sensor so it advertises its service UUID.
@@ -131,14 +126,11 @@ public class BLEScanner{
     /**
      * Sets the value of scanningForWearable which represents whether the device is currently scanning or not.
      * @param scanningForWearable
-     * @return the previous value of scanningForWearable
      */
-    private static synchronized byte setScanningForWearable(byte scanningForWearable) {
-        // It seems unnecessary to synchronize this method because only
-        // one thread should modify this boolean at a time.
-        byte temp = BLEScanner.scanningForWearable;
-        BLEScanner.scanningForWearable = scanningForWearable;
-        return temp;
+    private static void setScanningForWearable(byte scanningForWearable) {
+        synchronized (BLEScanner.class){
+            BLEScanner.scanningForWearable = scanningForWearable;
+        }
     }
 
     private static void stopScanning(BluetoothLeScannerCompat scanner, ScanCallback callback){
@@ -172,11 +164,12 @@ public class BLEScanner{
             Log.d(tag, "found: " + result.getDevice().toString());
 
             synchronized (BLEScanner.class){
-                // If the scan was stopped immediately before this callback, don't jeopardize the state of the scanner.
-                if(getScanningForWearable() == NOT_SCANNING) return;
+                // Confirm that the scanner is still on and this is the first found device.
+                byte currentState = getScanningForWearable();
+                if(currentState == NOT_SCANNING || currentState == FOUND_DEVICE) return;
 
-                // If the previous state was SCANNING, you can continue execution. Otherwise, you can't.
-                if(setScanningForWearable(FOUND_DEVICE) != SCANNING) return;
+                // If the previous state was SCANNING, you can continue execution. Otherwise (FOUND_DEVICE or NOT_SCANNING), you can't.
+                setScanningForWearable(FOUND_DEVICE);
             }
 
 

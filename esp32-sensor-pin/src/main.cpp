@@ -190,7 +190,7 @@ void setup()
       BLECharacteristic::PROPERTY_READ    |
       BLECharacteristic::PROPERTY_WRITE   |
       BLECharacteristic::PROPERTY_NOTIFY  |
-      BLECharacteristic::PROPERTY_NOTIFY  );
+      BLECharacteristic::PROPERTY_INDICATE  );
 
   wearableDataCharacteristicPtr->setCallbacks(new WearableDataCharacteristicCallBackHandler());
 

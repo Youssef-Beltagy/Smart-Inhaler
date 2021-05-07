@@ -1,5 +1,6 @@
 package com.ybeltagy.breathe;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -36,6 +37,9 @@ import com.ybeltagy.breathe.ble.BLEService;
 public class MainActivity extends AppCompatActivity {
 
     private static final String tag = "MainActivity";
+
+    private static final int ACCESS_FINE_LOCATION_REQUEST = 1;
+    private static final int ENABLE_BLUETOOTH = 2;
 
     @RequiresApi(api = Build.VERSION_CODES.O) // for start foreground sevice. todo: remove
     @Override
@@ -99,7 +103,6 @@ public class MainActivity extends AppCompatActivity {
         iueRecyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
-
     /**
      * A testing method just for development.
      * @param view
@@ -127,8 +130,11 @@ public class MainActivity extends AppCompatActivity {
      * The service UUID of the wearable sensor is used to filter for it.
      * @param view
      */
-    public void scanForWearableSensor(View view) {
+    public void onScanButtonClick(View view) {
+        scanForWearableSensor();
+    }
 
+    public void scanForWearableSensor(){
         if(!hasLocationPermissions()) return;
 
         if(!isBluetoothEnabled()) return;
@@ -141,15 +147,38 @@ public class MainActivity extends AppCompatActivity {
      * @return true if app has ACCESS_FINE_LOCATION permission
      */
     private boolean hasLocationPermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (getApplicationContext().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[] { Manifest.permission.ACCESS_FINE_LOCATION }, 0);
-                return false;
+        // M is for Marshmallow. Before Android Marshmallow, permissions are given at install time rather than at runtime.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M)  return true;
+
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            if(shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)){
+                Toast.makeText(this, "Bluetooth scanning requires location permission", Toast.LENGTH_SHORT).show();
             }
+
+            requestPermissions(new String[] { Manifest.permission.ACCESS_FINE_LOCATION }, ACCESS_FINE_LOCATION_REQUEST);
+            return false;
         }
+
         return true;
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        if(requestCode == ACCESS_FINE_LOCATION_REQUEST){
+            if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                scanForWearableSensor();
+            }else{
+                Toast.makeText(this, "Can't scan without a Location permissions", Toast.LENGTH_SHORT);
+            }
+        }else{
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+
+    }
+
+    // todo: implement a way an on request result that will restart the scan.
     /**
      * Returns true if Bluetooth is enabled. Otherwise, requests the user to enable it and returns false.
      * @return true if Bluetooth is enabled.
@@ -171,6 +200,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Bluetooth is supported but not enabled.
         Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+        Toast.makeText(this, "Please enable Bluetooth", Toast.LENGTH_SHORT);
         startActivityForResult(enableBtIntent, 0);
 
         return false;
