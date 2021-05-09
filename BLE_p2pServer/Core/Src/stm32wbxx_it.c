@@ -66,7 +66,8 @@ extern DMA_HandleTypeDef hdma_usart1_tx;
 extern UART_HandleTypeDef hlpuart1;
 extern UART_HandleTypeDef huart1;
 /* USER CODE BEGIN EV */
-
+/* External variables --------------------------------------------------------*/
+extern RTC_HandleTypeDef hrtc;
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -329,6 +330,20 @@ void PUSH_BUTTON_SW2_EXTI_IRQHandler(void)
 void RTC_WKUP_IRQHandler(void)
 {
   HW_TS_RTC_Wakeup_Handler();
+}
+
+/**
+  * @brief This function handles RTC tamper and time stamp, CSS on LSE interrupts through EXTI line 18.
+  */
+void TAMP_STAMP_LSECSS_IRQHandler(void)
+{
+  /* USER CODE BEGIN TAMP_STAMP_LSECSS_IRQn 0 */
+
+  /* USER CODE END TAMP_STAMP_LSECSS_IRQn 0 */
+  HAL_RTCEx_TamperTimeStampIRQHandler(&hrtc);
+  /* USER CODE BEGIN TAMP_STAMP_LSECSS_IRQn 1 */
+
+  /* USER CODE END TAMP_STAMP_LSECSS_IRQn 1 */
 }
 
 /* USER CODE END 1 */

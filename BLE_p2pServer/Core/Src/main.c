@@ -77,7 +77,8 @@ RTC_HandleTypeDef hrtc;
 SPI_HandleTypeDef hspi1;
 
 /* USER CODE BEGIN PV */
-
+__IO FlagStatus TamperStatus;
+__IO uint8_t RTCStatus = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -146,7 +147,10 @@ int main(void)
   MX_RTC_Init();
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
+  /* Clear the Tamper interrupt pending bit */
+  __HAL_RTC_TAMPER_CLEAR_FLAG(&hrtc, RTC_FLAG_TAMP3F);
 
+//
   /* USER CODE END 2 */
 
   /* Init code for STM32_WPAN */
@@ -156,6 +160,17 @@ int main(void)
 	while(1)
 	{
 		UTIL_SEQ_Run( UTIL_SEQ_DEFAULT );
+//		/* Turn LED1 on */
+//		  BSP_LED_On(LED_BLUE);
+//		  /* Wait for the tamper button is pressed */
+//		  while (TamperStatus != SET)
+//		  {
+//		    /* Toggle LED2 with a period of 1s */
+//		    BSP_LED_Toggle(LED_RED);
+//
+//		    /* Delay */
+//		    HAL_Delay(1000);
+//		  }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -426,8 +441,8 @@ static void MX_RTC_Init(void)
 
   /** Initialize RTC and set the Time and Date
   */
-  sTime.Hours = 0x0;
-  sTime.Minutes = 0x0;
+  sTime.Hours = 0x8;
+  sTime.Minutes = 0x09;
   sTime.Seconds = 0x0;
   sTime.SubSeconds = 0x0;
   sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
@@ -437,8 +452,8 @@ static void MX_RTC_Init(void)
     Error_Handler();
   }
   sDate.WeekDay = RTC_WEEKDAY_MONDAY;
-  sDate.Month = RTC_MONTH_JANUARY;
-  sDate.Date = 0x1;
+  sDate.Month = RTC_MONTH_MAY;
+  sDate.Date = 0x8;
   sDate.Year = 0x0;
   if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BCD) != HAL_OK)
   {
@@ -446,7 +461,7 @@ static void MX_RTC_Init(void)
   }
   /** Enable the TimeStamp
   */
-  if (HAL_RTCEx_SetTimeStamp(&hrtc, RTC_TIMESTAMPEDGE_RISING, RTC_TIMESTAMPPIN_DEFAULT) != HAL_OK)
+  if (HAL_RTCEx_SetTimeStamp(&hrtc, RTC_TIMESTAMPEDGE_FALLING, RTC_TIMESTAMPPIN_DEFAULT) != HAL_OK)
   {
     Error_Handler();
   }
@@ -459,7 +474,7 @@ static void MX_RTC_Init(void)
   /** Enable the RTC Tamper 3
   */
   sTamper.Tamper = RTC_TAMPER_3;
-  sTamper.Trigger = RTC_TAMPERTRIGGER_RISINGEDGE;
+  sTamper.Trigger = RTC_TAMPERTRIGGER_FALLINGEDGE;
   sTamper.NoErase = RTC_TAMPER_ERASE_BACKUP_ENABLE;
   sTamper.MaskFlag = RTC_TAMPERMASK_FLAG_DISABLE;
   sTamper.Filter = RTC_TAMPERFILTER_DISABLE;
@@ -759,6 +774,12 @@ void HAL_Delay(uint32_t Delay)
 
     __WFI( );
   }
+}
+
+void HAL_RTCEx_Tamper3EventCallback(RTC_HandleTypeDef *hrtc)
+{
+  RTCStatus = 1;
+  TamperStatus = SET;
 }
 /* USER CODE END 4 */
 
