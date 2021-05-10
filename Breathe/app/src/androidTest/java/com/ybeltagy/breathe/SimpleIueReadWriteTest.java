@@ -7,6 +7,10 @@ import androidx.room.Room;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.ybeltagy.breathe.persistence.BreatheDao;
+import com.ybeltagy.breathe.persistence.BreatheRoomDatabase;
+import com.ybeltagy.breathe.data.InhalerUsageEvent;
+
 import static org.junit.Assert.*;
 
 import org.junit.After;
@@ -41,10 +45,11 @@ public class SimpleIueReadWriteTest {
     @Test
     public void writeTrivialIueAndReadInList() {
         Instant rightNow = Instant.now();
-        InhalerUsageEvent tInhalerUsageEvent = new InhalerUsageEvent(rightNow, null, null, null);
+        InhalerUsageEvent tInhalerUsageEvent = new InhalerUsageEvent(rightNow);
 
         tBreatheDao.insert(tInhalerUsageEvent);
-        List<InhalerUsageEvent> byTimeStamp = tBreatheDao.getAllIUEs();
+
+        List<InhalerUsageEvent> byTimeStamp = tBreatheDao.getAllIUEsTest();
 
         assertEquals(byTimeStamp.get(0).getInhalerUsageEventTimeStamp(), rightNow);
     }

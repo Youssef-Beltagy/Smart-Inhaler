@@ -10,7 +10,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.ybeltagy.breathe.WearableData;
+import com.ybeltagy.breathe.data.WearableData;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;

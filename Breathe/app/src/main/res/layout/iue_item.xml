@@ -1,12 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/inhaler_usage_event_entry"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="6dp">
+    android:orientation="vertical">
 
     <TextView
-        android:id="@+id/iue_textview"
-        style="@style/generic_word_content" />
+        android:id="@+id/iue_entry_timestamp_textview"
+        style="@style/generic_word_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textStyle="bold" />
+
+    <!--Consider using something like an array of dots for the tags-->
+    <TextView
+        android:id="@+id/iue_entry_tag_textview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textStyle="italic" />
+
+    <TextView
+        android:id="@+id/iue_entry_diary_textview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
 
 </LinearLayout>

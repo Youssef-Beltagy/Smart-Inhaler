@@ -1,26 +1,26 @@
-package com.ybeltagy.breathe;
+package com.ybeltagy.breathe.data;
 
-/**
- * Categories of InhalerUsageEvent's, as annotated by the user
- */
-enum Tag {
-    PREVENTATIVE, // tag used proactively before any symptoms are experienced
-    RESCUE  // tag used in response to an asthma attack or problematic symptoms
-}
+import android.provider.ContactsContract;
+
+import androidx.room.Ignore;
 
 /**
  * Encapsulates user-added information for a given InhalerUsageEvent - comments and tag
  * - One InhalerUsageEvent object contains one DiaryEntry object
  * <p>
- * TODO: write static DiaryEntry createDiaryEntry() to create a DiaryEntry object
+ *
  */
 public class DiaryEntry {
-    private Tag tag; // category this InhalerUsageEvent falls into, as defined by the user
-    private String message; // user entered message describing the InhalerUsageEvent
+    private Tag tag = DataFinals.DEFAULT_TAG; // category this InhalerUsageEvent falls into, as defined by the user
+    private String message = DataFinals.DEFAULT_STRING; // user entered message describing the InhalerUsageEvent
 
+    @Ignore
     public DiaryEntry(Tag tag, String message) {
         this.tag = tag;
         this.message = message;
+    }
+
+    public DiaryEntry() {
     }
 
     public Tag getTag() {

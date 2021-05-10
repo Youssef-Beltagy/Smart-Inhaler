@@ -1,13 +1,6 @@
-package com.ybeltagy.breathe;
+package com.ybeltagy.breathe.data;
 
-/**
- * 3 state level (used for pollen index)
- */
-enum Level {
-    LOW,
-    MEDIUM,
-    HIGH
-}
+import androidx.room.Ignore;
 
 /**
  * Encapsulates area weather conditions (data from ClimaCell API) at the time of a given InhalerUsageEvent
@@ -18,32 +11,35 @@ enum Level {
  */
 public class WeatherData {
 
-    private double weatherTemperature; // Celsius
-    private double weatherHumidity; // percentage out of 100 - value should always be =< 1
-    private Level weatherPollen; // LOW, MEDIUM, or HIGH
-    private int weatherAQI; // Air quality index, as defined by the EPA
+    private float weatherTemperature = DataFinals.DEFAULT_FLOAT; // Celsius
+    private float weatherHumidity = DataFinals.DEFAULT_FLOAT; // percentage out of 100 - value should always be =< 1
+    private Level weatherPollen = DataFinals.DEFAULT_LEVEL; // LOW, MEDIUM, or HIGH
+    private int weatherAQI = DataFinals.DEFAULT_INTEGER; // Air quality index, as defined by the EPA
 
-    public WeatherData(double weatherTemperature, double weatherHumidity,
+    public WeatherData(){}
+
+    @Ignore
+    public WeatherData(float weatherTemperature, float weatherHumidity,
                        Level weatherPollen, int weatherAQI) {
-        this.weatherTemperature = weatherTemperature;
-        this.weatherHumidity = weatherHumidity;
-        this.weatherPollen = weatherPollen;
-        this.weatherAQI = weatherAQI;
+        setWeatherTemperature(weatherTemperature);
+        setWeatherHumidity(weatherHumidity);
+        setWeatherPollen(weatherPollen);
+        setWeatherAQI(weatherAQI);
     }
 
-    public double getWeatherTemperature() {
+    public float getWeatherTemperature() {
         return weatherTemperature;
     }
 
-    public void setWeatherTemperature(double weatherTemperature) {
+    public void setWeatherTemperature(float weatherTemperature) {
         this.weatherTemperature = weatherTemperature;
     }
 
-    public double getWeatherHumidity() {
+    public float getWeatherHumidity() {
         return weatherHumidity;
     }
 
-    public void setWeatherHumidity(double weatherHumidity) {
+    public void setWeatherHumidity(float weatherHumidity) {
         this.weatherHumidity = weatherHumidity;
     }
 

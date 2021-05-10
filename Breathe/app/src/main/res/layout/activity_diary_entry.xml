@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".DiaryEntryActivity">
+    tools:context=".ui.DiaryEntryActivity">
 
     <!--todo: consider defining the text box sizes using sp so they scale with the text size-->
     <TextView
@@ -29,7 +29,8 @@
         android:textSize="@dimen/tag_button_font_size"
         app:layout_constraintEnd_toStartOf="@+id/preventative_button"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/entry_date_textview" />
+        app:layout_constraintTop_toBottomOf="@+id/entry_date_textview"
+        android:onClick="onRescueButtonClick"/>
 
     <Button
         android:id="@+id/preventative_button"
@@ -42,13 +43,15 @@
         android:textSize="@dimen/tag_button_font_size"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/rescue_button"
-        app:layout_constraintTop_toTopOf="@+id/rescue_button" />
+        app:layout_constraintTop_toTopOf="@+id/rescue_button"
+        android:onClick="onPreventativeButtonClick"/>
 
     <EditText
         android:id="@+id/edit_diary_edittext"
         android:layout_width="@dimen/diary_edit_text_box_width"
         android:layout_height="@dimen/diary_edit_text_box_height"
         android:layout_marginTop="@dimen/default_spacer"
+        android:autofillHints=""
         android:ems="10"
         android:gravity="top|start"
         android:hint="@string/edit_diary_entry_text_hint"
@@ -56,8 +59,7 @@
         android:scrollbars="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rescue_button"
-        android:autofillHints="" />
+        app:layout_constraintTop_toBottomOf="@+id/rescue_button" />
 
     <Button
         android:id="@+id/diary_entry_save_button"
@@ -68,6 +70,7 @@
         android:text="@string/save_button_label"
         android:textColor="#FFFFFF"
         app:layout_constraintEnd_toEndOf="@+id/preventative_button"
-        app:layout_constraintTop_toBottomOf="@id/edit_diary_edittext" />
+        app:layout_constraintTop_toBottomOf="@id/edit_diary_edittext"
+        android:onClick="onSaveButtonClick"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

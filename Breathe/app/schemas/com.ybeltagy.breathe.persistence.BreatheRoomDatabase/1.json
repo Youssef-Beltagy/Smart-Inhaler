@@ -1,0 +1,144 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "e0621fc895cc7b17a7ade2d57fa9e31d",
+    "entities": [
+      {
+        "tableName": "InhalerUsageEvent_table",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`Inhaler_Usage_Event_UTC_ISO_8601_date_time` TEXT NOT NULL, `weatherTemperature` REAL, `weatherHumidity` REAL, `weatherPollen` INTEGER, `weatherAQI` INTEGER, `tag` INTEGER, `message` TEXT, `Wearable_Data_UTC_ISO_8601_date_time` TEXT, `temperature` REAL, `humidity` REAL, `character` INTEGER, `digit` INTEGER, PRIMARY KEY(`Inhaler_Usage_Event_UTC_ISO_8601_date_time`))",
+        "fields": [
+          {
+            "fieldPath": "inhalerUsageEventTimeStamp",
+            "columnName": "Inhaler_Usage_Event_UTC_ISO_8601_date_time",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "weatherData.weatherTemperature",
+            "columnName": "weatherTemperature",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "weatherData.weatherHumidity",
+            "columnName": "weatherHumidity",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "weatherData.weatherPollen",
+            "columnName": "weatherPollen",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "weatherData.weatherAQI",
+            "columnName": "weatherAQI",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "diaryEntry.tag",
+            "columnName": "tag",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "diaryEntry.message",
+            "columnName": "message",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "wearableData.wearableDataTimeStamp",
+            "columnName": "Wearable_Data_UTC_ISO_8601_date_time",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "wearableData.temperature",
+            "columnName": "temperature",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "wearableData.humidity",
+            "columnName": "humidity",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "wearableData.character",
+            "columnName": "character",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "wearableData.digit",
+            "columnName": "digit",
+            "affinity": "INTEGER",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "Inhaler_Usage_Event_UTC_ISO_8601_date_time"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "WearableData_table",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`Wearable_Data_UTC_ISO_8601_date_time` TEXT NOT NULL, `temperature` REAL NOT NULL, `humidity` REAL NOT NULL, `character` INTEGER NOT NULL, `digit` INTEGER NOT NULL, PRIMARY KEY(`Wearable_Data_UTC_ISO_8601_date_time`))",
+        "fields": [
+          {
+            "fieldPath": "wearableDataTimeStamp",
+            "columnName": "Wearable_Data_UTC_ISO_8601_date_time",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "temperature",
+            "columnName": "temperature",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "humidity",
+            "columnName": "humidity",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "character",
+            "columnName": "character",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "digit",
+            "columnName": "digit",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "Wearable_Data_UTC_ISO_8601_date_time"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e0621fc895cc7b17a7ade2d57fa9e31d')"
+    ]
+  }
+}

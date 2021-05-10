@@ -10,7 +10,7 @@ import android.os.Build;
 
 import androidx.core.app.NotificationCompat;
 
-import com.ybeltagy.breathe.MainActivity;
+import com.ybeltagy.breathe.ui.MainActivity;
 import com.ybeltagy.breathe.R;
 
 import static androidx.core.content.ContextCompat.getSystemService;

@@ -15,7 +15,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.ybeltagy.breathe.WearableData;
+import com.ybeltagy.breathe.data.WearableData;
 
 import java.util.Set;
 
