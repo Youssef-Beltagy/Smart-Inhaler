@@ -103,7 +103,7 @@ typedef struct _tSecurityParams
 
 /**
  * global context
- * contains the variables common to all stm32wbxx_nucleo.c
+ * contains the variables common to all
  * services
  */
 typedef struct _tBLEProfileGlobalContext

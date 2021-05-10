@@ -286,6 +286,7 @@ void HAL_GPIO_EXTI_Callback( uint16_t GPIO_Pin )
 
     case BUTTON_SW2_PIN:
       APP_BLE_Key_Button2_Action();
+    	BSP_LED_Toggle(LED1);
       break; 
 
     case BUTTON_SW3_PIN:
