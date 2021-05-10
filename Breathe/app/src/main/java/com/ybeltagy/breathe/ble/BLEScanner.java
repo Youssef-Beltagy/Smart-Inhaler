@@ -120,7 +120,9 @@ public class BLEScanner{
      * @return value of scanningForWearable.
      */
     public static byte getScanningForWearable(){
-        return scanningForWearable;
+        synchronized (BLEScanner.class){ // It should be unnecessary to synchronize, but just to be safe.
+            return scanningForWearable;
+        }
     }
 
     /**
@@ -166,7 +168,7 @@ public class BLEScanner{
             synchronized (BLEScanner.class){
                 // Confirm that the scanner is still on and this is the first found device.
                 byte currentState = getScanningForWearable();
-                if(currentState == NOT_SCANNING || currentState == FOUND_DEVICE) return;
+                if(currentState != NOT_SCANNING || currentState == FOUND_DEVICE) return;
 
                 // If the previous state was SCANNING, you can continue execution. Otherwise (FOUND_DEVICE or NOT_SCANNING), you can't.
                 setScanningForWearable(FOUND_DEVICE);

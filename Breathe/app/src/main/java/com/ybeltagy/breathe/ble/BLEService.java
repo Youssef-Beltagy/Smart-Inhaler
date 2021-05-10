@@ -133,6 +133,7 @@ public class BLEService extends Service {
             /**
              * Found a device
              *      Disconnects from the current device.
+             *      Save the newly found device in the shared preferences.
              *      Connects with the newly found device.
              */
 
