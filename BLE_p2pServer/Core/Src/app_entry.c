@@ -293,9 +293,9 @@ void HAL_GPIO_EXTI_Callback( uint16_t GPIO_Pin )
     	HAL_RTC_GetTime(&hrtc, &currentTime, RTC_FORMAT_BIN);
     	HAL_RTC_GetDate(&hrtc, &currentDate, RTC_FORMAT_BIN);
 
-    	currTime.tm_year = currentDate.Year;// + 100;  // In fact: 2000 + 18 - 1900
+    	currTime.tm_year = currentDate.Year + 100;  // In fact: 2000 + 18 - 1900
     	currTime.tm_mday = currentDate.Date;
-    	currTime.tm_mon  = currentDate.Month;// - 1;
+    	currTime.tm_mon  = currentDate.Month - 1;
 
     	currTime.tm_hour = currentTime.Hours;
     	currTime.tm_min  = currentTime.Minutes;

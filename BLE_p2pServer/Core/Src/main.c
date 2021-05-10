@@ -47,6 +47,8 @@
 #include "dbg_trace.h"
 #include "hw_conf.h"
 #include "otp.h"
+#include <time.h>
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -77,8 +79,13 @@ RTC_HandleTypeDef hrtc;
 SPI_HandleTypeDef hspi1;
 
 /* USER CODE BEGIN PV */
-__IO FlagStatus TamperStatus;
-__IO uint8_t RTCStatus = 0;
+//__IO FlagStatus TamperStatus;
+//__IO uint8_t RTCStatus = 0;
+
+RTC_TimeTypeDef currentTime;
+RTC_DateTypeDef currentDate;
+time_t timestamp;
+struct tm currTime;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -152,11 +159,26 @@ int main(void)
   /* -1- Initialize LEDs mounted on P-NUCLEO-WB55 board */
   BSP_LED_Init(LED_BLUE);
 
-  /* -2- Configure External line 4 (connected to PC.04 pin) in interrupt mode */
+  /* -2- Configure External line 0 (connected to PD.0 pin) in interrupt mode */
   EXTI0_IRQHandler_Config();
+
+  //for testing purposes - delete later
+  for (int i; i < 10; i ++) {
+
+	  HAL_RTC_GetTime(&hrtc, &currentTime, RTC_FORMAT_BIN);
+	  HAL_RTC_GetDate(&hrtc, &currentDate, RTC_FORMAT_BIN);
+
+	  currTime.tm_year = currentDate.Year + 100;  // In fact: 2000 + 18 - 1900
+	  currTime.tm_mday = currentDate.Date;
+	  currTime.tm_mon  = currentDate.Month - 1;
+
+	  currTime.tm_hour = currentTime.Hours;
+	  currTime.tm_min  = currentTime.Minutes;
+	  currTime.tm_sec  = currentTime.Seconds;
+
+	  timestamp = mktime(&currTime);
+  }
   /* USER CODE END 2 */
-
-
   /* Init code for STM32_WPAN */
   APPE_Init();
   /* Infinite loop */
@@ -435,9 +457,9 @@ static void MX_RTC_Init(void)
 
   /** Initialize RTC and set the Time and Date
   */
-  sTime.Hours = 0x9;
-  sTime.Minutes = 0x43;
-  sTime.Seconds = 0x0;
+  sTime.Hours = 0x11;
+  sTime.Minutes = 0x20;
+  sTime.Seconds = 0x25;
   sTime.SubSeconds = 0x0;
   sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
   sTime.StoreOperation = RTC_STOREOPERATION_RESET;
@@ -445,10 +467,10 @@ static void MX_RTC_Init(void)
   {
     Error_Handler();
   }
-  sDate.WeekDay = RTC_WEEKDAY_SUNDAY;
+  sDate.WeekDay = RTC_WEEKDAY_MONDAY;
   sDate.Month = RTC_MONTH_MAY;
-  sDate.Date = 0x9;
-  sDate.Year = 0x0;
+  sDate.Date = 0x10;
+  sDate.Year = 0x21;
 
   if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BCD) != HAL_OK)
   {
