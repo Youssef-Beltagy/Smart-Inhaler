@@ -134,7 +134,7 @@
 
 /* USER CODE BEGIN Generic_Parameters */
 #define PUSH_BUTTON_SW1_EXTI_IRQHandler                         EXTI4_IRQHandler
-#define PUSH_BUTTON_SW2_EXTI_IRQHandler                         EXTI0_IRQHandler
+
 /* USER CODE END Generic_Parameters */
 
 /**< specific parameters */
@@ -179,7 +179,7 @@
 
 /* USER CODE BEGIN Specific_Parameters */
 #define PUSH_BUTTON_SW1_EXTI_IRQHandler                         EXTI4_IRQHandler
-#define PUSH_BUTTON_SW2_EXTI_IRQHandler                         EXTI0_IRQHandler
+
 
 /* USER CODE END Specific_Parameters */
 

@@ -47,6 +47,8 @@
 #include "dbg_trace.h"
 #include "hw_conf.h"
 #include "otp.h"
+#include <time.h>
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -77,7 +79,13 @@ RTC_HandleTypeDef hrtc;
 SPI_HandleTypeDef hspi1;
 
 /* USER CODE BEGIN PV */
+//__IO FlagStatus TamperStatus;
+//__IO uint8_t RTCStatus = 0;
 
+RTC_TimeTypeDef currentTime;
+RTC_DateTypeDef currentDate;
+time_t timestamp;
+struct tm currTime;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -95,6 +103,7 @@ static void Reset_IPCC( void );
 static void Reset_BackupDomain( void );
 static void Init_Exti( void );
 static void Config_HSE(void);
+static void EXTI0_IRQHandler_Config(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -147,8 +156,29 @@ int main(void)
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
 
-  /* USER CODE END 2 */
+  /* -1- Initialize LEDs mounted on P-NUCLEO-WB55 board */
+  BSP_LED_Init(LED_BLUE);
 
+  /* -2- Configure External line 0 (connected to PD.0 pin) in interrupt mode */
+  EXTI0_IRQHandler_Config();
+
+  //for testing purposes - delete later
+  for (int i; i < 10; i ++) {
+
+	  HAL_RTC_GetTime(&hrtc, &currentTime, RTC_FORMAT_BIN);
+	  HAL_RTC_GetDate(&hrtc, &currentDate, RTC_FORMAT_BIN);
+
+	  currTime.tm_year = currentDate.Year + 100;  // In fact: 2000 + 18 - 1900
+	  currTime.tm_mday = currentDate.Date;
+	  currTime.tm_mon  = currentDate.Month - 1;
+
+	  currTime.tm_hour = currentTime.Hours;
+	  currTime.tm_min  = currentTime.Minutes;
+	  currTime.tm_sec  = currentTime.Seconds;
+
+	  timestamp = mktime(&currTime);
+  }
+  /* USER CODE END 2 */
   /* Init code for STM32_WPAN */
   APPE_Init();
   /* Infinite loop */
@@ -156,6 +186,8 @@ int main(void)
 	while(1)
 	{
 		UTIL_SEQ_Run( UTIL_SEQ_DEFAULT );
+
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -400,7 +432,6 @@ static void MX_RTC_Init(void)
 
   RTC_TimeTypeDef sTime = {0};
   RTC_DateTypeDef sDate = {0};
-  RTC_TamperTypeDef sTamper = {0};
 
   /* USER CODE BEGIN RTC_Init 1 */
 
@@ -426,9 +457,9 @@ static void MX_RTC_Init(void)
 
   /** Initialize RTC and set the Time and Date
   */
-  sTime.Hours = 0x0;
-  sTime.Minutes = 0x0;
-  sTime.Seconds = 0x0;
+  sTime.Hours = 0x11;
+  sTime.Minutes = 0x20;
+  sTime.Seconds = 0x25;
   sTime.SubSeconds = 0x0;
   sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
   sTime.StoreOperation = RTC_STOREOPERATION_RESET;
@@ -437,37 +468,17 @@ static void MX_RTC_Init(void)
     Error_Handler();
   }
   sDate.WeekDay = RTC_WEEKDAY_MONDAY;
-  sDate.Month = RTC_MONTH_JANUARY;
-  sDate.Date = 0x1;
-  sDate.Year = 0x0;
+  sDate.Month = RTC_MONTH_MAY;
+  sDate.Date = 0x10;
+  sDate.Year = 0x21;
+
   if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BCD) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /** Enable the TimeStamp
-  */
-  if (HAL_RTCEx_SetTimeStamp(&hrtc, RTC_TIMESTAMPEDGE_RISING, RTC_TIMESTAMPPIN_DEFAULT) != HAL_OK)
   {
     Error_Handler();
   }
   /** Enable the WakeUp
   */
   if (HAL_RTCEx_SetWakeUpTimer(&hrtc, 0, RTC_WAKEUPCLOCK_RTCCLK_DIV16) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /** Enable the RTC Tamper 3
-  */
-  sTamper.Tamper = RTC_TAMPER_3;
-  sTamper.Trigger = RTC_TAMPERTRIGGER_RISINGEDGE;
-  sTamper.NoErase = RTC_TAMPER_ERASE_BACKUP_ENABLE;
-  sTamper.MaskFlag = RTC_TAMPERMASK_FLAG_DISABLE;
-  sTamper.Filter = RTC_TAMPERFILTER_DISABLE;
-  sTamper.SamplingFrequency = RTC_TAMPERSAMPLINGFREQ_RTCCLK_DIV32768;
-  sTamper.PrechargeDuration = RTC_TAMPERPRECHARGEDURATION_1RTCCLK;
-  sTamper.TamperPullUp = RTC_TAMPER_PULLUP_ENABLE;
-  sTamper.TimeStampOnTamperDetection = RTC_TIMESTAMPONTAMPERDETECTION_ENABLE;
-  if (HAL_RTCEx_SetTamper(&hrtc, &sTamper) != HAL_OK)
   {
     Error_Handler();
   }
@@ -557,10 +568,11 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
+  __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, LED_GREEN_Pin|LED3_BR_Pin|LED1_BR_Pin|LED2_BR_Pin
-                          |LED_BLUE_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, LED_GREEN_Pin|LED_RED_Pin|LED3_BR_Pin|LED1_BR_Pin
+                          |LED2_BR_Pin|LED_BLUE_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : BUTTON_SW1_Pin */
   GPIO_InitStruct.Pin = BUTTON_SW1_Pin;
@@ -568,18 +580,60 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(BUTTON_SW1_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : LED_GREEN_Pin LED3_BR_Pin LED1_BR_Pin LED2_BR_Pin
-                           LED_BLUE_Pin */
-  GPIO_InitStruct.Pin = LED_GREEN_Pin|LED3_BR_Pin|LED1_BR_Pin|LED2_BR_Pin
-                          |LED_BLUE_Pin;
+  /*Configure GPIO pins : LED_GREEN_Pin LED_RED_Pin LED3_BR_Pin LED1_BR_Pin
+                           LED2_BR_Pin LED_BLUE_Pin */
+  GPIO_InitStruct.Pin = LED_GREEN_Pin|LED_RED_Pin|LED3_BR_Pin|LED1_BR_Pin
+                          |LED2_BR_Pin|LED_BLUE_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
+  /*Configure GPIO pin : SW1_BR_Pin */
+  GPIO_InitStruct.Pin = SW1_BR_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(SW1_BR_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : BUTTON_SW2_Pin */
+  GPIO_InitStruct.Pin = BUTTON_SW2_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(BUTTON_SW2_GPIO_Port, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+
 }
 
 /* USER CODE BEGIN 4 */
+/**
+  * @brief  Configures EXTI line 0 (connected to PD.0 pin) in interrupt mode
+  * @param  None
+  * @retval None
+  */
+static void EXTI0_IRQHandler_Config(void)
+{
+  GPIO_InitTypeDef   GPIO_InitStructure;
+
+
+  /* Enable GPIOC clock */
+  __HAL_RCC_GPIOD_CLK_ENABLE();
+
+  /* Configure PD.0 pin as input floating */
+  GPIO_InitStructure.Mode = GPIO_MODE_IT_FALLING;
+
+  GPIO_InitStructure.Pull = GPIO_PULLUP;
+  GPIO_InitStructure.Pin = GPIO_PIN_0;
+  HAL_GPIO_Init(GPIOD, &GPIO_InitStructure);
+
+
+  /* Enable and set line 0 Interrupt to the lowest priority */
+  HAL_NVIC_SetPriority(EXTI0_IRQn, 2, 0);
+  HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+}
+
 
 void PeriphClock_Config(void)
 {
@@ -760,6 +814,7 @@ void HAL_Delay(uint32_t Delay)
     __WFI( );
   }
 }
+
 /* USER CODE END 4 */
 
 /**

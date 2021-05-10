@@ -103,7 +103,7 @@ typedef struct _tSecurityParams
 
 /**
  * global context
- * contains the variables common to all stm32wbxx_nucleo.c
+ * contains the variables common to all
  * services
  */
 typedef struct _tBLEProfileGlobalContext
@@ -621,9 +621,9 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification( void *pckt )
           /*
            * SPECIFIC to P2P Server APP
            */             
-          handleNotification.P2P_Evt_Opcode = PEER_CONN_HANDLE_EVT;
-          handleNotification.ConnectionHandle = BleApplicationContext.BleApplicationContext_legacy.connectionHandle;
-          P2PS_APP_Notification(&handleNotification);
+//          handleNotification.P2P_Evt_Opcode = PEER_CONN_HANDLE_EVT;
+//          handleNotification.ConnectionHandle = BleApplicationContext.BleApplicationContext_legacy.connectionHandle;
+//          P2PS_APP_Notification(&handleNotification);
           /**/
           /* USER CODE END HCI_EVT_LE_CONN_COMPLETE */
         }
@@ -765,10 +765,10 @@ void APP_BLE_Key_Button1_Action(void)
 
 void APP_BLE_Key_Button2_Action(void)
 {
-#if (L2CAP_REQUEST_NEW_CONN_PARAM != 0 )    
-  UTIL_SEQ_SetTask( 1<<CFG_TASK_CONN_UPDATE_REG_ID, CFG_SCH_PRIO_0);
-#endif
-  
+//#if (L2CAP_REQUEST_NEW_CONN_PARAM != 0 )
+//  UTIL_SEQ_SetTask( 1<<CFG_TASK_CONN_UPDATE_REG_ID, CFG_SCH_PRIO_0);
+//#endif
+
   return;
 }
 
