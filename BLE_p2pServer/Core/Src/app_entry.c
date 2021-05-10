@@ -33,7 +33,7 @@
 
 /* Private includes -----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <time.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -61,7 +61,10 @@ PLACE_IN_SECTION("MB_MEM2") ALIGN(4) static uint8_t SystemSpareEvtBuffer[sizeof(
 PLACE_IN_SECTION("MB_MEM2") ALIGN(4) static uint8_t BleSpareEvtBuffer[sizeof(TL_PacketHeader_t) + TL_EVT_HDR_SIZE + 255];
 
 /* USER CODE BEGIN PV */
-
+RTC_TimeTypeDef currentTime;
+RTC_DateTypeDef currentDate;
+time_t timestamp;
+struct tm currTime;
 /* USER CODE END PV */
 
 /* Private functions prototypes-----------------------------------------------*/
@@ -285,8 +288,20 @@ void HAL_GPIO_EXTI_Callback( uint16_t GPIO_Pin )
       break; 
 
     case BUTTON_SW2_PIN:
-      APP_BLE_Key_Button2_Action();
+     // APP_BLE_Key_Button2_Action();
     	BSP_LED_Toggle(LED1);
+    	HAL_RTC_GetTime(&hrtc, &currentTime, RTC_FORMAT_BIN);
+    	HAL_RTC_GetDate(&hrtc, &currentDate, RTC_FORMAT_BIN);
+
+    	currTime.tm_year = currentDate.Year;// + 100;  // In fact: 2000 + 18 - 1900
+    	currTime.tm_mday = currentDate.Date;
+    	currTime.tm_mon  = currentDate.Month;// - 1;
+
+    	currTime.tm_hour = currentTime.Hours;
+    	currTime.tm_min  = currentTime.Minutes;
+    	currTime.tm_sec  = currentTime.Seconds;
+
+    	timestamp = mktime(&currTime);
       break; 
 
     case BUTTON_SW3_PIN:

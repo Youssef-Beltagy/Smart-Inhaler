@@ -18,4 +18,3 @@ stm32wbxx_it.c:310:6:DMA2_Channel4_IRQHandler	8	static
 stm32wbxx_it.c:328:6:EXTI4_IRQHandler	8	static
 stm32wbxx_it.c:339:6:PUSH_BUTTON_SW2_EXTI_IRQHandler	8	static
 stm32wbxx_it.c:344:6:RTC_WKUP_IRQHandler	8	static
-stm32wbxx_it.c:352:6:TAMP_STAMP_LSECSS_IRQHandler	8	static

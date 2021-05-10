@@ -765,10 +765,10 @@ void APP_BLE_Key_Button1_Action(void)
 
 void APP_BLE_Key_Button2_Action(void)
 {
-#if (L2CAP_REQUEST_NEW_CONN_PARAM != 0 )    
-  UTIL_SEQ_SetTask( 1<<CFG_TASK_CONN_UPDATE_REG_ID, CFG_SCH_PRIO_0);
-#endif
-  
+//#if (L2CAP_REQUEST_NEW_CONN_PARAM != 0 )
+//  UTIL_SEQ_SetTask( 1<<CFG_TASK_CONN_UPDATE_REG_ID, CFG_SCH_PRIO_0);
+//#endif
+
   return;
 }
 

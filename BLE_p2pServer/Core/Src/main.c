@@ -156,6 +156,7 @@ int main(void)
   EXTI0_IRQHandler_Config();
   /* USER CODE END 2 */
 
+
   /* Init code for STM32_WPAN */
   APPE_Init();
   /* Infinite loop */
@@ -611,12 +612,6 @@ static void EXTI0_IRQHandler_Config(void)
   HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 }
 
-
-/**
-  * @brief EXTI line detection callbacks
-  * @param GPIO_Pin: Specifies the pins connected EXTI line
-  * @retval None
-  */
 
 void PeriphClock_Config(void)
 {
