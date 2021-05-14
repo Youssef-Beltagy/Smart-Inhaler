@@ -15,13 +15,6 @@
   If it is not the case, you need to use STM32CubeProgrammer to load the appropriate
   binary.
 
-  All available binaries are located under following directory:
-  /Projects/STM32_Copro_Wireless_Binaries
-
-  Refer to UM2237 to learn how to use/install STM32CubeProgrammer.
-  Refer to /Projects/STM32_Copro_Wireless_Binaries/ReleaseNote.html for the
-  detailed procedure to change the Wireless Coprocessor binary.
-
   @endverbatim
   ******************************************************************************
   * @attention
@@ -162,23 +155,6 @@ int main(void)
   /* -2- Configure External line 0 (connected to PD.0 pin) in interrupt mode */
   EXTI0_IRQHandler_Config();
 
-  //for testing purposes - delete later
-//  for (int i; i < 10; i ++) {
-//
-//	  HAL_RTC_GetTime(&hrtc, &currentTime, RTC_FORMAT_BIN);
-//	  HAL_RTC_GetDate(&hrtc, &currentDate, RTC_FORMAT_BIN);
-//
-//	  currTime.tm_year = currentDate.Year + 100;  // In fact: 2000 + 18 - 1900
-//	  currTime.tm_mday = currentDate.Date;
-//	  currTime.tm_mon  = currentDate.Month - 1;
-//
-//	  currTime.tm_hour = currentTime.Hours;
-//	  currTime.tm_min  = currentTime.Minutes;
-//	  currTime.tm_sec  = currentTime.Seconds;
-//
-//	  timestamp = mktime(&currTime);
-//
-//  }
   /* USER CODE END 2 */
   /* Init code for STM32_WPAN */
   APPE_Init();
@@ -458,7 +434,7 @@ static void MX_RTC_Init(void)
 
   /** Initialize RTC and set the Time and Date
   */
-  sTime.Hours = 0x11;
+  sTime.Hours = 0x12;
   sTime.Minutes = 0x20;
   sTime.Seconds = 0x25;
   sTime.SubSeconds = 0x0;
@@ -468,9 +444,9 @@ static void MX_RTC_Init(void)
   {
     Error_Handler();
   }
-  sDate.WeekDay = RTC_WEEKDAY_MONDAY;
+  sDate.WeekDay = RTC_WEEKDAY_FRIDAY;
   sDate.Month = RTC_MONTH_MAY;
-  sDate.Date = 0x10;
+  sDate.Date = 0x14;
   sDate.Year = 0x21;
 
   if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BCD) != HAL_OK)

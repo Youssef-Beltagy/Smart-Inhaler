@@ -283,24 +283,19 @@ static void P2PS_TimeChange_Timer_Callback(void)
 
 void P2PS_Send_Notification(void)
 {
-//	uint8_t value[2];
-//
-//	value[0] = (uint8_t)(P2P_Server_App_Context.TimeControl.TimeStamp & 0x00FF);
-//	value[1] = (uint8_t)(P2P_Server_App_Context.TimeControl.TimeStamp >> 8);
+	uint8_t value[4];
 
- 
-//  if(P2P_Server_App_Context.ButtonControl.ButtonStatus == 0x00){
-//    P2P_Server_App_Context.ButtonControl.ButtonStatus=0x01;
-//  } else {
-//    P2P_Server_App_Context.ButtonControl.ButtonStatus=0x00;
-//  }
+	value[0] = (uint8_t)(timestamp >> 24);
+	value[1] = (uint8_t)(timestamp >> 16);
+	value[2] = (uint8_t)(timestamp >> 8);
+	value[3] = (uint8_t)(timestamp);
+
   
    if(P2P_Server_App_Context.Notification_Status){ 
     APP_DBG_MSG("-- P2P APPLICATION SERVER  : INFORM CLIENT BUTTON 1 PUSHED \n ");
     APP_DBG_MSG(" \n\r");
-    //P2PS_STM_App_Update_Char(P2P_NOTIFY_CHAR_UUID, (uint8_t *)&P2P_Server_App_Context.ButtonControl);
-    P2PS_STM_App_Update_Char(P2P_NOTIFY_CHAR_UUID, (uint8_t *)&timestamp);
-    //P2PS_STM_App_Update_Char(0x0000,(uint8_t *)&value);
+    P2PS_STM_App_Update_Char(P2P_NOTIFY_CHAR_UUID, (uint8_t *)&value);
+
    } else {
     APP_DBG_MSG("-- P2P APPLICATION SERVER : CAN'T INFORM CLIENT -  NOTIFICATION DISABLED\n "); 
    }

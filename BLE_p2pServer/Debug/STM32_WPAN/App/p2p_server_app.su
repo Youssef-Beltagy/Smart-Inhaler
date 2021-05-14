@@ -5,4 +5,4 @@ p2p_server_app.c:248:6:P2PS_APP_LED_BUTTON_context_Init	4	static
 p2p_server_app.c:259:6:P2PS_APP_SW1_Button_Action	8	static
 p2p_server_app.c:273:13:P2PS_APP_context_Init	4	static
 p2p_server_app.c:279:13:P2PS_TimeChange_Timer_Callback	8	static
-p2p_server_app.c:284:6:P2PS_Send_Notification	8	static
+p2p_server_app.c:284:6:P2PS_Send_Notification	16	static
