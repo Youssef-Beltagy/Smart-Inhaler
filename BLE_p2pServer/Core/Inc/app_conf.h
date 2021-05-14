@@ -567,6 +567,7 @@ typedef enum
 {
     CFG_TASK_ADV_CANCEL_ID,
     CFG_TASK_SW1_BUTTON_PUSHED_ID,
+	CFG_TASK_SW2_BUTTON_PUSHED_ID,
 #if (L2CAP_REQUEST_NEW_CONN_PARAM != 0 )
     CFG_TASK_CONN_UPDATE_REG_ID,
 #endif
@@ -574,6 +575,7 @@ typedef enum
 /* USER CODE BEGIN CFG_Task_Id_With_HCI_Cmd_t */
 	CFG_MY_TASK_NOTIFY_TEMPERATURE,
 	CFG_MY_TASK_NOTIFY_TIME,
+	CFG_MY_TASK_READ_TIME,
 /* USER CODE END CFG_Task_Id_With_HCI_Cmd_t */
     CFG_LAST_TASK_ID_WITH_HCICMD,                                               /**< Shall be LAST in the list */
 } CFG_Task_Id_With_HCI_Cmd_t;
