@@ -314,5 +314,24 @@ void HAL_GPIO_EXTI_Callback( uint16_t GPIO_Pin )
   }
   return;
 }
+
+//time_t	   mktime (struct tm *_timeptr)
+//    {
+//        time_t epoch_time  = 0 ;
+//        struct tm time_struct = {0} ;
+//
+//        // Your code to get RTC data in a tm struct here
+//        //...
+//
+//        // Convert tm struct to UNIX epoch time
+//        epoch_time = std::mktime( &time_struct ) ;
+//
+//        if( tp != 0 )
+//        {
+//            *timeptr = epoch_time ;
+//        }
+//
+//        return epoch_time ;
+//    }
 /* USER CODE END FD_WRAP_FUNCTIONS */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

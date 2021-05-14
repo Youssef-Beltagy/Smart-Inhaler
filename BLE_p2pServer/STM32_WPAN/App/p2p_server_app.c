@@ -78,6 +78,7 @@ typedef struct
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
+extern time_t timestamp;
 /**
  * START of Section BLE_APP_CONTEXT
  */
@@ -282,10 +283,10 @@ static void P2PS_TimeChange_Timer_Callback(void)
 
 void P2PS_Send_Notification(void)
 {
-	uint8_t value[2];
-
-	value[0] = (uint8_t)(P2P_Server_App_Context.TimeControl.TimeStamp & 0x00FF);
-	value[1] = (uint8_t)(P2P_Server_App_Context.TimeControl.TimeStamp >> 8);
+//	uint8_t value[2];
+//
+//	value[0] = (uint8_t)(P2P_Server_App_Context.TimeControl.TimeStamp & 0x00FF);
+//	value[1] = (uint8_t)(P2P_Server_App_Context.TimeControl.TimeStamp >> 8);
 
  
 //  if(P2P_Server_App_Context.ButtonControl.ButtonStatus == 0x00){
@@ -298,7 +299,7 @@ void P2PS_Send_Notification(void)
     APP_DBG_MSG("-- P2P APPLICATION SERVER  : INFORM CLIENT BUTTON 1 PUSHED \n ");
     APP_DBG_MSG(" \n\r");
     //P2PS_STM_App_Update_Char(P2P_NOTIFY_CHAR_UUID, (uint8_t *)&P2P_Server_App_Context.ButtonControl);
-    P2PS_STM_App_Update_Char(P2P_NOTIFY_CHAR_UUID, (uint8_t *)&value);
+    P2PS_STM_App_Update_Char(P2P_NOTIFY_CHAR_UUID, (uint8_t *)&timestamp);
     //P2PS_STM_App_Update_Char(0x0000,(uint8_t *)&value);
    } else {
     APP_DBG_MSG("-- P2P APPLICATION SERVER : CAN'T INFORM CLIENT -  NOTIFICATION DISABLED\n "); 
