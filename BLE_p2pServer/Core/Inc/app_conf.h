@@ -141,19 +141,9 @@
 /*****************************************************/
 
 #define P2P_SERVER1    1    /*1 = Device is Peripherique*/
-#define P2P_SERVER2    0
-#define P2P_SERVER3    0
-#define P2P_SERVER4    0
-#define P2P_SERVER5    0
-#define P2P_SERVER6    0
 
 #define CFG_DEV_ID_P2P_SERVER1                  (0x83)
-#define CFG_DEV_ID_P2P_SERVER2                  (0x84)
-#define CFG_DEV_ID_P2P_SERVER3                  (0x87)
-#define CFG_DEV_ID_P2P_SERVER4                  (0x88)
-#define CFG_DEV_ID_P2P_SERVER5                  (0x89)
-#define CFG_DEV_ID_P2P_SERVER6                  (0x8A)
-#define CFG_DEV_ID_P2P_ROUTER                   (0x85)
+
 
 #define  RADIO_ACTIVITY_EVENT   1          /* 1 for OOB Demo */
 
@@ -567,7 +557,6 @@ typedef enum
 {
     CFG_TASK_ADV_CANCEL_ID,
     CFG_TASK_SW1_BUTTON_PUSHED_ID,
-	CFG_TASK_SW2_BUTTON_PUSHED_ID,
 #if (L2CAP_REQUEST_NEW_CONN_PARAM != 0 )
     CFG_TASK_CONN_UPDATE_REG_ID,
 #endif
@@ -575,7 +564,6 @@ typedef enum
 /* USER CODE BEGIN CFG_Task_Id_With_HCI_Cmd_t */
 	CFG_MY_TASK_NOTIFY_TEMPERATURE,
 	CFG_MY_TASK_NOTIFY_TIME,
-	CFG_MY_TASK_READ_TIME,
 /* USER CODE END CFG_Task_Id_With_HCI_Cmd_t */
     CFG_LAST_TASK_ID_WITH_HCICMD,                                               /**< Shall be LAST in the list */
 } CFG_Task_Id_With_HCI_Cmd_t;

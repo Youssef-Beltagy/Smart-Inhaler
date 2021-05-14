@@ -244,104 +244,6 @@ uint8_t manuf_data[14] = {
     0x00, /* BLE MAC stop */
 };
 #endif
-/**
- * Advertising Data
- */
-#if (P2P_SERVER2 != 0)
-static const char local_name[] = { AD_TYPE_COMPLETE_LOCAL_NAME, 'P', '2', 'P', 'S', 'R', 'V', '2'};
-uint8_t manuf_data[14] = {
-    sizeof(manuf_data)-1, AD_TYPE_MANUFACTURER_SPECIFIC_DATA,
-    0x01/*SKD version */,
-    CFG_DEV_ID_P2P_SERVER2 /* STM32WB - P2P Server 2*/,
-    0x00 /* GROUP A Feature  */,
-    0x00 /* GROUP A Feature */,
-    0x00 /* GROUP B Feature */,
-    0x00 /* GROUP B Feature */,
-    0x00, /* BLE MAC start -MSB */
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00, /* BLE MAC stop */
-};
-
-#endif
-
-#if (P2P_SERVER3 != 0)
-static const char local_name[] = { AD_TYPE_COMPLETE_LOCAL_NAME, 'P', '2', 'P', 'S', 'R', 'V', '3'};
-uint8_t manuf_data[14] = {
-    sizeof(manuf_data)-1, AD_TYPE_MANUFACTURER_SPECIFIC_DATA,
-    0x01/*SKD version */,
-    CFG_DEV_ID_P2P_SERVER3 /* STM32WB - P2P Server 3*/,
-    0x00 /* GROUP A Feature  */,
-    0x00 /* GROUP A Feature */,
-    0x00 /* GROUP B Feature */,
-    0x00 /* GROUP B Feature */,
-    0x00, /* BLE MAC start -MSB */
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00, /* BLE MAC stop */
-};
-#endif
-
-#if (P2P_SERVER4 != 0)
-static const char local_name[] = { AD_TYPE_COMPLETE_LOCAL_NAME, 'P', '2', 'P', 'S', 'R', 'V', '4'};
-uint8_t manuf_data[14] = {
-    sizeof(manuf_data)-1, AD_TYPE_MANUFACTURER_SPECIFIC_DATA,
-    0x01/*SKD version */,
-    CFG_DEV_ID_P2P_SERVER4 /* STM32WB - P2P Server 4*/,
-    0x00 /* GROUP A Feature  */,
-    0x00 /* GROUP A Feature */,
-    0x00 /* GROUP B Feature */,
-    0x00 /* GROUP B Feature */,
-    0x00, /* BLE MAC start -MSB */
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00, /* BLE MAC stop */
-};
-#endif
-
-#if (P2P_SERVER5 != 0)
-static const char local_name[] = { AD_TYPE_COMPLETE_LOCAL_NAME, 'P', '2', 'P', 'S', 'R', 'V', '5'};
-uint8_t manuf_data[14] = {
-    sizeof(manuf_data)-1, AD_TYPE_MANUFACTURER_SPECIFIC_DATA,
-    0x01/*SKD version */,
-    CFG_DEV_ID_P2P_SERVER5 /* STM32WB - P2P Server 5*/,
-    0x00 /* GROUP A Feature  */,
-    0x00 /* GROUP A Feature */,
-    0x00 /* GROUP B Feature */,
-    0x00 /* GROUP B Feature */,
-    0x00, /* BLE MAC start -MSB */
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00, /* BLE MAC stop */
-};
-#endif
-
-#if (P2P_SERVER6 != 0)
-static const char local_name[] = { AD_TYPE_COMPLETE_LOCAL_NAME, 'P', '2', 'P', 'S', 'R', 'V', '6'};
-uint8_t manuf_data[14] = {
-    sizeof(manuf_data)-1, AD_TYPE_MANUFACTURER_SPECIFIC_DATA,
-    0x01/*SKD version */,
-    CFG_DEV_ID_P2P_SERVER6 /* STM32WB - P2P Server 1*/,
-    0x00 /* GROUP A Feature  */,
-    0x00 /* GROUP A Feature */,
-    0x00 /* GROUP B Feature */,
-    0x00 /* GROUP B Feature */,
-    0x00, /* BLE MAC start -MSB */
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00, /* BLE MAC stop */
-};
-#endif
 
 /* USER CODE BEGIN PV */
 
@@ -765,16 +667,14 @@ void APP_BLE_Key_Button1_Action(void)
 
 void APP_BLE_Key_Button2_Action(void)
 {
-//#if (L2CAP_REQUEST_NEW_CONN_PARAM != 0 )
-//  UTIL_SEQ_SetTask( 1<<CFG_TASK_CONN_UPDATE_REG_ID, CFG_SCH_PRIO_0);
-//#endif
+  UTIL_SEQ_SetTask( 1<<CFG_MY_TASK_NOTIFY_TIME, CFG_SCH_PRIO_0);
 
   return;
 }
 
-void APP_BLE_Key_Button3_Action(void)
-{
-}
+//void APP_BLE_Key_Button3_Action(void)
+//{
+//}
 
 /* USER CODE END FD*/
 /*************************************************************
