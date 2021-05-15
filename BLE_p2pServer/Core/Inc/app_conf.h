@@ -368,7 +368,7 @@
  *  When set to 1, the low power mode is enable
  *  When set to 0, the device stays in RUN mode
  */
-#define CFG_LPM_SUPPORTED    0
+#define CFG_LPM_SUPPORTED    1
 
 /******************************************************************************
  * Timer Server
@@ -406,7 +406,7 @@
 #define CFG_RTCCLK_DIV  (16)
 #define CFG_RTC_WUCKSEL_DIVIDER (0)
 #define CFG_RTC_ASYNCH_PRESCALER (0x7F)
-#define CFG_RTC_SYNCH_PRESCALER (0xFF)
+#define CFG_RTC_SYNCH_PRESCALER (0x00FF)
 
 #else
 
@@ -562,7 +562,7 @@ typedef enum
 #endif
     CFG_TASK_HCI_ASYNCH_EVT_ID,
 /* USER CODE BEGIN CFG_Task_Id_With_HCI_Cmd_t */
-	CFG_MY_TASK_NOTIFY_TEMPERATURE,
+	//CFG_MY_TASK_NOTIFY_TEMPERATURE,
 	CFG_MY_TASK_NOTIFY_TIME,
 /* USER CODE END CFG_Task_Id_With_HCI_Cmd_t */
     CFG_LAST_TASK_ID_WITH_HCICMD,                                               /**< Shall be LAST in the list */

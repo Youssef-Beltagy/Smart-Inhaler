@@ -151,6 +151,7 @@ int main(void)
 
   /* -1- Initialize LEDs mounted on P-NUCLEO-WB55 board */
   BSP_LED_Init(LED_BLUE);
+  BSP_LED_Init(LED_RED);
 
   /* -2- Configure External line 0 (connected to PD.0 pin) in interrupt mode */
   EXTI0_IRQHandler_Config();
@@ -403,71 +404,96 @@ static void MX_RF_Init(void)
 static void MX_RTC_Init(void)
 {
 
-  /* USER CODE BEGIN RTC_Init 0 */
+	/* USER CODE BEGIN RTC_Init 0 */
 
-  /* USER CODE END RTC_Init 0 */
+	/* USER CODE END RTC_Init 0 */
 
-  RTC_TimeTypeDef sTime = {0};
-  RTC_DateTypeDef sDate = {0};
+	RTC_TimeTypeDef sTime = {0};
+	RTC_DateTypeDef sDate = {0};
 
-  /* USER CODE BEGIN RTC_Init 1 */
+	/* USER CODE BEGIN RTC_Init 1 */
 
-  /* USER CODE END RTC_Init 1 */
-  /** Initialize RTC Only
-  */
-  hrtc.Instance = RTC;
-  hrtc.Init.HourFormat = RTC_HOURFORMAT_24;
-  hrtc.Init.AsynchPrediv = CFG_RTC_ASYNCH_PRESCALER;
-  hrtc.Init.SynchPrediv = CFG_RTC_SYNCH_PRESCALER;
-  hrtc.Init.OutPut = RTC_OUTPUT_DISABLE;
-  hrtc.Init.OutPutPolarity = RTC_OUTPUT_POLARITY_HIGH;
-  hrtc.Init.OutPutType = RTC_OUTPUT_TYPE_OPENDRAIN;
-  hrtc.Init.OutPutRemap = RTC_OUTPUT_REMAP_NONE;
-  if (HAL_RTC_Init(&hrtc) != HAL_OK)
-  {
-    Error_Handler();
-  }
+	/* USER CODE END RTC_Init 1 */
+	/** Initialize RTC Only
+	 */
+	hrtc.Instance = RTC;
+	hrtc.Init.HourFormat = RTC_HOURFORMAT_24;
+	hrtc.Init.AsynchPrediv = CFG_RTC_ASYNCH_PRESCALER;
+	hrtc.Init.SynchPrediv = CFG_RTC_SYNCH_PRESCALER;
+	hrtc.Init.OutPut = RTC_OUTPUT_DISABLE;
+	hrtc.Init.OutPutPolarity = RTC_OUTPUT_POLARITY_HIGH;
+	hrtc.Init.OutPutType = RTC_OUTPUT_TYPE_OPENDRAIN;
+	hrtc.Init.OutPutRemap = RTC_OUTPUT_REMAP_NONE;
+	if (HAL_RTC_Init(&hrtc) != HAL_OK)
+	{
+		Error_Handler();
+	}
 
-  /* USER CODE BEGIN Check_RTC_BKUP */
+	/* USER CODE BEGIN Check_RTC_BKUP */
+	/* Set Date and Time (if not already done before)*/
+	/* Read the Back Up Register 0 Data */
+	if (HAL_RTCEx_BKUPRead(&hrtc, RTC_BKP_DR0) != 0x32F2)
+	{
+		/* USER CODE END Check_RTC_BKUP */
 
-  /* USER CODE END Check_RTC_BKUP */
+		/** Initialize RTC and set the Time and Date
+		 */
+		sTime.Hours = 0x13;
+		sTime.Minutes = 0x43;
+		sTime.Seconds = 0x25;
+		sTime.SubSeconds = 0x0;
+		sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
+		sTime.StoreOperation = RTC_STOREOPERATION_RESET;
+		if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BCD) != HAL_OK)
+		{
+			Error_Handler();
+		}
+		sDate.WeekDay = RTC_WEEKDAY_FRIDAY;
+		sDate.Month = RTC_MONTH_MAY;
+		sDate.Date = 0x14;
+		sDate.Year = 0x21;
 
-  /** Initialize RTC and set the Time and Date
-  */
-  sTime.Hours = 0x12;
-  sTime.Minutes = 0x20;
-  sTime.Seconds = 0x25;
-  sTime.SubSeconds = 0x0;
-  sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
-  sTime.StoreOperation = RTC_STOREOPERATION_RESET;
-  if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BCD) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sDate.WeekDay = RTC_WEEKDAY_FRIDAY;
-  sDate.Month = RTC_MONTH_MAY;
-  sDate.Date = 0x14;
-  sDate.Year = 0x21;
+		if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BCD) != HAL_OK)
+		{
+			Error_Handler();
+		}
+		/** Enable the WakeUp
+		 */
+		//  if (HAL_RTCEx_SetWakeUpTimer(&hrtc, 0, RTC_WAKEUPCLOCK_RTCCLK_DIV16) != HAL_OK)
+		//  {
+		//    Error_Handler();
+		//  }
+		/* USER CODE BEGIN RTC_Init 2 */
+		/* Writes a data in a RTC Backup data Register0 */
+		HAL_RTCEx_BKUPWrite(&hrtc, RTC_BKP_DR0, 0x32F2);
+	}
+	else
+	{
+		/* Check if the Power On Reset flag is set */
+		if (__HAL_RCC_GET_FLAG(RCC_FLAG_BORRST) != RESET)
+		{
+			/* Turn on LED2: Power on reset occurred */
+			//BSP_LED_On(LED2);
+		}
 
-  if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BCD) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /** Enable the WakeUp
-  */
-  if (HAL_RTCEx_SetWakeUpTimer(&hrtc, 0, RTC_WAKEUPCLOCK_RTCCLK_DIV16) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN RTC_Init 2 */
-  /* Disable RTC registers write protection */
-  LL_RTC_DisableWriteProtection(RTC);
+		/* Check if Pin Reset flag is set */
+		if (__HAL_RCC_GET_FLAG(RCC_FLAG_PINRST) != RESET)
+		{
 
-  LL_RTC_WAKEUP_SetClock(RTC, CFG_RTC_WUCKSEL_DIVIDER);
+			BSP_LED_On(LED_RED);
+		}
+	}
+	/* Clear source Reset Flag */
+	__HAL_RCC_CLEAR_RESET_FLAGS();
 
-  /* Enable RTC registers write protection */
-  LL_RTC_EnableWriteProtection(RTC);
-  /* USER CODE END RTC_Init 2 */
+	/* Disable RTC registers write protection */
+	//  LL_RTC_DisableWriteProtection(RTC);
+	//
+	//  LL_RTC_WAKEUP_SetClock(RTC, CFG_RTC_WUCKSEL_DIVIDER);
+	//
+	//  /* Enable RTC registers write protection */
+	//  LL_RTC_EnableWriteProtection(RTC);
+	/* USER CODE END RTC_Init 2 */
 
 }
 

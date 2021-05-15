@@ -7,7 +7,7 @@ app_entry.c:178:13:APPE_SysStatusNot	16	static
 app_entry.c:193:13:APPE_SysUserEvtRx	16	static
 app_entry.c:205:13:Led_Init	8	static
 app_entry.c:222:13:Button_Init	8	static
-app_entry.c:243:6:UTIL_SEQ_Idle	4	static
+app_entry.c:243:6:UTIL_SEQ_Idle	8	static
 app_entry.c:258:6:UTIL_SEQ_EvtIdle	16	static
 app_entry.c:263:6:shci_notify_asynch_evt	16	static
 app_entry.c:269:6:shci_cmd_resp_release	16	static

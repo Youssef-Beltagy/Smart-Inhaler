@@ -520,13 +520,7 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification( void *pckt )
           handleNotification.ConnectionHandle = BleApplicationContext.BleApplicationContext_legacy.connectionHandle;
           P2PS_APP_Notification(&handleNotification);
           /* USER CODE BEGIN HCI_EVT_LE_CONN_COMPLETE */
-          /*
-           * SPECIFIC to P2P Server APP
-           */             
-//          handleNotification.P2P_Evt_Opcode = PEER_CONN_HANDLE_EVT;
-//          handleNotification.ConnectionHandle = BleApplicationContext.BleApplicationContext_legacy.connectionHandle;
-//          P2PS_APP_Notification(&handleNotification);
-          /**/
+
           /* USER CODE END HCI_EVT_LE_CONN_COMPLETE */
         }
         break; /* HCI_LE_CONNECTION_COMPLETE_SUBEVT_CODE */
@@ -668,7 +662,7 @@ void APP_BLE_Key_Button1_Action(void)
 void APP_BLE_Key_Button2_Action(void)
 {
   UTIL_SEQ_SetTask( 1<<CFG_MY_TASK_NOTIFY_TIME, CFG_SCH_PRIO_0);
-
+  Adv_Request(APP_BLE_FAST_ADV);
   return;
 }
 
