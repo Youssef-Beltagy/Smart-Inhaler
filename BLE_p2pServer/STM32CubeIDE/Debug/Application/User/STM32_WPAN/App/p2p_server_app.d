@@ -1,5 +1,5 @@
 Application/User/STM32_WPAN/App/p2p_server_app.o: \
- C:/Users/jenle/OneDrive/Desktop/School/CAPSTONE/Inhaler\ SW/Breathe/BLE_p2pServer/STM32_WPAN/App/p2p_server_app.c \
+ ../Application/User/STM32_WPAN/App/p2p_server_app.c \
  ../../Core/Inc/main.h \
  ../../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal.h \
  ../../Core/Inc/stm32wbxx_hal_conf.h \
@@ -104,7 +104,7 @@ Application/User/STM32_WPAN/App/p2p_server_app.o: \
  ../../Middlewares/ST/STM32_WPAN/ble/svc/Inc/template_stm.h \
  ../../Middlewares/ST/STM32_WPAN/ble/svc/Inc/svc_ctl.h \
  ../../Middlewares/ST/STM32_WPAN/ble/svc/Inc/uuid.h \
- C:/Users/jenle/OneDrive/Desktop/School/CAPSTONE/Inhaler\ SW/Breathe/BLE_p2pServer/STM32_WPAN/App/p2p_server_app.h \
+ ../../STM32_WPAN/App/p2p_server_app.h \
  ../../Utilities/sequencer/stm32_seq.h
 
 ../../Core/Inc/main.h:
@@ -321,6 +321,6 @@ Application/User/STM32_WPAN/App/p2p_server_app.o: \
 
 ../../Middlewares/ST/STM32_WPAN/ble/svc/Inc/uuid.h:
 
-C:/Users/jenle/OneDrive/Desktop/School/CAPSTONE/Inhaler\ SW/Breathe/BLE_p2pServer/STM32_WPAN/App/p2p_server_app.h:
+../../STM32_WPAN/App/p2p_server_app.h:
 
 ../../Utilities/sequencer/stm32_seq.h:

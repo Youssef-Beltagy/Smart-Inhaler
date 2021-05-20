@@ -1,6 +1,5 @@
-Middlewares/STM32_WPAN/p2p_stm.o: \
- C:/Users/jenle/OneDrive/Desktop/School/CAPSTONE/Inhaler\ SW/Breathe/BLE_p2pServer/Middlewares/ST/STM32_WPAN/ble/svc/Src/p2p_stm.c \
- C:/Users/jenle/OneDrive/Desktop/School/CAPSTONE/Inhaler\ SW/Breathe/BLE_p2pServer/Middlewares/ST/STM32_WPAN/ble/svc/Src/common_blesvc.h \
+Middlewares/STM32_WPAN/p2p_stm.o: ../Middlewares/STM32_WPAN/p2p_stm.c \
+ ../../Middlewares/ST/STM32_WPAN/ble/svc/Src/common_blesvc.h \
  ../../Middlewares/ST/STM32_WPAN/ble/ble_common.h \
  ../../STM32_WPAN/App/ble_conf.h ../../Core/Inc/app_conf.h \
  ../../Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/hw.h \
@@ -103,7 +102,7 @@ Middlewares/STM32_WPAN/p2p_stm.o: \
  ../../Middlewares/ST/STM32_WPAN/ble/svc/Inc/uuid.h \
  ../../Middlewares/ST/STM32_WPAN/utilities/dbg_trace.h
 
-C:/Users/jenle/OneDrive/Desktop/School/CAPSTONE/Inhaler\ SW/Breathe/BLE_p2pServer/Middlewares/ST/STM32_WPAN/ble/svc/Src/common_blesvc.h:
+../../Middlewares/ST/STM32_WPAN/ble/svc/Src/common_blesvc.h:
 
 ../../Middlewares/ST/STM32_WPAN/ble/ble_common.h:
 

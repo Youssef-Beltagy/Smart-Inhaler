@@ -1,5 +1,5 @@
 Drivers/STM32WBxx_HAL_Driver/stm32wbxx_hal_gpio.o: \
- C:/Users/jenle/OneDrive/Desktop/School/CAPSTONE/Inhaler\ SW/Breathe/BLE_p2pServer/Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_hal_gpio.c \
+ ../Drivers/STM32WBxx_HAL_Driver/stm32wbxx_hal_gpio.c \
  ../../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal.h \
  ../../Core/Inc/stm32wbxx_hal_conf.h \
  ../../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_dma.h \

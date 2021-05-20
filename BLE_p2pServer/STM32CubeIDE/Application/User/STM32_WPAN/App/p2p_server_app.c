@@ -225,15 +225,15 @@ void P2PS_APP_Init(void)
 {
 /* USER CODE BEGIN P2PS_APP_Init */
   //UTIL_SEQ_RegTask( 1<< CFG_TASK_SW1_BUTTON_PUSHED_ID, UTIL_SEQ_RFU, P2PS_Send_Notification );
-	UTIL_SEQ_RegTask( 1<< CFG_MY_TASK_NOTIFY_TIME, UTIL_SEQ_RFU, P2PS_Send_Notification );
+  UTIL_SEQ_RegTask( 1<< CFG_MY_TASK_NOTIFY_TIME, UTIL_SEQ_RFU, P2PS_Send_Notification );
 
-	/* Create timer to change the time and update characteristic */
-	    HW_TS_Create(CFG_TIM_PROC_ID_ISR,
-	  	        &(P2P_Server_App_Context.Update_timer_Id),
-	  	        hw_ts_Repeated,
-				P2PS_TimeChange_Timer_Callback);
+  /* Create timer to change the time and update charecteristic */
+      HW_TS_Create(CFG_TIM_PROC_ID_ISR,
+    	        &(P2P_Server_App_Context.Update_timer_Id),
+    	        hw_ts_Repeated,
+  			P2PS_TimeChange_Timer_Callback);
 
-	  /**
+    /**
    * Initialize LedButton Service
    */
   P2P_Server_App_Context.Notification_Status=0; 
@@ -246,7 +246,7 @@ void P2PS_APP_Init(void)
 /* USER CODE BEGIN FD */
 void P2PS_APP_LED_BUTTON_context_Init(void){
   
- // BSP_LED_Off(LED_BLUE);
+  BSP_LED_Off(LED_BLUE);
   
   #if(P2P_SERVER1 != 0)
   P2P_Server_App_Context.LedControl.Device_Led_Selection=0x01; /* Device1 */
@@ -254,7 +254,6 @@ void P2PS_APP_LED_BUTTON_context_Init(void){
   P2P_Server_App_Context.ButtonControl.Device_Button_Selection=0x01;/* Device1 */
   P2P_Server_App_Context.ButtonControl.ButtonStatus=0x00;
 #endif
-
 }
 
 void P2PS_APP_SW1_Button_Action(void)
@@ -271,6 +270,7 @@ void P2PS_APP_SW1_Button_Action(void)
  *
  *************************************************************/
 /* USER CODE BEGIN FD_LOCAL_FUNCTIONS*/
+
 static void P2PS_APP_context_Init(void)
 {
 	P2P_Server_App_Context.TimeControl.TimeStamp = 0xF2;
@@ -291,16 +291,18 @@ void P2PS_Send_Notification(void)
 		value[1] = (uint8_t)(timestamp >> 16);
 		value[2] = (uint8_t)(timestamp >> 8);
 		value[3] = (uint8_t)(timestamp);
-  
-   if(P2P_Server_App_Context.Notification_Status){ 
-    APP_DBG_MSG("-- P2P APPLICATION SERVER  : INFORM CLIENT BUTTON 2 PUSHED \n ");
-    APP_DBG_MSG(" \n\r");
-    P2PS_STM_App_Update_Char(P2P_NOTIFY_CHAR_UUID, (uint8_t *)&value);
-   } else {
-    APP_DBG_MSG("-- P2P APPLICATION SERVER : CAN'T INFORM CLIENT -  NOTIFICATION DISABLED\n "); 
-   }
 
-  return;
+
+	   if(P2P_Server_App_Context.Notification_Status){
+	    APP_DBG_MSG("-- P2P APPLICATION SERVER  : INFORM CLIENT BUTTON 1 PUSHED \n ");
+	    APP_DBG_MSG(" \n\r");
+	    P2PS_STM_App_Update_Char(P2P_NOTIFY_CHAR_UUID, (uint8_t *)&value);
+
+	   } else {
+	    APP_DBG_MSG("-- P2P APPLICATION SERVER : CAN'T INFORM CLIENT -  NOTIFICATION DISABLED\n ");
+	   }
+
+	  return;
 }
 
 /* USER CODE END FD_LOCAL_FUNCTIONS*/

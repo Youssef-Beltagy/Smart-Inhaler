@@ -35,7 +35,7 @@ main.c:537:13:MX_DMA_Init	8	static
 main.c:560:13:MX_GPIO_Init	32	static
 main.c:611:6:PeriphClock_Config	4	static
 main.c:664:13:Config_HSE	16	static
-main.c:681:13:Reset_Device	8	static
+main.c:681:13:Reset_Device	4	static
 main.c:692:13:Reset_IPCC	8	static
 main.c:729:13:Reset_BackupDomain	8	static
 main.c:748:13:Init_Exti	8	static
