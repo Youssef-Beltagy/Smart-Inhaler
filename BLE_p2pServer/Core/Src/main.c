@@ -91,8 +91,8 @@ static void MX_SPI1_Init(void);
 /* USER CODE BEGIN PFP */
 void PeriphClock_Config(void);
 static void Reset_Device( void );
-static void Reset_IPCC( void );
-static void Reset_BackupDomain( void );
+//static void Reset_IPCC( void );
+//static void Reset_BackupDomain( void );
 static void Init_Exti( void );
 static void Config_HSE(void);
 
@@ -434,8 +434,8 @@ static void MX_RTC_Init(void)
   /** Initialize RTC and set the Time and Date
   */
   sTime.Hours = 0x11;
-  sTime.Minutes = 0x45;
-  sTime.Seconds = 0x25;
+  sTime.Minutes = 0x27;
+  sTime.Seconds = 0x20;
   sTime.SubSeconds = 0x0;
   sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
   sTime.StoreOperation = RTC_STOREOPERATION_RESET;
@@ -443,9 +443,9 @@ static void MX_RTC_Init(void)
   {
     Error_Handler();
   }
-  sDate.WeekDay = RTC_WEEKDAY_WEDNESDAY;
+  sDate.WeekDay = RTC_WEEKDAY_THURSDAY;
   sDate.Month = RTC_MONTH_MAY;
-  sDate.Date = 0x19;
+  sDate.Date = 0x20;
   sDate.Year = 0x21;
 
   if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BCD) != HAL_OK)
@@ -689,61 +689,61 @@ static void Reset_Device( void )
 	return;
 }
 
-static void Reset_IPCC( void )
-{
-	LL_AHB3_GRP1_EnableClock(LL_AHB3_GRP1_PERIPH_IPCC);
-
-	LL_C1_IPCC_ClearFlag_CHx(
-			IPCC,
-			LL_IPCC_CHANNEL_1 | LL_IPCC_CHANNEL_2 | LL_IPCC_CHANNEL_3 | LL_IPCC_CHANNEL_4
-			| LL_IPCC_CHANNEL_5 | LL_IPCC_CHANNEL_6);
-
-	LL_C2_IPCC_ClearFlag_CHx(
-			IPCC,
-			LL_IPCC_CHANNEL_1 | LL_IPCC_CHANNEL_2 | LL_IPCC_CHANNEL_3 | LL_IPCC_CHANNEL_4
-			| LL_IPCC_CHANNEL_5 | LL_IPCC_CHANNEL_6);
-
-	LL_C1_IPCC_DisableTransmitChannel(
-			IPCC,
-			LL_IPCC_CHANNEL_1 | LL_IPCC_CHANNEL_2 | LL_IPCC_CHANNEL_3 | LL_IPCC_CHANNEL_4
-			| LL_IPCC_CHANNEL_5 | LL_IPCC_CHANNEL_6);
-
-	LL_C2_IPCC_DisableTransmitChannel(
-			IPCC,
-			LL_IPCC_CHANNEL_1 | LL_IPCC_CHANNEL_2 | LL_IPCC_CHANNEL_3 | LL_IPCC_CHANNEL_4
-			| LL_IPCC_CHANNEL_5 | LL_IPCC_CHANNEL_6);
-
-	LL_C1_IPCC_DisableReceiveChannel(
-			IPCC,
-			LL_IPCC_CHANNEL_1 | LL_IPCC_CHANNEL_2 | LL_IPCC_CHANNEL_3 | LL_IPCC_CHANNEL_4
-			| LL_IPCC_CHANNEL_5 | LL_IPCC_CHANNEL_6);
-
-	LL_C2_IPCC_DisableReceiveChannel(
-			IPCC,
-			LL_IPCC_CHANNEL_1 | LL_IPCC_CHANNEL_2 | LL_IPCC_CHANNEL_3 | LL_IPCC_CHANNEL_4
-			| LL_IPCC_CHANNEL_5 | LL_IPCC_CHANNEL_6);
-
-	return;
-}
-
-static void Reset_BackupDomain( void )
-{
-	if ((LL_RCC_IsActiveFlag_PINRST() != FALSE) && (LL_RCC_IsActiveFlag_SFTRST() == FALSE))
-	{
-		HAL_PWR_EnableBkUpAccess(); /**< Enable access to the RTC registers */
-
-		/**
-		 *  Write twice the value to flush the APB-AHB bridge
-		 *  This bit shall be written in the register before writing the next one
-		 */
-		HAL_PWR_EnableBkUpAccess();
-
-		__HAL_RCC_BACKUPRESET_FORCE();
-		__HAL_RCC_BACKUPRESET_RELEASE();
-	}
-
-	return;
-}
+//static void Reset_IPCC( void )
+//{
+//	LL_AHB3_GRP1_EnableClock(LL_AHB3_GRP1_PERIPH_IPCC);
+//
+//	LL_C1_IPCC_ClearFlag_CHx(
+//			IPCC,
+//			LL_IPCC_CHANNEL_1 | LL_IPCC_CHANNEL_2 | LL_IPCC_CHANNEL_3 | LL_IPCC_CHANNEL_4
+//			| LL_IPCC_CHANNEL_5 | LL_IPCC_CHANNEL_6);
+//
+//	LL_C2_IPCC_ClearFlag_CHx(
+//			IPCC,
+//			LL_IPCC_CHANNEL_1 | LL_IPCC_CHANNEL_2 | LL_IPCC_CHANNEL_3 | LL_IPCC_CHANNEL_4
+//			| LL_IPCC_CHANNEL_5 | LL_IPCC_CHANNEL_6);
+//
+//	LL_C1_IPCC_DisableTransmitChannel(
+//			IPCC,
+//			LL_IPCC_CHANNEL_1 | LL_IPCC_CHANNEL_2 | LL_IPCC_CHANNEL_3 | LL_IPCC_CHANNEL_4
+//			| LL_IPCC_CHANNEL_5 | LL_IPCC_CHANNEL_6);
+//
+//	LL_C2_IPCC_DisableTransmitChannel(
+//			IPCC,
+//			LL_IPCC_CHANNEL_1 | LL_IPCC_CHANNEL_2 | LL_IPCC_CHANNEL_3 | LL_IPCC_CHANNEL_4
+//			| LL_IPCC_CHANNEL_5 | LL_IPCC_CHANNEL_6);
+//
+//	LL_C1_IPCC_DisableReceiveChannel(
+//			IPCC,
+//			LL_IPCC_CHANNEL_1 | LL_IPCC_CHANNEL_2 | LL_IPCC_CHANNEL_3 | LL_IPCC_CHANNEL_4
+//			| LL_IPCC_CHANNEL_5 | LL_IPCC_CHANNEL_6);
+//
+//	LL_C2_IPCC_DisableReceiveChannel(
+//			IPCC,
+//			LL_IPCC_CHANNEL_1 | LL_IPCC_CHANNEL_2 | LL_IPCC_CHANNEL_3 | LL_IPCC_CHANNEL_4
+//			| LL_IPCC_CHANNEL_5 | LL_IPCC_CHANNEL_6);
+//
+//	return;
+//}
+//
+//static void Reset_BackupDomain( void )
+//{
+//	if ((LL_RCC_IsActiveFlag_PINRST() != FALSE) && (LL_RCC_IsActiveFlag_SFTRST() == FALSE))
+//	{
+//		HAL_PWR_EnableBkUpAccess(); /**< Enable access to the RTC registers */
+//
+//		/**
+//		 *  Write twice the value to flush the APB-AHB bridge
+//		 *  This bit shall be written in the register before writing the next one
+//		 */
+//		HAL_PWR_EnableBkUpAccess();
+//
+//		__HAL_RCC_BACKUPRESET_FORCE();
+//		__HAL_RCC_BACKUPRESET_RELEASE();
+//	}
+//
+//	return;
+//}
 
 static void Init_Exti( void )
 {

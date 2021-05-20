@@ -35,23 +35,23 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  15 MB_MEM2       00000877  200301e0  200301e0  00030000  2**2
                   ALLOC
- 16 .debug_info   00040fb3  00000000  00000000  000202cd  2**0
+ 16 .debug_info   00040db1  00000000  00000000  000202cd  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_abbrev 00007694  00000000  00000000  00061280  2**0
+ 17 .debug_abbrev 0000767a  00000000  00000000  0006107e  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_aranges 00002b48  00000000  00000000  00068918  2**3
+ 18 .debug_aranges 00002ae0  00000000  00000000  000686f8  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .debug_ranges 00002870  00000000  00000000  0006b460  2**3
+ 19 .debug_ranges 00002808  00000000  00000000  0006b1d8  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 20 .debug_macro  0002e13e  00000000  00000000  0006dcd0  2**0
+ 20 .debug_macro  0002e114  00000000  00000000  0006d9e0  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 21 .debug_line   0002ecb6  00000000  00000000  0009be0e  2**0
+ 21 .debug_line   0002eb14  00000000  00000000  0009baf4  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 22 .debug_str    000faf54  00000000  00000000  000caac4  2**0
+ 22 .debug_str    000fadd7  00000000  00000000  000ca608  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 23 .comment      00000053  00000000  00000000  001c5a18  2**0
+ 23 .comment      00000053  00000000  00000000  001c53df  2**0
                   CONTENTS, READONLY
- 24 .debug_frame  0000bc44  00000000  00000000  001c5a6c  2**2
+ 24 .debug_frame  0000ba74  00000000  00000000  001c5434  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -4278,11 +4278,11 @@ static void MX_RTC_Init(void)
  8001962:	605a      	str	r2, [r3, #4]
   hrtc.Init.AsynchPrediv = CFG_RTC_ASYNCH_PRESCALER;
  8001964:	4b3e      	ldr	r3, [pc, #248]	; (8001a60 <MX_RTC_Init+0x120>)
- 8001966:	22ff      	movs	r2, #255	; 0xff
+ 8001966:	227f      	movs	r2, #127	; 0x7f
  8001968:	609a      	str	r2, [r3, #8]
   hrtc.Init.SynchPrediv = CFG_RTC_SYNCH_PRESCALER;
  800196a:	4b3d      	ldr	r3, [pc, #244]	; (8001a60 <MX_RTC_Init+0x120>)
- 800196c:	227f      	movs	r2, #127	; 0x7f
+ 800196c:	22ff      	movs	r2, #255	; 0xff
  800196e:	60da      	str	r2, [r3, #12]
   hrtc.Init.OutPut = RTC_OUTPUT_DISABLE;
  8001970:	4b3b      	ldr	r3, [pc, #236]	; (8001a60 <MX_RTC_Init+0x120>)
@@ -4330,11 +4330,11 @@ static void MX_RTC_Init(void)
   sTime.Hours = 0x11;
  80019aa:	2311      	movs	r3, #17
  80019ac:	713b      	strb	r3, [r7, #4]
-  sTime.Minutes = 0x45;
- 80019ae:	2345      	movs	r3, #69	; 0x45
+  sTime.Minutes = 0x27;
+ 80019ae:	2327      	movs	r3, #39	; 0x27
  80019b0:	717b      	strb	r3, [r7, #5]
-  sTime.Seconds = 0x25;
- 80019b2:	2325      	movs	r3, #37	; 0x25
+  sTime.Seconds = 0x20;
+ 80019b2:	2320      	movs	r3, #32
  80019b4:	71bb      	strb	r3, [r7, #6]
   sTime.SubSeconds = 0x0;
  80019b6:	2300      	movs	r3, #0
@@ -4358,14 +4358,14 @@ static void MX_RTC_Init(void)
     Error_Handler();
  80019d4:	f000 f955 	bl	8001c82 <Error_Handler>
   }
-  sDate.WeekDay = RTC_WEEKDAY_WEDNESDAY;
- 80019d8:	2303      	movs	r3, #3
+  sDate.WeekDay = RTC_WEEKDAY_THURSDAY;
+ 80019d8:	2304      	movs	r3, #4
  80019da:	703b      	strb	r3, [r7, #0]
   sDate.Month = RTC_MONTH_MAY;
  80019dc:	2305      	movs	r3, #5
  80019de:	707b      	strb	r3, [r7, #1]
-  sDate.Date = 0x19;
- 80019e0:	2319      	movs	r3, #25
+  sDate.Date = 0x20;
+ 80019e0:	2320      	movs	r3, #32
  80019e2:	70bb      	strb	r3, [r7, #2]
   sDate.Year = 0x21;
  80019e4:	2321      	movs	r3, #33	; 0x21
@@ -4800,9 +4800,9 @@ static void Reset_Device( void )
  8001c1e:	4770      	bx	lr
 
 08001c20 <Init_Exti>:
-
-	return;
-}
+//
+//	return;
+//}
 
 static void Init_Exti( void )
 {

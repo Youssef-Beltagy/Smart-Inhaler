@@ -146,12 +146,6 @@
 #define P2P_SERVER6    0
 
 #define CFG_DEV_ID_P2P_SERVER1                  (0x83)
-#define CFG_DEV_ID_P2P_SERVER2                  (0x84)
-#define CFG_DEV_ID_P2P_SERVER3                  (0x87)
-#define CFG_DEV_ID_P2P_SERVER4                  (0x88)
-#define CFG_DEV_ID_P2P_SERVER5                  (0x89)
-#define CFG_DEV_ID_P2P_SERVER6                  (0x8A)
-#define CFG_DEV_ID_P2P_ROUTER                   (0x85)
 
 #define  RADIO_ACTIVITY_EVENT   1          /* 1 for OOB Demo */
 
@@ -346,8 +340,8 @@
 /**
  * Select UART interfaces
  */
-#define CFG_DEBUG_TRACE_UART    hw_uart1
-#define CFG_CONSOLE_MENU      hw_lpuart1
+#define CFG_DEBUG_TRACE_UART    0
+#define CFG_CONSOLE_MENU      0
 /******************************************************************************
  * USB interface
  ******************************************************************************/
@@ -413,8 +407,8 @@
 
 #define CFG_RTCCLK_DIV  (16)
 #define CFG_RTC_WUCKSEL_DIVIDER (0)
-#define CFG_RTC_ASYNCH_PRESCALER (0x00FF)
-#define CFG_RTC_SYNCH_PRESCALER (0x007F)
+#define CFG_RTC_ASYNCH_PRESCALER (0x7F)
+#define CFG_RTC_SYNCH_PRESCALER (0x00FF)
 
 #else
 
