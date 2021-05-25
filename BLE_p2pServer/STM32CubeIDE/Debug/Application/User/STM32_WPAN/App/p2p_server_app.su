@@ -1,8 +1,0 @@
-p2p_server_app.c:101:6:P2PS_STM_App_Notification	16	static
-p2p_server_app.c:190:6:P2PS_APP_Notification	16	static
-p2p_server_app.c:224:6:P2PS_APP_Init	8	static
-p2p_server_app.c:247:6:P2PS_APP_LED_BUTTON_context_Init	8	static
-p2p_server_app.c:259:6:P2PS_APP_SW1_Button_Action	8	static
-p2p_server_app.c:274:13:P2PS_APP_context_Init	4	static
-p2p_server_app.c:280:13:P2PS_TimeChange_Timer_Callback	8	static
-p2p_server_app.c:285:6:P2PS_Send_Notification	16	static
