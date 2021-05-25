@@ -422,8 +422,6 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification( void *pckt )
       {
         BleApplicationContext.BleApplicationContext_legacy.connectionHandle = 0;
         BleApplicationContext.Device_Connection_Status = APP_BLE_IDLE;
-
-        APP_DBG_MSG("\r\n\r** DISCONNECTION EVENT WITH CLIENT \n");
       }
 
       /* restart advertising */
@@ -436,7 +434,6 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification( void *pckt )
       handleNotification.ConnectionHandle = BleApplicationContext.BleApplicationContext_legacy.connectionHandle;
       P2PS_APP_Notification(&handleNotification);
       /* USER CODE BEGIN EVT_DISCONN_COMPLETE */
-
       /* USER CODE END EVT_DISCONN_COMPLETE */
     }
 
@@ -451,44 +448,15 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification( void *pckt )
       switch (meta_evt->subevent)
       {
         case HCI_LE_CONNECTION_UPDATE_COMPLETE_SUBEVT_CODE:
-          APP_DBG_MSG("\r\n\r** CONNECTION UPDATE EVENT WITH CLIENT \n");
-
           /* USER CODE BEGIN EVT_LE_CONN_UPDATE_COMPLETE */
-
           /* USER CODE END EVT_LE_CONN_UPDATE_COMPLETE */
           break;
         case HCI_LE_PHY_UPDATE_COMPLETE_SUBEVT_CODE:
-          APP_DBG_MSG("EVT_UPDATE_PHY_COMPLETE \n");
           evt_le_phy_update_complete = (hci_le_phy_update_complete_event_rp0*)meta_evt->data;
-          if (evt_le_phy_update_complete->Status == 0)
-          {
-            APP_DBG_MSG("EVT_UPDATE_PHY_COMPLETE, status ok \n");
-          }
-          else
-          {
-            APP_DBG_MSG("EVT_UPDATE_PHY_COMPLETE, status nok \n");
-          }
 
           ret = hci_le_read_phy(BleApplicationContext.BleApplicationContext_legacy.connectionHandle,&TX_PHY,&RX_PHY);
-          if (ret == BLE_STATUS_SUCCESS)
-          {
-            APP_DBG_MSG("Read_PHY success \n");
 
-            if ((TX_PHY == TX_2M) && (RX_PHY == RX_2M))
-            {
-              APP_DBG_MSG("PHY Param  TX= %d, RX= %d \n", TX_PHY, RX_PHY);
-            }
-            else
-            {
-              APP_DBG_MSG("PHY Param  TX= %d, RX= %d \n", TX_PHY, RX_PHY);
-            }
-          }
-          else
-          {
-            APP_DBG_MSG("Read conf not succeess \n");
-          }
           /* USER CODE BEGIN EVT_LE_PHY_UPDATE_COMPLETE */
-
           /* USER CODE END EVT_LE_PHY_UPDATE_COMPLETE */
           break;
         case HCI_LE_CONNECTION_COMPLETE_SUBEVT_CODE:
@@ -502,7 +470,6 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification( void *pckt )
 
           HW_TS_Stop(BleApplicationContext.Advertising_mgr_timer_Id);
 
-          APP_DBG_MSG("HCI_LE_CONNECTION_COMPLETE_SUBEVT_CODE for connection handle 0x%x\n", connection_complete_event->Connection_Handle);
           if (BleApplicationContext.Device_Connection_Status == APP_BLE_LP_CONNECTING)
           {
             /* Connection as client */

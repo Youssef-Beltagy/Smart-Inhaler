@@ -46,10 +46,16 @@ typedef enum
   LED1 = 0,
   LED2 = 1,
   LED3 = 2,
+  LED1_BR = 3,
+  LED2_BR = 4,
+  LED3_BR = 5,
   /* Color led aliases */
   LED_BLUE   = LED1,
   LED_GREEN  = LED2,
-  LED_RED    = LED3
+  LED_RED    = LED3,
+  LED_GREEN_BR   = LED1_BR,
+  LED_YELLOW_BR  = LED2_BR,
+  LED_RED_BR    = LED3_BR
 }Led_TypeDef;
 
 typedef enum 
@@ -93,7 +99,7 @@ typedef enum
 /** @defgroup STM32WBXX_NUCLEO_LED LED Constants
   * @{
   */
-#define LEDn                                    3
+#define LEDn                                    6
 
 #define LED1_PIN                                GPIO_PIN_5
 #define LED1_GPIO_PORT                          GPIOB
@@ -109,6 +115,21 @@ typedef enum
 #define LED3_GPIO_PORT                          GPIOB
 #define LED3_GPIO_CLK_ENABLE()                  __HAL_RCC_GPIOB_CLK_ENABLE()
 #define LED3_GPIO_CLK_DISABLE()                 __HAL_RCC_GPIOB_CLK_DISABLE()
+
+#define LED1_BR_PIN                             GPIO_PIN_13
+#define LED1_BR_GPIO_PORT                       GPIOB
+#define LED1_BR_GPIO_CLK_ENABLE()               __HAL_RCC_GPIOB_CLK_ENABLE()
+#define LED1_BR_GPIO_CLK_DISABLE()              __HAL_RCC_GPIOB_CLK_DISABLE()
+
+#define LED2_BR_PIN                             GPIO_PIN_14
+#define LED2_BR_GPIO_PORT                       GPIOB
+#define LED2_BR_GPIO_CLK_ENABLE()               __HAL_RCC_GPIOB_CLK_ENABLE()
+#define LED2_BR_GPIO_CLK_DISABLE()              __HAL_RCC_GPIOB_CLK_DISABLE()
+
+#define LED3_BR_PIN                             GPIO_PIN_12
+#define LED3_BR_GPIO_PORT                       GPIOB
+#define LED3_BR_GPIO_CLK_ENABLE()               __HAL_RCC_GPIOB_CLK_ENABLE()
+#define LED3_BR_GPIO_CLK_DISABLE()              __HAL_RCC_GPIOB_CLK_DISABLE()
 
 #define LEDx_GPIO_CLK_ENABLE(__INDEX__)         __HAL_RCC_GPIOB_CLK_ENABLE() /* All Led on same port */
 #define LEDx_GPIO_CLK_DISABLE(__INDEX__)        __HAL_RCC_GPIOB_CLK_DISABLE() /* All Led on same port */

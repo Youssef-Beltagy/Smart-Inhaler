@@ -289,7 +289,8 @@ void HAL_GPIO_EXTI_Callback( uint16_t GPIO_Pin )
 
     case BUTTON_SW2_PIN:
     	APP_BLE_Key_Button2_Action();
-    	BSP_LED_Toggle(LED1);
+    	//BSP_LED_Toggle(LED1);
+    	BSP_LED_Toggle(LED_GREEN_BR);
 
     	HAL_RTC_GetTime(&hrtc, &currentTime, RTC_FORMAT_BIN);
     	HAL_RTC_GetDate(&hrtc, &currentDate, RTC_FORMAT_BIN);

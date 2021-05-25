@@ -148,8 +148,8 @@ int main(void)
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
 
-  /* -1- Initialize LEDs mounted on P-NUCLEO-WB55 board */
-    BSP_LED_Init(LED_BLUE);
+  /* -1- Initialize LEDs */
+    BSP_LED_Init(LED_GREEN_BR);
     BSP_LED_Init(LED_RED);
 
   /* USER CODE END 2 */
@@ -433,7 +433,7 @@ static void MX_RTC_Init(void)
 
   /** Initialize RTC and set the Time and Date
   */
-  sTime.Hours = 0x11;
+  sTime.Hours = 0x19;
   sTime.Minutes = 0x27;
   sTime.Seconds = 0x20;
   sTime.SubSeconds = 0x0;
@@ -443,9 +443,9 @@ static void MX_RTC_Init(void)
   {
     Error_Handler();
   }
-  sDate.WeekDay = RTC_WEEKDAY_THURSDAY;
+  sDate.WeekDay = RTC_WEEKDAY_MONDAY;
   sDate.Month = RTC_MONTH_MAY;
-  sDate.Date = 0x20;
+  sDate.Date = 0x24;
   sDate.Year = 0x21;
 
   if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BCD) != HAL_OK)
@@ -462,22 +462,7 @@ static void MX_RTC_Init(void)
   /* Writes a data in a RTC Backup data Register0 */
   		HAL_RTCEx_BKUPWrite(&hrtc, RTC_BKP_DR0, 0x32F2);
   	}
-  	else
-  	{
-  		/* Check if the Power On Reset flag is set */
-  		if (__HAL_RCC_GET_FLAG(RCC_FLAG_BORRST) != RESET)
-  		{
-  			/* Turn on LED2: Power on reset occurred */
-  			//BSP_LED_On(LED2);
-  		}
 
-  		/* Check if Pin Reset flag is set */
-  		if (__HAL_RCC_GET_FLAG(RCC_FLAG_PINRST) != RESET)
-  		{
-
-  			BSP_LED_On(LED_RED);
-  		}
-  	}
   	/* Clear source Reset Flag */
   	__HAL_RCC_CLEAR_RESET_FLAGS();
   /* Disable RTC registers write protection */
