@@ -19,7 +19,8 @@ Backup/
 
 
 # Appeared after building for the first time
-STM32CubeIDE/.settings/stm32cubeide.project.prefs
+# ignore .settings file because it keeps changing for every dev. Fix later if it causes problems.
+.settings/
 
 # Appeared after launching the program for the first time
 STM32CubeIDE/BLE_p2pServer.launch
