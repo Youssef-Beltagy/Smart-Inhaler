@@ -1,0 +1,26 @@
+# Compiled C code
+*.o 
+*.elf
+*.hex
+
+# Included in compile https://www.eclipse.org/forums/index.php/t/275294/
+*.d 
+
+# Appears in build
+*.su
+
+# https://www.embeddedrelated.com/showthread/comp.arch.embedded/272022-1.php
+Debug/
+Release/
+#html/ Don't ignore html folders because they can contain documentation
+Backup/
+*.bak
+# todo: consider adding lock files
+
+
+# Appeared after building for the first time
+STM32CubeIDE/.settings/stm32cubeide.project.prefs
+
+# Appeared after launching the program for the first time
+STM32CubeIDE/BLE_p2pServer.launch
+
