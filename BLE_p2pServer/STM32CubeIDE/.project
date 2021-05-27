@@ -56,7 +56,7 @@
 		<link>
 			<name>Drivers/CMSIS/system_stm32wbxx.c</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Core/Src/system_stm32wbxx.c</locationURI>
+			<location>C:/Users/jenle/OneDrive/Desktop/School/CAPSTONE/Inhaler SW/Breathe/BLE_p2pServer/Core/Src/system_stm32wbxx.c</location>
 		</link>
 		<link>
 			<name>Drivers/STM32WBxx_HAL_Driver/stm32wbxx_hal.c</name>
@@ -251,42 +251,42 @@
 		<link>
 			<name>Application/User/Core/app_debug.c</name>
 			<type>1</type>
-			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Core/Src/app_debug.c</locationURI>
+			<location>C:/Users/jenle/OneDrive/Desktop/School/CAPSTONE/Inhaler SW/Breathe/BLE_p2pServer/Core/Src/app_debug.c</location>
 		</link>
 		<link>
 			<name>Application/User/Core/app_entry.c</name>
 			<type>1</type>
-			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Core/Src/app_entry.c</locationURI>
+			<location>C:/Users/jenle/OneDrive/Desktop/School/CAPSTONE/Inhaler SW/Breathe/BLE_p2pServer/Core/Src/app_entry.c</location>
 		</link>
 		<link>
 			<name>Application/User/Core/hw_timerserver.c</name>
 			<type>1</type>
-			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Core/Src/hw_timerserver.c</locationURI>
+			<location>C:/Users/jenle/OneDrive/Desktop/School/CAPSTONE/Inhaler SW/Breathe/BLE_p2pServer/Core/Src/hw_timerserver.c</location>
 		</link>
 		<link>
 			<name>Application/User/Core/hw_uart.c</name>
 			<type>1</type>
-			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Core/Src/hw_uart.c</locationURI>
+			<location>C:/Users/jenle/OneDrive/Desktop/School/CAPSTONE/Inhaler SW/Breathe/BLE_p2pServer/Core/Src/hw_uart.c</location>
 		</link>
 		<link>
 			<name>Application/User/Core/main.c</name>
 			<type>1</type>
-			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Core/Src/main.c</locationURI>
+			<location>C:/Users/jenle/OneDrive/Desktop/School/CAPSTONE/Inhaler SW/Breathe/BLE_p2pServer/Core/Src/main.c</location>
 		</link>
 		<link>
 			<name>Application/User/Core/stm32_lpm_if.c</name>
 			<type>1</type>
-			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Core/Src/stm32_lpm_if.c</locationURI>
+			<location>C:/Users/jenle/OneDrive/Desktop/School/CAPSTONE/Inhaler SW/Breathe/BLE_p2pServer/Core/Src/stm32_lpm_if.c</location>
 		</link>
 		<link>
 			<name>Application/User/Core/stm32wbxx_hal_msp.c</name>
 			<type>1</type>
-			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Core/Src/stm32wbxx_hal_msp.c</locationURI>
+			<location>C:/Users/jenle/OneDrive/Desktop/School/CAPSTONE/Inhaler SW/Breathe/BLE_p2pServer/Core/Src/stm32wbxx_hal_msp.c</location>
 		</link>
 		<link>
 			<name>Application/User/Core/stm32wbxx_it.c</name>
 			<type>1</type>
-			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Core/Src/stm32wbxx_it.c</locationURI>
+			<location>C:/Users/jenle/OneDrive/Desktop/School/CAPSTONE/Inhaler SW/Breathe/BLE_p2pServer/Core/Src/stm32wbxx_it.c</location>
 		</link>
 		<link>
 			<name>Drivers/BSP/P-NUCLEO-WB55.Nucleo/stm32wbxx_nucleo.c</name>

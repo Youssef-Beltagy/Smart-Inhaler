@@ -167,6 +167,7 @@ typedef struct
 #define APPBLE_GAP_DEVICE_NAME_LENGTH 7
 #define FAST_ADV_TIMEOUT               (30*1000*1000/CFG_TS_TICK_VAL) /**< 30s */
 #define INITIAL_ADV_TIMEOUT            (60*1000*1000/CFG_TS_TICK_VAL) /**< 60s */
+#define LP_ADV_TIMEOUT                 (30*1000*1000/CFG_TS_TICK_VAL) /**< 30s */
 
 #define BD_ADDR_SIZE_LOCAL    6
 
@@ -247,7 +248,6 @@ uint8_t manuf_data[14] = {
 
 
 /* USER CODE BEGIN PV */
-
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -266,14 +266,12 @@ static void Connection_Interval_Update_Req( void );
 #endif
 
 /* USER CODE BEGIN PFP */
-
 /* USER CODE END PFP */
 
 /* Functions Definition ------------------------------------------------------*/
 void APP_BLE_Init( void )
 {
 /* USER CODE BEGIN APP_BLE_Init_1 */
-
 /* USER CODE END APP_BLE_Init_1 */
   SHCI_C2_Ble_Init_Cmd_Packet_t ble_init_cmd_packet =
   {
@@ -348,11 +346,8 @@ void APP_BLE_Init( void )
 #endif
 
   /**
-   * Initialization of ADV - Ad Manufacturer Element - Support OTA Bit Mask
+   * Initialization of ADV - Ad Manufacturer Element
    */
-#if(BLE_CFG_OTA_REBOOT_CHAR != 0)
-  manuf_data[sizeof(manuf_data)-8] = CFG_FEATURE_OTA_REBOOT;
-#endif
 #if(RADIO_ACTIVITY_EVENT != 0)
   aci_hal_set_radio_activity_mask(0x0006);
 #endif
@@ -388,10 +383,9 @@ void APP_BLE_Init( void )
   /**
    * Start to Advertise to be connected by P2P Client
    */
-   Adv_Request(APP_BLE_FAST_ADV);
+   Adv_Request(APP_BLE_LP_ADV);
 
 /* USER CODE BEGIN APP_BLE_Init_2 */
-
 /* USER CODE END APP_BLE_Init_2 */
   return;
 }
@@ -408,7 +402,6 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification( void *pckt )
   event_pckt = (hci_event_pckt*) ((hci_uart_pckt *) pckt)->data;
 
   /* USER CODE BEGIN SVCCTL_App_Notification */
-
   /* USER CODE END SVCCTL_App_Notification */
 
   switch (event_pckt->evt)
@@ -425,7 +418,7 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification( void *pckt )
       }
 
       /* restart advertising */
-      Adv_Request(APP_BLE_FAST_ADV);
+      Adv_Request(APP_BLE_LP_ADV);
 
       /**
        * SPECIFIC to P2P Server APP
@@ -603,18 +596,15 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification( void *pckt )
 #endif
 
       /* USER CODE BEGIN BLUE_EVT */
-
       /* USER CODE END BLUE_EVT */
       }
       break; /* HCI_VENDOR_SPECIFIC_DEBUG_EVT_CODE */
 
       /* USER CODE BEGIN EVENT_PCKT */
-
       /* USER CODE END EVENT_PCKT */
 
       default:
       /* USER CODE BEGIN ECODE_DEFAULT*/
-
       /* USER CODE END ECODE_DEFAULT*/
       break;
   }
@@ -622,27 +612,22 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification( void *pckt )
   return (SVCCTL_UserEvtFlowEnable);
 }
 
-APP_BLE_ConnStatus_t APP_BLE_Get_Server_Connection_Status(void)
-{
+APP_BLE_ConnStatus_t APP_BLE_Get_Server_Connection_Status(void) {
     return BleApplicationContext.Device_Connection_Status;
 }
 
 /* USER CODE BEGIN FD*/
-void APP_BLE_Key_Button1_Action(void)
-{
+void APP_BLE_Key_Button1_Action(void) {
   P2PS_APP_SW1_Button_Action();
 }
 
 void APP_BLE_Key_Button2_Action(void)
 {
 	UTIL_SEQ_SetTask( 1<<CFG_MY_TASK_NOTIFY_TIME, CFG_SCH_PRIO_0);
-	Adv_Request(APP_BLE_FAST_ADV);
+	Adv_Request(APP_BLE_LP_ADV);
 	return;
 }
 
-void APP_BLE_Key_Button3_Action(void)
-{
-}
 
 /* USER CODE END FD*/
 /*************************************************************
@@ -650,7 +635,7 @@ void APP_BLE_Key_Button3_Action(void)
  * LOCAL FUNCTIONS
  *
  *************************************************************/
-static void Ble_Tl_Init( void )
+static void Ble_Tl_Init(void)
 {
   HCI_TL_HciInitConf_t Hci_Tl_Init_Conf;
 
@@ -827,14 +812,6 @@ static void Adv_Request(APP_BLE_ConnStatus_t New_Status)
     {
       /* Connection in ADVERTISE mode have to stop the current advertising */
       ret = aci_gap_set_non_discoverable();
-      if (ret == BLE_STATUS_SUCCESS)
-      {
-        APP_DBG_MSG("Successfully Stopped Advertising \n");
-      }
-      else
-      {
-        APP_DBG_MSG("Stop Advertising Failed , result: %d \n", ret);
-      }
     }
 
     BleApplicationContext.Device_Connection_Status = New_Status;
@@ -865,6 +842,7 @@ static void Adv_Request(APP_BLE_ConnStatus_t New_Status)
       else
       {
         APP_DBG_MSG("Successfully Start Low Power Advertising \n");
+        HW_TS_Start(BleApplicationContext.Advertising_mgr_timer_Id, LP_ADV_TIMEOUT);
       }
     }
     else
@@ -950,9 +928,7 @@ static void Adv_Cancel( void )
   {
 
     tBleStatus result = 0x00;
-
     result = aci_gap_set_non_discoverable();
-
     BleApplicationContext.Device_Connection_Status = APP_BLE_IDLE;
     if (result == BLE_STATUS_SUCCESS)
     {
@@ -966,7 +942,6 @@ static void Adv_Cancel( void )
   }
 
 /* USER CODE BEGIN Adv_Cancel_2 */
-
 /* USER CODE END Adv_Cancel_2 */
   return;
 }

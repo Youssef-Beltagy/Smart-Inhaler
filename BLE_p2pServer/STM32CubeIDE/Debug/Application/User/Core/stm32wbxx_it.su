@@ -17,4 +17,5 @@ stm32wbxx_it.c:294:6:IPCC_C1_RX_IRQHandler	8	static
 stm32wbxx_it.c:308:6:IPCC_C1_TX_IRQHandler	8	static
 stm32wbxx_it.c:322:6:HSEM_IRQHandler	8	static
 stm32wbxx_it.c:336:6:DMA2_Channel4_IRQHandler	8	static
-stm32wbxx_it.c:370:6:RTC_WKUP_IRQHandler	8	static
+stm32wbxx_it.c:354:6:PVD_PVM_IRQHandler	8	static
+stm32wbxx_it.c:359:6:RTC_WKUP_IRQHandler	8	static
