@@ -51,7 +51,6 @@ extern RTC_HandleTypeDef hrtc;
 
 /* Private macros ------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -65,6 +64,8 @@ RTC_TimeTypeDef currentTime;
 RTC_DateTypeDef currentDate;
 time_t timestamp;
 struct tm currTime;
+extern __IO uint32_t flag;
+
 /* USER CODE END PV */
 
 /* Private functions prototypes-----------------------------------------------*/
@@ -212,6 +213,9 @@ static void Led_Init( void )
   BSP_LED_Init(LED_BLUE);
   BSP_LED_Init(LED_GREEN);
   BSP_LED_Init(LED_RED);
+  BSP_LED_Init(LED_GREEN_BR);
+  BSP_LED_Init(LED_YELLOW_BR);
+  BSP_LED_Init(LED_RED_BR);
 
   BSP_LED_On(LED_GREEN);
 #endif
@@ -289,7 +293,15 @@ void HAL_GPIO_EXTI_Callback( uint16_t GPIO_Pin )
 
     case BUTTON_SW2_PIN:
     	APP_BLE_Key_Button2_Action();
-    	BSP_LED_Toggle(LED1);
+    	//BSP_LED_Toggle(LED1);
+    	//BSP_LED_Toggle(LED_GREEN_BR);
+    	if (flag == 2) {
+    		BSP_LED_Toggle(LED_GREEN_BR);
+    	} else if (flag == 1) {
+    		BSP_LED_Toggle(LED_YELLOW_BR);
+    	} else if (flag == 0) {
+    		BSP_LED_Toggle(LED_RED_BR);
+    	}
 
     	HAL_RTC_GetTime(&hrtc, &currentTime, RTC_FORMAT_BIN);
     	HAL_RTC_GetDate(&hrtc, &currentDate, RTC_FORMAT_BIN);
