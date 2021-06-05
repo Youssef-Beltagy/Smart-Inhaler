@@ -29,11 +29,12 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <time.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
+extern RTC_HandleTypeDef hrtc;
 
 typedef struct {
   uint8_t               Notification_Status; /* used to check if P2P Server is enabled to Notify */
@@ -53,7 +54,11 @@ typedef struct {
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
-extern time_t timestamp;
+RTC_TimeTypeDef currentTime;
+RTC_DateTypeDef currentDate;
+time_t timestamp;
+struct tm currTime;
+extern __IO uint8_t  timestamp_flag;
 
 /**
  * START of Section BLE_APP_CONTEXT
@@ -142,10 +147,10 @@ void P2PS_APP_Init(void) {
 
 /* USER CODE BEGIN FD */
 
-void P2PS_APP_SW1_Button_Action(void) {
-	UTIL_SEQ_SetTask( 1<<CFG_TASK_SW1_BUTTON_PUSHED_ID, CFG_SCH_PRIO_0);
-	return;
-}
+//void P2PS_APP_SW1_Button_Action(void) {
+//	UTIL_SEQ_SetTask( 1<<CFG_TASK_SW1_BUTTON_PUSHED_ID, CFG_SCH_PRIO_0);
+//	return;
+//}
 /* USER CODE END FD */
 
 /*************************************************************
@@ -156,22 +161,37 @@ void P2PS_APP_SW1_Button_Action(void) {
 /* USER CODE BEGIN FD_LOCAL_FUNCTIONS*/
 
 void P2PS_Send_Notification(void) {
- 	uint8_t value[4];
 
-		value[0] = (uint8_t)(timestamp >> 24);
-		value[1] = (uint8_t)(timestamp >> 16);
-		value[2] = (uint8_t)(timestamp >> 8);
-		value[3] = (uint8_t)(timestamp);
+	HAL_RTC_GetTime(&hrtc, &currentTime, RTC_FORMAT_BIN);
+	HAL_RTC_GetDate(&hrtc, &currentDate, RTC_FORMAT_BIN);
+
+	currTime.tm_year = currentDate.Year + 100;  // In fact: 2000 + 18 - 1900
+	currTime.tm_mday = currentDate.Date;
+	currTime.tm_mon  = currentDate.Month - 1;
+
+	currTime.tm_hour = currentTime.Hours;
+	currTime.tm_min  = currentTime.Minutes;
+	currTime.tm_sec  = currentTime.Seconds;
+
+	timestamp = mktime(&currTime);
 
 
-	   if(P2P_Server_App_Context.Notification_Status){
-	     P2PS_STM_App_Update_Char(P2P_NOTIFY_CHAR_UUID, (uint8_t *)&value);
+	uint8_t value[4];
 
-	   } else {
-	    APP_DBG_MSG("-- P2P APPLICATION SERVER : CAN'T INFORM CLIENT -  NOTIFICATION DISABLED\n ");
-	   }
+	value[0] = (uint8_t)(timestamp >> 24);
+	value[1] = (uint8_t)(timestamp >> 16);
+	value[2] = (uint8_t)(timestamp >> 8);
+	value[3] = (uint8_t)(timestamp);
 
-	  return;
+
+	if(P2P_Server_App_Context.Notification_Status && timestamp_flag){
+		P2PS_STM_App_Update_Char(P2P_NOTIFY_CHAR_UUID, (uint8_t *)&value);
+
+	} else {
+		APP_DBG_MSG("-- P2P APPLICATION SERVER : CAN'T INFORM CLIENT -  NOTIFICATION DISABLED\n ");
+	}
+
+	return;
 }
 
 /* USER CODE END FD_LOCAL_FUNCTIONS*/

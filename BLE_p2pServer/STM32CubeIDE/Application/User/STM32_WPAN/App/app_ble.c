@@ -618,7 +618,9 @@ APP_BLE_ConnStatus_t APP_BLE_Get_Server_Connection_Status(void) {
 
 /* USER CODE BEGIN FD*/
 void APP_BLE_Key_Button1_Action(void) {
-  P2PS_APP_SW1_Button_Action();
+	UTIL_SEQ_SetTask( 1<<CFG_MY_TASK_NOTIFY_TIME, CFG_SCH_PRIO_0);
+	Adv_Request(APP_BLE_LP_ADV);
+	return;
 }
 
 void APP_BLE_Key_Button2_Action(void)
