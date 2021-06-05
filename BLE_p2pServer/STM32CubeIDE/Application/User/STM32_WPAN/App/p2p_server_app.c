@@ -131,7 +131,7 @@ void P2PS_APP_Notification(P2PS_APP_ConnHandle_Not_evt_t *pNotification) {
 	/* USER CODE END P2PS_APP_Notification_2 */
 	return;
 }
-
+//CFG_
 void P2PS_APP_Init(void) {
 	/* USER CODE BEGIN P2PS_APP_Init */
 	UTIL_SEQ_RegTask( 1<< CFG_MY_TASK_NOTIFY_TIME, UTIL_SEQ_RFU, P2PS_Send_Notification );
