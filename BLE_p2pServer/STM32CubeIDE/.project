@@ -251,42 +251,42 @@
 		<link>
 			<name>Application/User/Core/app_debug.c</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Core/Src/app_debug.c</locationURI>
+			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Core/Src/app_debug.c</locationURI>
 		</link>
 		<link>
 			<name>Application/User/Core/app_entry.c</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Core/Src/app_entry.c</locationURI>
+			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Core/Src/app_entry.c</locationURI>
 		</link>
 		<link>
 			<name>Application/User/Core/hw_timerserver.c</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Core/Src/hw_timerserver.c</locationURI>
+			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Core/Src/hw_timerserver.c</locationURI>
 		</link>
 		<link>
 			<name>Application/User/Core/hw_uart.c</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Core/Src/hw_uart.c</locationURI>
+			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Core/Src/hw_uart.c</locationURI>
 		</link>
 		<link>
 			<name>Application/User/Core/main.c</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Core/Src/main.c</locationURI>
+			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Core/Src/main.c</locationURI>
 		</link>
 		<link>
 			<name>Application/User/Core/stm32_lpm_if.c</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Core/Src/stm32_lpm_if.c</locationURI>
+			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Core/Src/stm32_lpm_if.c</locationURI>
 		</link>
 		<link>
 			<name>Application/User/Core/stm32wbxx_hal_msp.c</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Core/Src/stm32wbxx_hal_msp.c</locationURI>
+			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Core/Src/stm32wbxx_hal_msp.c</locationURI>
 		</link>
 		<link>
 			<name>Application/User/Core/stm32wbxx_it.c</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Core/Src/stm32wbxx_it.c</locationURI>
+			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Core/Src/stm32wbxx_it.c</locationURI>
 		</link>
 		<link>
 			<name>Drivers/BSP/P-NUCLEO-WB55.Nucleo/stm32wbxx_nucleo.c</name>

@@ -26,11 +26,11 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
+  * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics. 
   * All rights reserved.</center></h2>
   *
-  * This software component is licensed by ST under Ultimate Liberty license
-  * SLA0044, the "License"; You may not use this file except in compliance with
+  * This software component is licensed by ST under Ultimate Liberty license 
+  * SLA0044, the "License"; You may not use this file except in compliance with 
   * the License. You may obtain a copy of the License at:
   *                             www.st.com/SLA0044
   *
@@ -47,7 +47,6 @@
 #include "dbg_trace.h"
 #include "hw_conf.h"
 #include "otp.h"
-#include <stdbool.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -66,9 +65,6 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-PWR_PVDTypeDef sConfigPVD;
-__IO uint32_t flag = 2;
-
 IPCC_HandleTypeDef hipcc;
 
 UART_HandleTypeDef hlpuart1;
@@ -86,7 +82,6 @@ SPI_HandleTypeDef hspi1;
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
-static void PVD_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
 static void MX_RF_Init(void);
@@ -96,7 +91,6 @@ static void MX_SPI1_Init(void);
 /* USER CODE BEGIN PFP */
 void PeriphClock_Config(void);
 static void Reset_Device( void );
-
 //static void Reset_IPCC( void );
 //static void Reset_BackupDomain( void );
 static void Init_Exti( void );
@@ -115,67 +109,63 @@ static void Config_HSE(void);
   */
 int main(void)
 {
-	/* USER CODE BEGIN 1 */
+  /* USER CODE BEGIN 1 */
 
-	/**
-	 * The OPTVERR flag is wrongly set at power on
-	 * It shall be cleared before using any HAL_FLASH_xxx() api
-	 */
-	__HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_OPTVERR);
+  /**
+   * The OPTVERR flag is wrongly set at power on
+   * It shall be cleared before using any HAL_FLASH_xxx() api
+   */
+  __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_OPTVERR);
 
-	/* USER CODE END 1 */
+  /* USER CODE END 1 */
 
-	/* MCU Configuration--------------------------------------------------------*/
+  /* MCU Configuration--------------------------------------------------------*/
 
-	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-	HAL_Init();
+  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+  HAL_Init();
 
-	/* USER CODE BEGIN Init */
-	Reset_Device();
-	Config_HSE();
-	/* USER CODE END Init */
+  /* USER CODE BEGIN Init */
+  Reset_Device();
+  Config_HSE();
+  /* USER CODE END Init */
 
-	/* Configure the system clock */
-	SystemClock_Config();
+  /* Configure the system clock */
+  SystemClock_Config();
 
-	/* IPCC initialisation */
-	MX_IPCC_Init();
+  /* IPCC initialisation */
+   MX_IPCC_Init();
 
-	/* USER CODE BEGIN SysInit */
-	Init_Exti(); /**< Configure the system Power Mode */
-	/* USER CODE END SysInit */
+  /* USER CODE BEGIN SysInit */
+  PeriphClock_Config();
+  Init_Exti(); /**< Configure the system Power Mode */
+  /* USER CODE END SysInit */
 
-	/* Initialize all configured peripherals */
-	MX_GPIO_Init();
-	MX_DMA_Init();
-	MX_RF_Init();
-	MX_RTC_Init();
-	MX_SPI1_Init();
-	/* USER CODE BEGIN 2 */
+  /* Initialize all configured peripherals */
+  MX_GPIO_Init();
+  MX_DMA_Init();
+  MX_RF_Init();
+  MX_RTC_Init();
+  MX_SPI1_Init();
+  /* USER CODE BEGIN 2 */
 
-	/* -1- Initialize LEDs */
-//	BSP_LED_Init(LED_GREEN_BR);
-//	BSP_LED_Init(LED_YELLOW_BR);
-//	BSP_LED_Init(LED_RED_BR);
-	BSP_LED_Init(LED3);
+  /* -1- Initialize LEDs mounted on P-NUCLEO-WB55 board */
+    BSP_LED_Init(LED_BLUE);
+    BSP_LED_Init(LED_RED);
 
-	/* Configure the PVD */
-	PVD_Config();
+  /* USER CODE END 2 */
 
-	/* USER CODE END 2 */
-
-	/* Init code for STM32_WPAN */
-	APPE_Init();
-	/* Infinite loop */
-	/* USER CODE BEGIN WHILE */
+  /* Init code for STM32_WPAN */
+  APPE_Init();
+  /* Infinite loop */
+  /* USER CODE BEGIN WHILE */
 	while(1)
 	{
 		UTIL_SEQ_Run( UTIL_SEQ_DEFAULT );
-		/* USER CODE END WHILE */
-		/* USER CODE BEGIN 3 */
+    /* USER CODE END WHILE */
 
-	}
-	/* USER CODE END 3 */
+    /* USER CODE BEGIN 3 */
+  }
+  /* USER CODE END 3 */
 }
 
 /**
@@ -263,12 +253,15 @@ void SystemClock_Config(void)
   * @param None
   * @retval None
   */
-static void MX_IPCC_Init(void) {
+static void MX_IPCC_Init(void)
+{
 
   /* USER CODE BEGIN IPCC_Init 0 */
+
   /* USER CODE END IPCC_Init 0 */
 
   /* USER CODE BEGIN IPCC_Init 1 */
+
   /* USER CODE END IPCC_Init 1 */
   hipcc.Instance = IPCC;
   if (HAL_IPCC_Init(&hipcc) != HAL_OK)
@@ -276,7 +269,9 @@ static void MX_IPCC_Init(void) {
     Error_Handler();
   }
   /* USER CODE BEGIN IPCC_Init 2 */
+
   /* USER CODE END IPCC_Init 2 */
+
 }
 
 /**
@@ -288,9 +283,11 @@ void MX_LPUART1_UART_Init(void)
 {
 
   /* USER CODE BEGIN LPUART1_Init 0 */
+
   /* USER CODE END LPUART1_Init 0 */
 
   /* USER CODE BEGIN LPUART1_Init 1 */
+
   /* USER CODE END LPUART1_Init 1 */
   hlpuart1.Instance = LPUART1;
   hlpuart1.Init.BaudRate = 115200;
@@ -382,12 +379,14 @@ static void MX_RF_Init(void)
 {
 
   /* USER CODE BEGIN RF_Init 0 */
+
   /* USER CODE END RF_Init 0 */
 
   /* USER CODE BEGIN RF_Init 1 */
-  /* USER CODE END RF_Init 1 */
 
+  /* USER CODE END RF_Init 1 */
   /* USER CODE BEGIN RF_Init 2 */
+
   /* USER CODE END RF_Init 2 */
 
 }
@@ -401,12 +400,14 @@ static void MX_RTC_Init(void)
 {
 
   /* USER CODE BEGIN RTC_Init 0 */
+
   /* USER CODE END RTC_Init 0 */
 
   RTC_TimeTypeDef sTime = {0};
   RTC_DateTypeDef sDate = {0};
 
   /* USER CODE BEGIN RTC_Init 1 */
+
   /* USER CODE END RTC_Init 1 */
   /** Initialize RTC Only
   */
@@ -432,36 +433,51 @@ static void MX_RTC_Init(void)
 
   /** Initialize RTC and set the Time and Date
   */
-  sTime.Hours = 0x19;
+  sTime.Hours = 0x11;
   sTime.Minutes = 0x27;
   sTime.Seconds = 0x20;
   sTime.SubSeconds = 0x0;
   sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
   sTime.StoreOperation = RTC_STOREOPERATION_RESET;
-
-  if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BCD) != HAL_OK) {
+  if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BCD) != HAL_OK)
+  {
     Error_Handler();
   }
-
-  sDate.WeekDay = RTC_WEEKDAY_MONDAY;
+  sDate.WeekDay = RTC_WEEKDAY_THURSDAY;
   sDate.Month = RTC_MONTH_MAY;
-  sDate.Date = 0x24;
+  sDate.Date = 0x20;
   sDate.Year = 0x21;
 
-  if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BCD) != HAL_OK)   {
+  if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BCD) != HAL_OK)
+  {
     Error_Handler();
   }
   /** Enable the WakeUp
   */
-//  if (HAL_RTCEx_SetWakeUpTimer(&hrtc, 0, RTC_WAKEUPCLOCK_RTCCLK_DIV16) != HAL_OK)
-//  {
-//    Error_Handler();
-//  }
+  if (HAL_RTCEx_SetWakeUpTimer(&hrtc, 0, RTC_WAKEUPCLOCK_RTCCLK_DIV16) != HAL_OK)
+  {
+    Error_Handler();
+  }
   /* USER CODE BEGIN RTC_Init 2 */
   /* Writes a data in a RTC Backup data Register0 */
   		HAL_RTCEx_BKUPWrite(&hrtc, RTC_BKP_DR0, 0x32F2);
   	}
+  	else
+  	{
+  		/* Check if the Power On Reset flag is set */
+  		if (__HAL_RCC_GET_FLAG(RCC_FLAG_BORRST) != RESET)
+  		{
+  			/* Turn on LED2: Power on reset occurred */
+  			//BSP_LED_On(LED2);
+  		}
 
+  		/* Check if Pin Reset flag is set */
+  		if (__HAL_RCC_GET_FLAG(RCC_FLAG_PINRST) != RESET)
+  		{
+
+  			BSP_LED_On(LED_RED);
+  		}
+  	}
   	/* Clear source Reset Flag */
   	__HAL_RCC_CLEAR_RESET_FLAGS();
   /* Disable RTC registers write protection */
@@ -587,51 +603,58 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 /**
-  * @brief  Configures the PVD resources.
+  * @brief  Configures EXTI line 0 (connected to PD.0 pin) in interrupt mode
   * @param  None
   * @retval None
   */
-static void PVD_Config(void) {
-	/*##-1- Enable Power Clock #################################################*/
-	/* Note: On this STM32 series, Power Clock is enabled automatically */
 
-	/*##-2- Configure the NVIC for PVD #########################################*/
-	HAL_NVIC_SetPriority(PVD_PVM_IRQn, 1, 1);
-	HAL_NVIC_EnableIRQ(PVD_PVM_IRQn);
+void PeriphClock_Config(void)
+{
+  #if (CFG_USB_INTERFACE_ENABLE != 0)
+	RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = { 0 };
+	RCC_CRSInitTypeDef RCC_CRSInitStruct = { 0 };
 
-	/* Configure the PVD Level to 5 and generate an interrupt on rising and falling
-     edges(PVD detection level set to 2.8V */
-	sConfigPVD.PVDLevel = PWR_PVDLEVEL_5; //2.8 V
-	sConfigPVD.Mode = PWR_PVD_MODE_IT_RISING_FALLING;
-	HAL_PWR_ConfigPVD(&sConfigPVD);
+	/**
+   * This prevents the CPU2 to disable the HSI48 oscillator when
+   * it does not use anymore the RNG IP
+   */
+  LL_HSEM_1StepLock( HSEM, 5 );
 
-	/* Enable the PVD Output */
-	HAL_PWR_EnablePVD();
+  LL_RCC_HSI48_Enable();
+
+	while(!LL_RCC_HSI48_IsReady());
+
+	/* Select HSI48 as USB clock source */
+	PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_USB;
+	PeriphClkInitStruct.UsbClockSelection = RCC_USBCLKSOURCE_HSI48;
+	HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct);
+
+	/*Configure the clock recovery system (CRS)**********************************/
+
+	/* Enable CRS Clock */
+	__HAL_RCC_CRS_CLK_ENABLE();
+
+	/* Default Synchro Signal division factor (not divided) */
+	RCC_CRSInitStruct.Prescaler = RCC_CRS_SYNC_DIV1;
+
+	/* Set the SYNCSRC[1:0] bits according to CRS_Source value */
+	RCC_CRSInitStruct.Source = RCC_CRS_SYNC_SOURCE_USB;
+
+	/* HSI48 is synchronized with USB SOF at 1KHz rate */
+	RCC_CRSInitStruct.ReloadValue = RCC_CRS_RELOADVALUE_DEFAULT;
+	RCC_CRSInitStruct.ErrorLimitValue = RCC_CRS_ERRORLIMIT_DEFAULT;
+
+	RCC_CRSInitStruct.Polarity = RCC_CRS_SYNC_POLARITY_RISING;
+
+	/* Set the TRIM[5:0] to the default value*/
+	RCC_CRSInitStruct.HSI48CalibrationValue = RCC_CRS_HSI48CALIBRATION_DEFAULT;
+
+	/* Start automatic synchronization */
+	HAL_RCCEx_CRSConfig(&RCC_CRSInitStruct);
+#endif
+
+	return;
 }
-
-
-/**
-  * @brief  PWR PVD interrupt callback
-  * @param  none
-  * @retval none
-  */
-void HAL_PWR_PVDCallback(void) {
-	flag = flag-1;
-	HAL_PWR_DisablePVD(); //check to see if this is necessary
-
-	if (flag == 1) {
-		HAL_NVIC_SetPriority(PVD_PVM_IRQn, 1, 1);
-		HAL_NVIC_EnableIRQ(PVD_PVM_IRQn);
-		sConfigPVD.PVDLevel = PWR_PVDLEVEL_4; //2.6 V
-		sConfigPVD.Mode = PWR_PVD_MODE_IT_RISING_FALLING;
-		HAL_PWR_ConfigPVD(&sConfigPVD);
-		HAL_PWR_EnablePVD();
-		//BSP_LED_Toggle(LED3);
-	} else if (flag == 0) {
-		//BSP_LED_Off(LED3);
-	}
-}
-
 /*************************************************************
  *
  * LOCAL FUNCTIONS
@@ -652,7 +675,8 @@ static void Config_HSE(void)
   }
 
   return;
-}
+}  
+
 
 static void Reset_Device( void )
 {
@@ -741,11 +765,13 @@ void HAL_Delay(uint32_t Delay)
   uint32_t wait = Delay;
 
   /* Add a freq to guarantee minimum wait */
-  if (wait < HAL_MAX_DELAY)   {
+  if (wait < HAL_MAX_DELAY)
+  {
     wait += HAL_GetTickFreq();
   }
 
-  while ((HAL_GetTick() - tickstart) < wait)   {
+  while ((HAL_GetTick() - tickstart) < wait)
+  {
     /************************************************************************************
      * ENTER SLEEP MODE
      ***********************************************************************************/
@@ -754,6 +780,9 @@ void HAL_Delay(uint32_t Delay)
     /**
      * This option is used to ensure that store operations are completed
      */
+  #if defined ( __CC_ARM)
+    __force_stores();
+  #endif
 
     __WFI( );
   }
@@ -768,8 +797,25 @@ void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
-
+ 
   /* USER CODE END Error_Handler_Debug */
 }
+
+#ifdef  USE_FULL_ASSERT
+/**
+  * @brief  Reports the name of the source file and the source line number
+  *         where the assert_param error has occurred.
+  * @param  file: pointer to the source file name
+  * @param  line: assert_param error line source number
+  * @retval None
+  */
+void assert_failed(uint8_t *file, uint32_t line)
+{
+  /* USER CODE BEGIN 6 */
+  /* User can add his own implementation to report the file name and line number,
+     tex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+  /* USER CODE END 6 */
+}
+#endif /* USE_FULL_ASSERT */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
