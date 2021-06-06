@@ -44,16 +44,6 @@
 			<locationURI>PARENT-1-PROJECT_LOC/readme.txt</locationURI>
 		</link>
 		<link>
-			<name>Utilities/stm32_lpm.c</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Utilities/lpm/tiny_lpm/stm32_lpm.c</locationURI>
-		</link>
-		<link>
-			<name>Utilities/stm32_seq.c</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Utilities/sequencer/stm32_seq.c</locationURI>
-		</link>
-		<link>
 			<name>Drivers/STM32WBxx_HAL_Driver/stm32wbxx_hal.c</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_hal.c</locationURI>
