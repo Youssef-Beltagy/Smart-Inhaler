@@ -2,34 +2,20 @@
 #include <stdio.h>
 #include "data_interface.h"
 
-// todo: too bloated: move to somewhere else
 
-// todo: rename
-/* Private typedef -----------------------------------------------------------*/
-typedef struct{
-  uint16_t	PeerToPeerSvcHdle;				        /**< Service handle */
-  uint16_t	P2PWriteClientToServerCharHdle;	  /**< Characteristic handle */
-  uint16_t	P2PNotifyServerToClientCharHdle;	/**< Characteristic handle */
-}PeerToPeerContext_t;
-
-/* Private defines -----------------------------------------------------------*/
-// Define the UUIDs
 #define SERVICE_UUID "25380284e1b6489abbcf97d8f7470aa4"
 #define WEARABLE_DATA_CHARACTERISTIC_UUID "c3856cfa4af64d0da9a05ed875d937cc"
 
-/* Private macros ------------------------------------------------------------*/
+typedef struct{
+  uint16_t	service_handler;				        /**< Service handle */
+  uint16_t	data_characteristic_handler;	  /**< Characteristic handle */
+}Wearable_Context_t;
 
-/* Private variables ---------------------------------------------------------*/
-/**
- * START of Section BLE_DRIVER_CONTEXT
- */
-PLACE_IN_SECTION("BLE_DRIVER_CONTEXT") static PeerToPeerContext_t aPeerToPeerContext;
+// todo: too bloated: move to somewhere else
+// todo: rename
+// todo: clean the service handler when you update it.
 
-/**
- * END of Section BLE_DRIVER_CONTEXT
- */
-/* Private function prototypes -----------------------------------------------*/
-static SVCCTL_EvtAckStatus_t PeerToPeer_Event_Handler(void *pckt);
+PLACE_IN_SECTION("BLE_DRIVER_CONTEXT") static Wearable_Context_t wearable_context;
 
 /**
  * @brief  Event handler
@@ -53,14 +39,14 @@ static SVCCTL_EvtAckStatus_t PeerToPeer_Event_Handler(void *Event)
         {
         	//todo: fix warning
         	aci_gatt_read_permit_req_event_rp0* read_permit_req = (aci_gatt_read_permit_req_event_rp0*)blecore_evt->data;
-			if(read_permit_req->Attribute_Handle == (aPeerToPeerContext.P2PWriteClientToServerCharHdle + 1))
+			if(read_permit_req->Attribute_Handle == (wearable_context.data_characteristic_handler + 1))
 			{
 				HAL_Delay(100);
 				static uint8_t count = 0;
 				count++;
 				uint8_t yo[5] = {count,6,7,8,9}; // todo: delete
-				aci_gatt_update_char_value(aPeerToPeerContext.PeerToPeerSvcHdle,
-						aPeerToPeerContext.P2PWriteClientToServerCharHdle,
+				aci_gatt_update_char_value(wearable_context.service_handler,
+						wearable_context.data_characteristic_handler,
 															0, /* charValOffset */
 															5, /* charValueLen */
 															yo);
@@ -86,8 +72,6 @@ static SVCCTL_EvtAckStatus_t PeerToPeer_Event_Handler(void *Event)
   return(return_value);
 }/* end SVCCTL_EvtAckStatus_t */
 
-
-/* Public functions ----------------------------------------------------------*/
 
 static uint8_t charToInt(char c){
 
@@ -128,13 +112,12 @@ void P2PS_STM_Init(void)
   SVCCTL_RegisterSvcHandler(PeerToPeer_Event_Handler);
   
     /**
-     *  Peer To Peer Service
+     *  Wearable Data Service
      *
      * Max_Attribute_Records = 2*no_of_char + 1
-     * service_max_attribute_record = 1 for Peer To Peer service +
-     *                                2 for P2P Write characteristic +
-     *                                2 for P2P Notify characteristic +
-     *                                1 for client char configuration descriptor +
+     * service_max_attribute_record = 1 for service
+     *                                2 for data characteristic
+     *                                3 because I don't know what this is.
      *                                
      */
   	Char_UUID_t  uuid128;
@@ -143,14 +126,13 @@ void P2PS_STM_Init(void)
                       (Service_UUID_t *) &uuid128,
                       PRIMARY_SERVICE,
                       6,
-                      &(aPeerToPeerContext.PeerToPeerSvcHdle));
+                      &(wearable_context.service_handler));
 
-    // todo: remember to update the size.
     /**
      *  Add LED Characteristic
      */
   	charArrayTo128UUID( WEARABLE_DATA_CHARACTERISTIC_UUID , (uint8_t*)&uuid128);
-    aci_gatt_add_char(aPeerToPeerContext.PeerToPeerSvcHdle,
+    aci_gatt_add_char(wearable_context.service_handler,
                       UUID_TYPE_128, &uuid128,
                       sizeof(wearable_data_t),
                       CHAR_PROP_READ,
@@ -158,6 +140,6 @@ void P2PS_STM_Init(void)
 					  GATT_NOTIFY_READ_REQ_AND_WAIT_FOR_APPL_RESP, /* gattEvtMask */
                       10, /* encryKeySize */
                       1, /* isVariable */
-                      &(aPeerToPeerContext.P2PWriteClientToServerCharHdle));
+                      &(wearable_context.data_characteristic_handler));
 
 }
