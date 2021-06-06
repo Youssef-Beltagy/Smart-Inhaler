@@ -38,60 +38,43 @@ static SVCCTL_EvtAckStatus_t PeerToPeer_Event_Handler(void *pckt);
  */
 static SVCCTL_EvtAckStatus_t PeerToPeer_Event_Handler(void *Event)
 {
-  SVCCTL_EvtAckStatus_t return_value;
-  hci_event_pckt *event_pckt;
-  evt_blecore_aci *blecore_evt;
-  aci_gatt_attribute_modified_event_rp0    * attribute_modified;
-  P2PS_STM_App_Notification_evt_t Notification;
+  SVCCTL_EvtAckStatus_t return_value = SVCCTL_EvtNotAck;
 
-  return_value = SVCCTL_EvtNotAck;
-  event_pckt = (hci_event_pckt *)(((hci_uart_pckt*)Event)->data);
+  hci_event_pckt *event_pckt = (hci_event_pckt *)(((hci_uart_pckt*)Event)->data);
 
   switch(event_pckt->evt)
   {
     case HCI_VENDOR_SPECIFIC_DEBUG_EVT_CODE:
     {
-      blecore_evt = (evt_blecore_aci*)event_pckt->data;
+    	  evt_blecore_aci *blecore_evt = (evt_blecore_aci*)event_pckt->data;
       switch(blecore_evt->ecode)
       {
-        case ACI_GATT_ATTRIBUTE_MODIFIED_VSEVT_CODE:
-       {
-          attribute_modified = (aci_gatt_attribute_modified_event_rp0*)blecore_evt->data;
-            if(attribute_modified->Attr_Handle == (aPeerToPeerContext.P2PNotifyServerToClientCharHdle + 2))
-            {
-              /**
-               * Descriptor handle
-               */
-              return_value = SVCCTL_EvtAckFlowEnable;
-              /**
-               * Notify to application
-               */
-              if(attribute_modified->Attr_Data[0] & COMSVC_Notification)
-              {
-                Notification.P2P_Evt_Opcode = P2PS_STM__NOTIFY_ENABLED_EVT;
-                P2PS_STM_App_Notification(&Notification);
-              }
-              else
-              {
-                Notification.P2P_Evt_Opcode = P2PS_STM_NOTIFY_DISABLED_EVT;
-                P2PS_STM_App_Notification(&Notification);
-              }
-            }
-            
-            else if(attribute_modified->Attr_Handle == (aPeerToPeerContext.P2PWriteClientToServerCharHdle + 1))
-            {
-              BLE_DBG_P2P_STM_MSG("-- GATT : LED CONFIGURATION RECEIVED\n");
-              Notification.P2P_Evt_Opcode = P2PS_STM_WRITE_EVT;
-              Notification.DataTransfered.Length=attribute_modified->Attr_Data_Length;
-              Notification.DataTransfered.pPayload=attribute_modified->Attr_Data;
-              P2PS_STM_App_Notification(&Notification);  
-            }
+        case ACI_GATT_READ_PERMIT_REQ_VSEVT_CODE:
+        {
+        	//todo: fix warning
+        	aci_gatt_read_permit_req_event_rp0* read_permit_req = (aci_gatt_read_permit_req_event_rp0*)blecore_evt->data;
+			if(read_permit_req->Attribute_Handle == (aPeerToPeerContext.P2PWriteClientToServerCharHdle + 1))
+			{
+				HAL_Delay(100);
+				static uint8_t count = 0;
+				count++;
+				uint8_t yo[5] = {count,6,7,8,9}; // todo: delete
+				aci_gatt_update_char_value(aPeerToPeerContext.PeerToPeerSvcHdle,
+						aPeerToPeerContext.P2PWriteClientToServerCharHdle,
+															0, /* charValOffset */
+															5, /* charValueLen */
+															yo);
+				aci_gatt_allow_read(read_permit_req->Connection_Handle); // todo: consider switching the order.
 
+				 return_value = SVCCTL_EvtNotAck;
+			}
+			break;
         }
+
         break;
 
         default:
-          break;
+        break;
       }
     }
     break; /* HCI_HCI_VENDOR_SPECIFIC_DEBUG_EVT_CODE_SPECIFIC */
@@ -154,7 +137,6 @@ void P2PS_STM_Init(void)
      *                                1 for client char configuration descriptor +
      *                                
      */
-
   	Char_UUID_t  uuid128;
   	charArrayTo128UUID(SERVICE_UUID , (uint8_t*)&uuid128);
     aci_gatt_add_service(UUID_TYPE_128,
@@ -173,11 +155,9 @@ void P2PS_STM_Init(void)
                       sizeof(wearable_data_t),
                       CHAR_PROP_READ,
                       ATTR_PERMISSION_NONE,
-                      GATT_NOTIFY_ATTRIBUTE_WRITE, /* gattEvtMask */
+					  GATT_NOTIFY_READ_REQ_AND_WAIT_FOR_APPL_RESP, /* gattEvtMask */
                       10, /* encryKeySize */
                       1, /* isVariable */
                       &(aPeerToPeerContext.P2PWriteClientToServerCharHdle));
 
 }
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
