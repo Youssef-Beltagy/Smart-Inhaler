@@ -1,5 +1,6 @@
 #include "common_blesvc.h"
 #include <stdio.h>
+#include "data_interface.h"
 
 // todo: too bloated: move to somewhere else
 
@@ -9,9 +10,6 @@ typedef struct{
   uint16_t	PeerToPeerSvcHdle;				        /**< Service handle */
   uint16_t	P2PWriteClientToServerCharHdle;	  /**< Characteristic handle */
   uint16_t	P2PNotifyServerToClientCharHdle;	/**< Characteristic handle */
-#if(BLE_CFG_OTA_REBOOT_CHAR != 0)
-  uint16_t  RebootReqCharHdle;                /**< Characteristic handle */
-#endif
 }PeerToPeerContext_t;
 
 /* Private defines -----------------------------------------------------------*/
@@ -151,13 +149,14 @@ void P2PS_STM_Init(void)
                       6,
                       &(aPeerToPeerContext.PeerToPeerSvcHdle));
 
+    // todo: remember to update the size.
     /**
      *  Add LED Characteristic
      */
   	charArrayTo128UUID( WEARABLE_DATA_CHARACTERISTIC_UUID , (uint8_t*)&uuid128);
     aci_gatt_add_char(aPeerToPeerContext.PeerToPeerSvcHdle,
                       UUID_TYPE_128, &uuid128,
-                      2,                                   
+                      sizeof(wearable_data_t),
                       CHAR_PROP_READ,
                       ATTR_PERMISSION_NONE,
                       GATT_NOTIFY_ATTRIBUTE_WRITE, /* gattEvtMask */
