@@ -209,11 +209,6 @@
 			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Middlewares/ST/STM32_WPAN/utilities/otp.c</locationURI>
 		</link>
 		<link>
-			<name>Middlewares/STM32_WPAN/p2p_stm.c</name>
-			<type>1</type>
-			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Middlewares/ST/STM32_WPAN/ble/svc/Src/p2p_stm.c</locationURI>
-		</link>
-		<link>
 			<name>Middlewares/STM32_WPAN/shci.c</name>
 			<type>1</type>
 			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/shci/shci.c</locationURI>
@@ -289,6 +284,11 @@
 			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Core/Src/stm32wbxx_it.c</locationURI>
 		</link>
 		<link>
+			<name>Application/User/Core/wearable_ble.c</name>
+			<type>1</type>
+			<location>D:/Desktop/CSS 427/stm32-smart-pin/Core/Src/wearable_ble.c</location>
+		</link>
+		<link>
 			<name>Drivers/BSP/P-NUCLEO-WB55.Nucleo/stm32wbxx_nucleo.c</name>
 			<type>1</type>
 			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Drivers/BSP/P-NUCLEO-WB55.Nucleo/stm32wbxx_nucleo.c</locationURI>
@@ -297,11 +297,6 @@
 			<name>Application/User/STM32_WPAN/App/app_ble.c</name>
 			<type>1</type>
 			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/STM32_WPAN/App/app_ble.c</locationURI>
-		</link>
-		<link>
-			<name>Application/User/STM32_WPAN/App/p2p_server_app.c</name>
-			<type>1</type>
-			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/STM32_WPAN/App/p2p_server_app.c</locationURI>
 		</link>
 		<link>
 			<name>Application/User/STM32_WPAN/Target/hw_ipcc.c</name>
