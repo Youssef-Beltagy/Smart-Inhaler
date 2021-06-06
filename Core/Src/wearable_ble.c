@@ -5,6 +5,21 @@
 #define SERVICE_UUID "25380284e1b6489abbcf97d8f7470aa4"
 #define WEARABLE_DATA_CHARACTERISTIC_UUID "c3856cfa4af64d0da9a05ed875d937cc"
 
+
+// todo: too bloated: move to somewhere else
+// todo: rename
+// todo: clean the service handler when you update it.
+// todo: implement connection and disconnection handling functions if necessary
+//- ~~Bonding~~
+//- Advertisement
+//  - Advertise service
+//  - Always advertise
+//- Cleanup
+//- Connection and Disconnection callbacks
+//- Places for Sarah to write her code
+//- Check i didn't introduce bugs in the last commit because I was groggy.
+
+// ybeltagy to Sarah: feel free to modify this struct. It has some requirements, but I will take care of those.
 typedef struct{
 	float temperature;// 4 bytes - little endian
 	float humidity;   // 4 bytes - little endian
@@ -17,13 +32,27 @@ typedef struct{
   uint16_t	data_characteristic_handler;	  /**< Characteristic handle */
 }Wearable_Context_t;
 
-// todo: too bloated: move to somewhere else
-// todo: rename
-// todo: clean the service handler when you update it.
-// todo: implement connection and disconnection handling functions if necessary
-
 PLACE_IN_SECTION("BLE_DRIVER_CONTEXT") static Wearable_Context_t wearable_context;
 
+static wearable_data_t getWearableData(){
+
+	//Making dummy data.
+	wearable_data_t data;
+
+	static uint8_t count = 0;
+
+	for(uint8_t i = 0; i < sizeof(wearable_data_t); i++){
+		((uint8_t*) (&data))[i] = count + i;
+	}
+
+	count++;
+
+	HAL_Delay(100); // simulate a delay
+
+	return data;
+}
+
+// todo: I want to confirm where this is called from.
 /**
  * @brief  Event handler
  * @param  Event: Address of the buffer holding the Event
@@ -44,20 +73,22 @@ static SVCCTL_EvtAckStatus_t Wearable_BLE_Event_Handler(void *Event)
       {
         case ACI_GATT_READ_PERMIT_REQ_VSEVT_CODE:
         {
-        	//todo: fix warning
+        	//todo: fix warning --> fixed, but check again.
         	aci_gatt_read_permit_req_event_rp0* read_permit_req = (aci_gatt_read_permit_req_event_rp0*)blecore_evt->data;
 			if(read_permit_req->Attribute_Handle == (wearable_context.data_characteristic_handler + 1))
 			{
 				//https://community.st.com/s/question/0D53W000003xw7LSAQ/basic-ble-reading-for-stm32wb
-				HAL_Delay(100);
-				static uint8_t count = 0;
-				count++;
-				uint8_t yo[5] = {count,6,7,8,9}; // todo: delete
+
+				static wearable_data_t data; // fixme: it is annoying and unnecessary to protect this against concurrency. Will think a bit about this later.
+
+				data = getWearableData();
+
+				//todo: I want to confirm whether this is synchronous or asynchronous. Could be a problem with two asynch calls right after each other.
 				aci_gatt_update_char_value(wearable_context.service_handler,
 						wearable_context.data_characteristic_handler,
 															0, /* charValOffset */
-															5, /* charValueLen */
-															yo);
+															sizeof(wearable_data_t), /* charValueLen */
+															(uint8_t*) (&data));
 				aci_gatt_allow_read(read_permit_req->Connection_Handle); // todo: consider switching the order.
 
 				 return_value = SVCCTL_EvtNotAck;
