@@ -19,6 +19,8 @@
  */
 /* USER CODE END Header */
 
+//todo: investigate connection and disconnection callbacks
+
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
@@ -33,7 +35,6 @@
 #include "shci.h"
 #include "stm32_lpm.h"
 #include "otp.h"
-#include "p2p_server_app.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -215,7 +216,6 @@ PLACE_IN_SECTION("TAG_OTA_START") const uint32_t MagicKeywordAddress = (uint32_t
 PLACE_IN_SECTION("BLE_APP_CONTEXT") static BleApplicationContext_t BleApplicationContext;
 PLACE_IN_SECTION("BLE_APP_CONTEXT") static uint16_t AdvIntervalMin, AdvIntervalMax;
 
-P2PS_APP_ConnHandle_Not_evt_t handleNotification;
 
 #if L2CAP_REQUEST_NEW_CONN_PARAM != 0
 #define SIZE_TAB_CONN_INT            2
@@ -461,8 +461,7 @@ void APP_BLE_Init( void )
   /**
    * Initialize P2P Server Application
    */
-  P2PS_APP_Init();
-
+  //Wearable_Sensor_Init();// todo: fix later
   /**
    * Create timer to handle the Advertising Stop
    */
@@ -529,9 +528,9 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification( void *pckt )
       /**
        * SPECIFIC to P2P Server APP
        */
-      handleNotification.P2P_Evt_Opcode = PEER_DISCON_HANDLE_EVT;
-      handleNotification.ConnectionHandle = BleApplicationContext.BleApplicationContext_legacy.connectionHandle;
-      P2PS_APP_Notification(&handleNotification);
+//      handleNotification.P2P_Evt_Opcode = PEER_DISCON_HANDLE_EVT;
+//      handleNotification.ConnectionHandle = BleApplicationContext.BleApplicationContext_legacy.connectionHandle;
+//      P2PS_APP_Notification(&handleNotification); // todo: Implement call backs for connection and disconnection.
       /* USER CODE BEGIN EVT_DISCONN_COMPLETE */
 
       /* USER CODE END EVT_DISCONN_COMPLETE */
@@ -614,9 +613,9 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification( void *pckt )
           /**
            * SPECIFIC to P2P Server APP
            */
-          handleNotification.P2P_Evt_Opcode = PEER_CONN_HANDLE_EVT;
-          handleNotification.ConnectionHandle = BleApplicationContext.BleApplicationContext_legacy.connectionHandle;
-          P2PS_APP_Notification(&handleNotification);
+//          handleNotification.P2P_Evt_Opcode = PEER_CONN_HANDLE_EVT;
+//          handleNotification.ConnectionHandle = BleApplicationContext.BleApplicationContext_legacy.connectionHandle;
+//          P2PS_APP_Notification(&handleNotification); // todo: Implement call backs for connection and disconnection.
           /* USER CODE BEGIN HCI_EVT_LE_CONN_COMPLETE */
 
           /* USER CODE END HCI_EVT_LE_CONN_COMPLETE */
@@ -751,11 +750,6 @@ APP_BLE_ConnStatus_t APP_BLE_Get_Server_Connection_Status(void)
     return BleApplicationContext.Device_Connection_Status;
 }
 
-/* USER CODE BEGIN FD*/
-void APP_BLE_Key_Button1_Action(void)
-{
-  P2PS_APP_SW1_Button_Action();
-}
 
 void APP_BLE_Key_Button2_Action(void)
 {

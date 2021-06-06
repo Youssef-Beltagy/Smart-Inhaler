@@ -564,7 +564,6 @@ typedef enum
 typedef enum
 {
     CFG_TASK_ADV_CANCEL_ID,
-    CFG_TASK_SW1_BUTTON_PUSHED_ID,
 #if (L2CAP_REQUEST_NEW_CONN_PARAM != 0 )
     CFG_TASK_CONN_UPDATE_REG_ID,
 #endif

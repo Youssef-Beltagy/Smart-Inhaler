@@ -110,7 +110,7 @@ __weak void MOTENV_STM_Init( void )
 {
   return;
 }
-__weak void P2PS_STM_Init( void )
+__weak void Wearable_Sensor_Init( void )
 {
   return;
 }
@@ -176,7 +176,7 @@ __weak void SVCCTL_SvcInit(void)
 
   MOTENV_STM_Init();
 
-  P2PS_STM_Init();
+  Wearable_Sensor_Init();
 
   OTAS_STM_Init();
   
