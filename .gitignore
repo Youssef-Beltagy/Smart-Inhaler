@@ -3,9 +3,40 @@
 # Some folders have projects inside them and they have an additional .gitignore file for that folder and its children.
 
 
+
+# Android =========================================
 # Ignore these android files
 *.iml
 .gradle
 .DS_Store
 .externalNativeBuild
 .cxx
+
+
+# STM32============================================
+# Compiled C code
+# *.o 
+# *.elf
+# *.hex
+
+# Included in compile https://www.eclipse.org/forums/index.php/t/275294/
+# *.d 
+
+# Appears in build
+# *.su
+
+# https://www.embeddedrelated.com/showthread/comp.arch.embedded/272022-1.php
+Debug/
+Release/
+#html/ Don't ignore html folders because they can contain documentation
+Backup/
+#*.bak
+# todo: consider adding lock files
+
+
+# Appeared after building for the first time
+# ignore .settings file because it keeps changing for every dev. Fix later if it causes problems.
+.settings
+
+# Appeared after launching the program for the first time
+*.launch
