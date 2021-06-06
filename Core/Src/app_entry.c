@@ -281,15 +281,15 @@ void HAL_GPIO_EXTI_Callback( uint16_t GPIO_Pin )
   switch (GPIO_Pin)
   {
     case BUTTON_SW1_PIN:
-     APP_BLE_Key_Button1_Action();
+     //APP_BLE_Key_Button1_Action(); //todo: remember to disable interrupts
       break; 
 
     case BUTTON_SW2_PIN:
-      APP_BLE_Key_Button2_Action();
+      //APP_BLE_Key_Button2_Action();
       break; 
 
     case BUTTON_SW3_PIN:
-      APP_BLE_Key_Button3_Action();
+      //APP_BLE_Key_Button3_Action();
       break;
 
     default:

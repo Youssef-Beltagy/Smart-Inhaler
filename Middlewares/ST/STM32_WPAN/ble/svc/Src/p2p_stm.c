@@ -2,9 +2,17 @@
 #include <stdio.h>
 #include "data_interface.h"
 
-
 #define SERVICE_UUID "25380284e1b6489abbcf97d8f7470aa4"
 #define WEARABLE_DATA_CHARACTERISTIC_UUID "c3856cfa4af64d0da9a05ed875d937cc"
+
+
+typedef struct{
+	float temperature;// 4 bytes - little endian
+	float humidity;   // 4 bytes - little endian
+	char  character;  // todo: update to PM2.5
+	char  digit;      // 1 byte
+} wearable_data_t;
+
 
 typedef struct{
   uint16_t	service_handler;				        /**< Service handle */
@@ -14,6 +22,7 @@ typedef struct{
 // todo: too bloated: move to somewhere else
 // todo: rename
 // todo: clean the service handler when you update it.
+// todo: implement connection and disconnection handling functions if necessary
 
 PLACE_IN_SECTION("BLE_DRIVER_CONTEXT") static Wearable_Context_t wearable_context;
 
@@ -22,7 +31,7 @@ PLACE_IN_SECTION("BLE_DRIVER_CONTEXT") static Wearable_Context_t wearable_contex
  * @param  Event: Address of the buffer holding the Event
  * @retval Ack: Return whether the Event has been managed or not
  */
-static SVCCTL_EvtAckStatus_t PeerToPeer_Event_Handler(void *Event)
+static SVCCTL_EvtAckStatus_t Wearable_BLE_Event_Handler(void *Event)
 {
   SVCCTL_EvtAckStatus_t return_value = SVCCTL_EvtNotAck;
 
@@ -102,14 +111,13 @@ static void charArrayTo128UUID(char * charArrayPtr, uint8_t* uuidPtr){
  * @param  None
  * @retval None
  */
-void P2PS_STM_Init(void)
+void Wearable_Sensor_Init(void)
 {
  
-
   /**
    *	Register the event handler to the BLE controller
    */
-  SVCCTL_RegisterSvcHandler(PeerToPeer_Event_Handler);
+  SVCCTL_RegisterSvcHandler(Wearable_BLE_Event_Handler);
   
     /**
      *  Wearable Data Service
