@@ -54,11 +54,6 @@
 			<locationURI>PARENT-1-PROJECT_LOC/Utilities/sequencer/stm32_seq.c</locationURI>
 		</link>
 		<link>
-			<name>Drivers/CMSIS/system_stm32wbxx.c</name>
-			<type>1</type>
-			<location>C:/Users/jenle/OneDrive/Desktop/School/CAPSTONE/Inhaler SW/Breathe/BLE_p2pServer/Core/Src/system_stm32wbxx.c</location>
-		</link>
-		<link>
 			<name>Drivers/STM32WBxx_HAL_Driver/stm32wbxx_hal.c</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_hal.c</locationURI>
@@ -247,31 +242,6 @@
 			<name>Middlewares/STM32_WPAN/tl_mbox.c</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/tl_mbox.c</locationURI>
-		</link>
-		<link>
-			<name>Application/User/Core/hw_uart.c</name>
-			<type>1</type>
-			<location>C:/Users/jenle/OneDrive/Desktop/School/CAPSTONE/Inhaler SW/Breathe/BLE_p2pServer/Core/Src/hw_uart.c</location>
-		</link>
-		<link>
-			<name>Application/User/Core/main.c</name>
-			<type>1</type>
-			<location>C:/Users/jenle/OneDrive/Desktop/School/CAPSTONE/Inhaler SW/Breathe/BLE_p2pServer/Core/Src/main.c</location>
-		</link>
-		<link>
-			<name>Application/User/Core/stm32_lpm_if.c</name>
-			<type>1</type>
-			<location>C:/Users/jenle/OneDrive/Desktop/School/CAPSTONE/Inhaler SW/Breathe/BLE_p2pServer/Core/Src/stm32_lpm_if.c</location>
-		</link>
-		<link>
-			<name>Application/User/Core/stm32wbxx_hal_msp.c</name>
-			<type>1</type>
-			<location>C:/Users/jenle/OneDrive/Desktop/School/CAPSTONE/Inhaler SW/Breathe/BLE_p2pServer/Core/Src/stm32wbxx_hal_msp.c</location>
-		</link>
-		<link>
-			<name>Application/User/Core/stm32wbxx_it.c</name>
-			<type>1</type>
-			<location>C:/Users/jenle/OneDrive/Desktop/School/CAPSTONE/Inhaler SW/Breathe/BLE_p2pServer/Core/Src/stm32wbxx_it.c</location>
 		</link>
 		<link>
 			<name>Drivers/BSP/P-NUCLEO-WB55.Nucleo/stm32wbxx_nucleo.c</name>

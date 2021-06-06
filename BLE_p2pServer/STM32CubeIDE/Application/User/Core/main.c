@@ -66,9 +66,6 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-PWR_PVDTypeDef sConfigPVD;
-__IO uint32_t flag = 2;
-
 IPCC_HandleTypeDef hipcc;
 
 UART_HandleTypeDef hlpuart1;
@@ -81,7 +78,8 @@ RTC_HandleTypeDef hrtc;
 SPI_HandleTypeDef hspi1;
 
 /* USER CODE BEGIN PV */
-
+PWR_PVDTypeDef sConfigPVD;
+__IO uint32_t flag = 2;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -152,12 +150,6 @@ int main(void)
 	MX_RTC_Init();
 	MX_SPI1_Init();
 	/* USER CODE BEGIN 2 */
-
-	/* -1- Initialize LEDs */
-//	BSP_LED_Init(LED_GREEN_BR);
-//	BSP_LED_Init(LED_YELLOW_BR);
-//	BSP_LED_Init(LED_RED_BR);
-	BSP_LED_Init(LED3);
 
 	/* Configure the PVD */
 	PVD_Config();
@@ -432,8 +424,8 @@ static void MX_RTC_Init(void)
 
   /** Initialize RTC and set the Time and Date
   */
-  sTime.Hours = 0x19;
-  sTime.Minutes = 0x27;
+  sTime.Hours = 0x12;
+  sTime.Minutes = 0x15;
   sTime.Seconds = 0x20;
   sTime.SubSeconds = 0x0;
   sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
@@ -443,9 +435,9 @@ static void MX_RTC_Init(void)
     Error_Handler();
   }
 
-  sDate.WeekDay = RTC_WEEKDAY_MONDAY;
-  sDate.Month = RTC_MONTH_MAY;
-  sDate.Date = 0x24;
+  sDate.WeekDay = RTC_WEEKDAY_SUNDAY;
+  sDate.Month = RTC_MONTH_JUNE;
+  sDate.Date = 0x05;
   sDate.Year = 0x21;
 
   if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BCD) != HAL_OK)   {
@@ -552,8 +544,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, LED_GREEN_Pin|LED_RED_Pin|LED3_BR_Pin|LED1_BR_Pin
-                          |LED2_BR_Pin|LED_BLUE_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, LED3_BR_Pin|LED1_BR_Pin|LED2_BR_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : BUTTON_SW1_Pin SW1_BR_Pin */
   GPIO_InitStruct.Pin = BUTTON_SW1_Pin|SW1_BR_Pin;
@@ -563,8 +554,7 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pins : LED_GREEN_Pin LED_RED_Pin LED3_BR_Pin LED1_BR_Pin
                            LED2_BR_Pin LED_BLUE_Pin */
-  GPIO_InitStruct.Pin = LED_GREEN_Pin|LED_RED_Pin|LED3_BR_Pin|LED1_BR_Pin
-                          |LED2_BR_Pin|LED_BLUE_Pin;
+  GPIO_InitStruct.Pin = LED3_BR_Pin|LED1_BR_Pin|LED2_BR_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -626,9 +616,8 @@ void HAL_PWR_PVDCallback(void) {
 		sConfigPVD.Mode = PWR_PVD_MODE_IT_RISING_FALLING;
 		HAL_PWR_ConfigPVD(&sConfigPVD);
 		HAL_PWR_EnablePVD();
-		//BSP_LED_Toggle(LED3);
 	} else if (flag == 0) {
-		//BSP_LED_Off(LED3);
+		//HAL_PWR_DisablePVD();
 	}
 }
 
