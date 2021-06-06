@@ -1,10 +1,9 @@
 #include "common_blesvc.h"
+#include "wearable_ble.h"
 #include <stdio.h>
-#include "data_interface.h"
 
 #define SERVICE_UUID "25380284e1b6489abbcf97d8f7470aa4"
 #define WEARABLE_DATA_CHARACTERISTIC_UUID "c3856cfa4af64d0da9a05ed875d937cc"
-
 
 typedef struct{
 	float temperature;// 4 bytes - little endian
@@ -12,7 +11,6 @@ typedef struct{
 	char  character;  // todo: update to PM2.5
 	char  digit;      // 1 byte
 } wearable_data_t;
-
 
 typedef struct{
   uint16_t	service_handler;				        /**< Service handle */
@@ -50,6 +48,7 @@ static SVCCTL_EvtAckStatus_t Wearable_BLE_Event_Handler(void *Event)
         	aci_gatt_read_permit_req_event_rp0* read_permit_req = (aci_gatt_read_permit_req_event_rp0*)blecore_evt->data;
 			if(read_permit_req->Attribute_Handle == (wearable_context.data_characteristic_handler + 1))
 			{
+				//https://community.st.com/s/question/0D53W000003xw7LSAQ/basic-ble-reading-for-stm32wb
 				HAL_Delay(100);
 				static uint8_t count = 0;
 				count++;
@@ -113,12 +112,12 @@ static void charArrayTo128UUID(char * charArrayPtr, uint8_t* uuidPtr){
  */
 void Wearable_Sensor_Init(void)
 {
- 
+
   /**
    *	Register the event handler to the BLE controller
    */
   SVCCTL_RegisterSvcHandler(Wearable_BLE_Event_Handler);
-  
+
     /**
      *  Wearable Data Service
      *
@@ -126,7 +125,7 @@ void Wearable_Sensor_Init(void)
      * service_max_attribute_record = 1 for service
      *                                2 for data characteristic
      *                                3 because I don't know what this is.
-     *                                
+     *
      */
   	Char_UUID_t  uuid128;
   	charArrayTo128UUID(SERVICE_UUID , (uint8_t*)&uuid128);

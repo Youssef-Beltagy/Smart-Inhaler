@@ -428,6 +428,8 @@ void APP_BLE_Init( void )
 
   /**
    * Initialization of the BLE Services
+   *
+   * This initializes the wearable data service
    */
   SVCCTL_Init();
 
@@ -458,10 +460,7 @@ void APP_BLE_Init( void )
   index_con_int = 0;
   mutex = 1;
 #endif
-  /**
-   * Initialize P2P Server Application
-   */
-  //Wearable_Sensor_Init();// todo: fix later
+
   /**
    * Create timer to handle the Advertising Stop
    */
