@@ -106,11 +106,26 @@ static SVCCTL_EvtAckStatus_t PeerToPeer_Event_Handler(void *Event)
 
 /* Public functions ----------------------------------------------------------*/
 
+static uint8_t charToInt(char c){
+
+	if( c >= '0' && c <= '9') return c - '0';
+	if( c >= 'a' && c <= 'f') return c - 'a' + 10;
+	if( c >= 'A' && c <= 'F') return c - 'A' + 10;
+
+	return 0xff; //error;
+}
+
 static void charArrayTo128UUID(char * charArrayPtr, uint8_t* uuidPtr){
 
-    for (size_t count = 0; count < 16; count++) {
-        sscanf(charArrayPtr, "%2hhx", &uuidPtr[count]);
-        charArrayPtr += 2;
+	uint8_t maxSize = 16;
+    for (uint8_t count = 0; count < maxSize; count++) {
+
+    	uuidPtr[maxSize - 1 - count] = charToInt(*charArrayPtr) << 4;
+    	charArrayPtr ++;
+
+    	uuidPtr[maxSize - 1 - count] += charToInt(*charArrayPtr);
+    	charArrayPtr++;
+
     }
 
 }
@@ -141,7 +156,6 @@ void P2PS_STM_Init(void)
      */
 
   	Char_UUID_t  uuid128;
-
   	charArrayTo128UUID(SERVICE_UUID , (uint8_t*)&uuid128);
     aci_gatt_add_service(UUID_TYPE_128,
                       (Service_UUID_t *) &uuid128,
