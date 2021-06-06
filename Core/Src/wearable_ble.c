@@ -143,7 +143,7 @@ void Wearable_Sensor_Init(void)
                       UUID_TYPE_128, &uuid128,
                       sizeof(wearable_data_t),
                       CHAR_PROP_READ,
-                      ATTR_PERMISSION_NONE,
+					  ATTR_PERMISSION_AUTHEN_READ,
 					  GATT_NOTIFY_READ_REQ_AND_WAIT_FOR_APPL_RESP, /* gattEvtMask */
                       10, /* encryKeySize */
                       1, /* isVariable */
