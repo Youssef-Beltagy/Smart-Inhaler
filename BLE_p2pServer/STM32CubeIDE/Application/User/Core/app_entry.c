@@ -45,7 +45,7 @@ extern RTC_HandleTypeDef hrtc;
 #define POOL_SIZE (CFG_TLBLE_EVT_QUEUE_LENGTH*4U*DIVC(( sizeof(TL_PacketHeader_t) + TL_BLE_EVENT_FRAME_SIZE ), 4U))
 
 /* USER CODE BEGIN PD */
-
+#define LED_ON_PVD                 (5*1000*1000/CFG_TS_TICK_VAL) /**< 5s */
 /* USER CODE END PD */
 
 /* Private macros ------------------------------------------------------------*/
@@ -61,6 +61,7 @@ PLACE_IN_SECTION("MB_MEM2") ALIGN(4) static uint8_t BleSpareEvtBuffer[sizeof(TL_
 /* USER CODE BEGIN PV */
 extern __IO uint32_t flag;
 __IO uint8_t  timestamp_flag;
+uint8_t PVD_timer_Id;
 
 /* USER CODE END PV */
 
@@ -69,7 +70,7 @@ static void SystemPower_Config( void );
 static void appe_Tl_Init( void );
 static void APPE_SysStatusNot( SHCI_TL_CmdStatus_t status );
 static void APPE_SysUserEvtRx( void * pPayload );
-
+static void Switch_OFF_PVD_GPIO( void );
 /* USER CODE BEGIN PFP */
 static void Led_Init( void );
 static void Button_Init( void );
@@ -79,34 +80,35 @@ void Check_PVD_Val( void );
 /* Functions Definition ------------------------------------------------------*/
 void APPE_Init( void )
 {
-  SystemPower_Config(); /**< Configure the system Power Mode */
+	SystemPower_Config(); /**< Configure the system Power Mode */
 
-  HW_TS_Init(hw_ts_InitMode_Full, &hrtc); /**< Initialize the TimerServer */
+	HW_TS_Init(hw_ts_InitMode_Full, &hrtc); /**< Initialize the TimerServer */
 
-/* USER CODE BEGIN APPE_Init_1 */
-  APPD_Init();
-  
-  /**
-   * The Standby mode should not be entered before the initialization is over
-   * The default state of the Low Power Manager is to allow the Standby Mode so an request is needed here
-   */
-  UTIL_LPM_SetOffMode(1 << CFG_LPM_APP, UTIL_LPM_DISABLE);
+	/* USER CODE BEGIN APPE_Init_1 */
+	APPD_Init();
 
-  Led_Init();
+	/**
+	 * The Standby mode should not be entered before the initialization is over
+	 * The default state of the Low Power Manager is to allow the Standby Mode so an request is needed here
+	 */
+	UTIL_LPM_SetOffMode(1 << CFG_LPM_APP, UTIL_LPM_DISABLE);
 
-  Button_Init();
-/* USER CODE END APPE_Init_1 */
-  appe_Tl_Init();	/* Initialize all transport layers */
+	Led_Init();
 
-  /**
-   * From now, the application is waiting for the ready event ( VS_HCI_C2_Ready )
-   * received on the system channel before starting the Stack
-   * This system event is received with APPE_SysUserEvtRx()
-   */
-/* USER CODE BEGIN APPE_Init_2 */
+	Button_Init();
+	/* USER CODE END APPE_Init_1 */
+	appe_Tl_Init();	/* Initialize all transport layers */
 
-/* USER CODE END APPE_Init_2 */
-   return;
+	/**
+	 * From now, the application is waiting for the ready event ( VS_HCI_C2_Ready )
+	 * received on the system channel before starting the Stack
+	 * This system event is received with APPE_SysUserEvtRx()
+	 */
+	/* USER CODE BEGIN APPE_Init_2 */
+	//timer for PVD
+	HW_TS_Create(CFG_TIM_PROC_ID_ISR, &(PVD_timer_Id), hw_ts_SingleShot, Switch_OFF_PVD_GPIO);
+	/* USER CODE END APPE_Init_2 */
+	return;
 }
 /* USER CODE BEGIN FD */
 
@@ -207,14 +209,14 @@ static void Led_Init( void )
    * Leds Initialization
    */
 
-  BSP_LED_Init(LED_BLUE);
-  BSP_LED_Init(LED_GREEN);
-  BSP_LED_Init(LED_RED);
+//  BSP_LED_Init(LED_BLUE);			//NUCLEO
+//  BSP_LED_Init(LED_GREEN);		//NUCLEO
+//  BSP_LED_Init(LED_RED);			//NUCLEO
   BSP_LED_Init(LED_GREEN_BR);		//SHIELD
   BSP_LED_Init(LED_YELLOW_BR);		//SHIELD
   BSP_LED_Init(LED_RED_BR);			//SHIELD
 
-  BSP_LED_On(LED_GREEN);
+//  BSP_LED_On(LED_GREEN);
 #endif
 
   return;
@@ -236,6 +238,14 @@ static void Button_Init( void )
 #endif
 
 	return;
+}
+
+static void Switch_OFF_PVD_GPIO(){
+/* USER CODE BEGIN Switch_OFF_PVD_GPIO */
+  BSP_LED_Off(LED_GREEN_BR);
+  BSP_LED_Off(LED_YELLOW_BR);
+  BSP_LED_Off(LED_RED_BR);
+/* USER CODE END Switch_OFF_PVD_GPIO */
 }
 /* USER CODE END FD_LOCAL_FUNCTIONS */
 
@@ -321,6 +331,8 @@ void Check_PVD_Val( void )
 	} else if (flag == 0) {
 		BSP_LED_Toggle(LED_RED_BR);
 	}
+	HW_TS_Start(PVD_timer_Id, (uint32_t)LED_ON_PVD);
+
 }
 
 
