@@ -6,20 +6,6 @@
 #define SERVICE_UUID "25380284e1b6489abbcf97d8f7470aa4"
 #define WEARABLE_DATA_CHARACTERISTIC_UUID "c3856cfa4af64d0da9a05ed875d937cc"
 
-
-// todo: too bloated: move to somewhere else
-// todo: rename
-// todo: clean the service handler when you update it.
-// todo: implement connection and disconnection handling functions if necessary
-//- ~~Bonding~~
-//- Advertisement
-//  - Advertise service
-//  - Always advertise
-//- Cleanup
-//- Connection and Disconnection callbacks
-//- Places for Sarah to write her code
-//- Check i didn't introduce bugs in the last commit because I was groggy.
-
 // ybeltagy to Sarah: feel free to modify this struct. It has some requirements, but I will take care of those.
 typedef struct{
 	float temperature;// 4 bytes - little endian

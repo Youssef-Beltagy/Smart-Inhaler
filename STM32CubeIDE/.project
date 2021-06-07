@@ -291,7 +291,7 @@
 		<link>
 			<name>Application/User/Core/wearable_ble.c</name>
 			<type>1</type>
-			<location>D:/Desktop/CSS 427/stm32-smart-pin/Core/Src/wearable_ble.c</location>
+			<location>$%7BPARENT-1-PROJECT_LOC%7D/Core/Src/wearable_ble.c</location>
 		</link>
 		<link>
 			<name>Drivers/BSP/P-NUCLEO-WB55.Nucleo/stm32wbxx_nucleo.c</name>
