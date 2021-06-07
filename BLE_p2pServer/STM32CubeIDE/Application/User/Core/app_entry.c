@@ -210,9 +210,9 @@ static void Led_Init( void )
   BSP_LED_Init(LED_BLUE);
   BSP_LED_Init(LED_GREEN);
   BSP_LED_Init(LED_RED);
-  BSP_LED_Init(LED_GREEN_BR);
-  BSP_LED_Init(LED_YELLOW_BR);
-  BSP_LED_Init(LED_RED_BR);
+  BSP_LED_Init(LED_GREEN_BR);		//SHIELD
+  BSP_LED_Init(LED_YELLOW_BR);		//SHIELD
+  BSP_LED_Init(LED_RED_BR);			//SHIELD
 
   BSP_LED_On(LED_GREEN);
 #endif
@@ -223,15 +223,19 @@ static void Led_Init( void )
 static void Button_Init( void )
 {
 #if (CFG_BUTTON_SUPPORTED == 1)
-  /**
-   * Button Initialization
-   */
+	/**
+	 * Button Initialization
+	 */
 
-  BSP_PB_Init(BUTTON_SW1, BUTTON_MODE_EXTI);
-  BSP_PB_Init(BUTTON_SW2, BUTTON_MODE_EXTI);
+	//USE for NUCLEO buttons
+	BSP_PB_Init(BUTTON_SW1, BUTTON_MODE_EXTI);
+	BSP_PB_Init(BUTTON_SW2, BUTTON_MODE_EXTI);
+	//USE for SHIELD buttons
+	//BSP_PB_Init(BUTTON_SW1_BR, BUTTON_MODE_EXTI);
+	//BSP_PB_Init(BUTTON_SW2_BR, BUTTON_MODE_EXTI);
 #endif
 
-  return;
+	return;
 }
 /* USER CODE END FD_LOCAL_FUNCTIONS */
 
@@ -284,13 +288,13 @@ void HAL_GPIO_EXTI_Callback( uint16_t GPIO_Pin )
 {
 	switch (GPIO_Pin)
 	{
-	case BUTTON_SW1_PIN:
+	case BUTTON_SW1_PIN:				//use BUTTON_SW1_PIN for nucleo SW1, use BUTTON_SW1_BR_PIN for Breathe Shield SW1
 		APP_BLE_Key_Button1_Action();
 		Check_PVD_Val();
 		timestamp_flag = 1;
 		break;
 
-	case BUTTON_SW2_PIN:
+	case BUTTON_SW2_PIN:				//use BUTTON_SW2_PIN for nucleo SW2, use BUTTON_SW2_BR_PIN for Breathe Shield SW2
 		APP_BLE_Key_Button2_Action();
 		timestamp_flag = 0;
 		break;
@@ -303,7 +307,7 @@ void HAL_GPIO_EXTI_Callback( uint16_t GPIO_Pin )
 }
 
 /**
-  * @brief  This function is called when SW1 is pressed. It checks the PVD flag and toggles the corresponding LED
+  * @brief  This function is called when SW1_BR is pressed. It checks the PVD flag and toggles the corresponding LED
   *
   * @param  None
   * @retval None

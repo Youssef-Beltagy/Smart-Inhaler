@@ -61,28 +61,6 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define SW2_BR_Pin GPIO_PIN_0
-#define SW2_BR_GPIO_Port GPIOA
-#define BUTTON_SW1_Pin GPIO_PIN_4
-#define BUTTON_SW1_GPIO_Port GPIOC
-#define BUTTON_SW1_EXTI_IRQn EXTI4_IRQn
-#define LED_GREEN_Pin GPIO_PIN_0
-#define LED_GREEN_GPIO_Port GPIOB
-#define LED_RED_Pin GPIO_PIN_1
-#define LED_RED_GPIO_Port GPIOB
-#define LED3_BR_Pin GPIO_PIN_12
-#define LED3_BR_GPIO_Port GPIOB
-#define LED1_BR_Pin GPIO_PIN_13
-#define LED1_BR_GPIO_Port GPIOB
-#define LED2_BR_Pin GPIO_PIN_14
-#define LED2_BR_GPIO_Port GPIOB
-#define SW1_BR_Pin GPIO_PIN_12
-#define SW1_BR_GPIO_Port GPIOC
-#define BUTTON_SW2_Pin GPIO_PIN_0
-#define BUTTON_SW2_GPIO_Port GPIOD
-#define BUTTON_SW2_EXTI_IRQn EXTI0_IRQn
-#define LED_BLUE_Pin GPIO_PIN_5
-#define LED_BLUE_GPIO_Port GPIOB
 void   MX_LPUART1_UART_Init(void);
 void   MX_USART1_UART_Init(void);
 /* USER CODE BEGIN Private defines */

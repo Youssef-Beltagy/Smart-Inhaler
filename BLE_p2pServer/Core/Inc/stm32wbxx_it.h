@@ -62,6 +62,7 @@ void EXTI4_IRQHandler(void);
 void DMA1_Channel4_IRQHandler(void);
 void USART1_IRQHandler(void);
 void LPUART1_IRQHandler(void);
+void EXTI15_10_IRQHandler(void);
 void PWR_SOTF_BLEACT_802ACT_RFPHASE_IRQHandler(void);
 void IPCC_C1_RX_IRQHandler(void);
 void IPCC_C1_TX_IRQHandler(void);
@@ -71,8 +72,8 @@ void DMA2_Channel4_IRQHandler(void);
 void RTC_WKUP_IRQHandler(void);
 void IPCC_C1_TX_IRQHandler(void);
 void IPCC_C1_RX_IRQHandler(void);
-void PUSH_BUTTON_SW1_EXTI_IRQHandler(void);
-void PUSH_BUTTON_SW2_EXTI_IRQHandler(void);
+//void PUSH_BUTTON_SW1_EXTI_IRQHandler(void);
+//void PUSH_BUTTON_SW2_EXTI_IRQHandler(void);
 /* USER CODE END EFP */
 
 #ifdef __cplusplus

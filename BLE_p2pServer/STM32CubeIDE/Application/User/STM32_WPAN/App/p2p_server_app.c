@@ -136,7 +136,7 @@ void P2PS_APP_Notification(P2PS_APP_ConnHandle_Not_evt_t *pNotification) {
 	/* USER CODE END P2PS_APP_Notification_2 */
 	return;
 }
-//CFG_
+
 void P2PS_APP_Init(void) {
 	/* USER CODE BEGIN P2PS_APP_Init */
 	UTIL_SEQ_RegTask( 1<< CFG_MY_TASK_NOTIFY_TIME, UTIL_SEQ_RFU, P2PS_Send_Notification );
@@ -147,10 +147,6 @@ void P2PS_APP_Init(void) {
 
 /* USER CODE BEGIN FD */
 
-//void P2PS_APP_SW1_Button_Action(void) {
-//	UTIL_SEQ_SetTask( 1<<CFG_TASK_SW1_BUTTON_PUSHED_ID, CFG_SCH_PRIO_0);
-//	return;
-//}
 /* USER CODE END FD */
 
 /*************************************************************

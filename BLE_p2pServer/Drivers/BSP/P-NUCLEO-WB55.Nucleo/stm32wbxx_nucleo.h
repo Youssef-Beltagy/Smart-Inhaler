@@ -63,6 +63,8 @@ typedef enum
   BUTTON_SW1 = 0,
   BUTTON_SW2 = 1,
   BUTTON_SW3 = 2,
+  BUTTON_SW1_BR = 3,
+  BUTTON_SW2_BR = 4
 }Button_TypeDef;
 
 typedef enum 
@@ -140,7 +142,7 @@ typedef enum
 /** @defgroup STM32WBXX_NUCLEO_BUTTON BUTTON Constants
   * @{
   */  
-#define BUTTONn                                 3
+#define BUTTONn                                 5
 
 /**
  * @brief Key push-button
@@ -178,13 +180,39 @@ typedef enum
 #define BUTTON_SW3_EXTI_IRQn                    EXTI1_IRQn
 #endif
 
+#define BUTTON_SW1_BR_PIN                       GPIO_PIN_12
+#define BUTTON_SW1_BR_GPIO_PORT                 GPIOC
+#define BUTTON_SW1_BR_GPIO_CLK_ENABLE()         __HAL_RCC_GPIOC_CLK_ENABLE()
+#define BUTTON_SW1_BR_GPIO_CLK_DISABLE()        __HAL_RCC_GPIOC_CLK_DISABLE()
+#define BUTTON_SW1_BR_EXTI_LINE                 GPIO_PIN_12
+#ifdef CORE_CM0PLUS
+#define BUTTON_SW1_EXTI_IRQn                    EXTI15_4_IRQn
+#else
+#define BUTTON_SW1_BR_EXTI_IRQn                 EXTI15_10_IRQn
+#endif
+
+#define BUTTON_SW2_BR_PIN                       GPIO_PIN_0
+#define BUTTON_SW2_BR_GPIO_PORT                 GPIOA
+#define BUTTON_SW2_BR_GPIO_CLK_ENABLE()         __HAL_RCC_GPIOA_CLK_ENABLE()
+#define BUTTON_SW2_BR_GPIO_CLK_DISABLE()        __HAL_RCC_GPIOA_CLK_DISABLE()
+#define BUTTON_SW2_BR_EXTI_LINE                 GPIO_PIN_0
+#ifdef CORE_CM0PLUS
+#define BUTTON_SW2_EXTI_IRQn                    EXTI1_0_IRQn
+#else
+#define BUTTON_SW2_BR_EXTI_IRQn                 EXTI0_IRQn
+#endif
+
 #define BUTTONx_GPIO_CLK_ENABLE(__INDEX__)    do { if ((__INDEX__) == BUTTON_SW1) BUTTON_SW1_GPIO_CLK_ENABLE(); else \
                                               if ((__INDEX__) == BUTTON_SW2) BUTTON_SW2_GPIO_CLK_ENABLE(); else \
-                                              if ((__INDEX__) == BUTTON_SW3) BUTTON_SW3_GPIO_CLK_ENABLE();} while(0)
+                                              if ((__INDEX__) == BUTTON_SW3) BUTTON_SW3_GPIO_CLK_ENABLE(); else \
+                                              if ((__INDEX__) == BUTTON_SW1_BR) BUTTON_SW1_BR_GPIO_CLK_ENABLE(); else \
+                                              if ((__INDEX__) == BUTTON_SW2_BR) BUTTON_SW2_BR_GPIO_CLK_ENABLE();} while(0)
 
 #define BUTTONx_GPIO_CLK_DISABLE(__INDEX__)    do { if ((__INDEX__) == BUTTON_SW1) BUTTON_SW1_GPIO_CLK_DISABLE(); else \
                                               if ((__INDEX__) == BUTTON_SW2) BUTTON_SW2_GPIO_CLK_DISABLE(); else \
-                                              if ((__INDEX__) == BUTTON_SW3) BUTTON_SW3_GPIO_CLK_DISABLE();} while(0)
+                                              if ((__INDEX__) == BUTTON_SW3) BUTTON_SW3_GPIO_CLK_DISABLE(); else \
+                                              if ((__INDEX__) == BUTTON_SW1_BR) BUTTON_SW1_BR_GPIO_CLK_DISABLE(); else \
+                                              if ((__INDEX__) == BUTTON_SW2_BR) BUTTON_SW2_BR_GPIO_CLK_DISABLE();} while(0)
 
 /**
   * @}
