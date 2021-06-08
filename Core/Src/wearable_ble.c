@@ -1,6 +1,7 @@
 #include "common_blesvc.h"
 #include "wearable_ble.h"
 #include <stdio.h>
+#include "dht_11.h"
 
 #define SERVICE_UUID "25380284e1b6489abbcf97d8f7470aa4"
 #define WEARABLE_DATA_CHARACTERISTIC_UUID "c3856cfa4af64d0da9a05ed875d937cc"
@@ -39,15 +40,23 @@ static wearable_data_t getWearableData(){
 	//Making dummy data.
 	wearable_data_t data;
 
-	static uint8_t count = 0;
+	//DHT 11 Data
+	DHT_11_Data dht11_data;
+	DHT_GetData (&dht11_data);
+	data.temperature = dht11_data.Temperature;
+	data.humidity = dht11_data.Humidity;
 
-	for(uint8_t i = 0; i < sizeof(wearable_data_t); i++){
-		((uint8_t*) (&data))[i] = count + i;
-	}
+	// Character Dummy Data
+	static char chr = 'A';
+	data.character = chr;
+	chr = (chr - 'A' + 1)%26 + 'A';
 
-	count++;
 
-	HAL_Delay(100); // simulate a delay
+
+	static char dig = '0';
+	data.digit = dig;
+	dig = (dig - '0' + 1)%10 + '0';
+
 
 	return data;
 }
@@ -143,6 +152,9 @@ static void charArrayTo128UUID(char * charArrayPtr, uint8_t* uuidPtr){
  */
 void Wearable_Sensor_Init(void)
 {
+
+	DHT_Initialize();
+
 
   /**
    *	Register the event handler to the BLE controller
