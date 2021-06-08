@@ -71,8 +71,6 @@ static void APPE_SysStatusNot( SHCI_TL_CmdStatus_t status );
 static void APPE_SysUserEvtRx( void * pPayload );
 
 /* USER CODE BEGIN PFP */
-static void Led_Init( void );
-static void Button_Init( void );
 /* USER CODE END PFP */
 
 /* Functions Definition ------------------------------------------------------*/
@@ -91,9 +89,6 @@ void APPE_Init( void )
    */
   UTIL_LPM_SetOffMode(1 << CFG_LPM_APP, UTIL_LPM_DISABLE);
 
-  Led_Init();
-
-  Button_Init();
 /* USER CODE END APPE_Init_1 */
   appe_Tl_Init();	/* Initialize all transport layers */
 
@@ -103,8 +98,8 @@ void APPE_Init( void )
    * This system event is received with APPE_SysUserEvtRx()
    */
 /* USER CODE BEGIN APPE_Init_2 */
-
 /* USER CODE END APPE_Init_2 */
+
    return;
 }
 /* USER CODE BEGIN FD */
@@ -199,36 +194,6 @@ static void APPE_SysUserEvtRx( void * pPayload )
 }
 
 /* USER CODE BEGIN FD_LOCAL_FUNCTIONS */
-static void Led_Init( void )
-{
-#if (CFG_LED_SUPPORTED == 1)
-  /**
-   * Leds Initialization
-   */
-
-  BSP_LED_Init(LED_BLUE);
-  BSP_LED_Init(LED_GREEN);
-  BSP_LED_Init(LED_RED);
-
-  BSP_LED_On(LED_GREEN);
-#endif
-
-  return;
-}
-
-static void Button_Init( void )
-{
-#if (CFG_BUTTON_SUPPORTED == 1)
-  /**
-   * Button Initialization
-   */
-
-  BSP_PB_Init(BUTTON_SW1, BUTTON_MODE_EXTI);
-  BSP_PB_Init(BUTTON_SW2, BUTTON_MODE_EXTI);
-#endif
-
-  return;
-}
 /* USER CODE END FD_LOCAL_FUNCTIONS */
 
 /*************************************************************
@@ -276,27 +241,5 @@ void shci_cmd_resp_wait(uint32_t timeout)
 }
 
 /* USER CODE BEGIN FD_WRAP_FUNCTIONS */
-void HAL_GPIO_EXTI_Callback( uint16_t GPIO_Pin )
-{
-  switch (GPIO_Pin)
-  {
-    case BUTTON_SW1_PIN:
-     //APP_BLE_Key_Button1_Action(); //todo: remember to disable interrupts
-      break; 
-
-    case BUTTON_SW2_PIN:
-      //APP_BLE_Key_Button2_Action();
-      break; 
-
-    case BUTTON_SW3_PIN:
-      //APP_BLE_Key_Button3_Action();
-      break;
-
-    default:
-      break;
-
-  }
-  return;
-}
 /* USER CODE END FD_WRAP_FUNCTIONS */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

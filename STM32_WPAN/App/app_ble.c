@@ -19,8 +19,6 @@
  */
 /* USER CODE END Header */
 
-//todo: investigate connection and disconnection callbacks
-
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
@@ -38,7 +36,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "wearable_ble.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -148,6 +146,7 @@ typedef struct _tBLEProfileGlobalContext
 
 }BleGlobalContext_t;
 
+
 typedef struct
 {
   BleGlobalContext_t BleApplicationContext_legacy;
@@ -165,14 +164,10 @@ typedef struct
 /* USER CODE END PTD */
 
 /* Private defines -----------------------------------------------------------*/
-#define APPBLE_GAP_DEVICE_NAME_LENGTH 7
-#define FAST_ADV_TIMEOUT               (30*1000*1000/CFG_TS_TICK_VAL) /**< 30s */
-#define INITIAL_ADV_TIMEOUT            (60*1000*1000/CFG_TS_TICK_VAL) /**< 60s */
 
 #define BD_ADDR_SIZE_LOCAL    6
 
 /* USER CODE BEGIN PD */
-#define LED_ON_TIMEOUT                 (0.005*1000*1000/CFG_TS_TICK_VAL) /**< 5ms */
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -226,122 +221,6 @@ uint8_t index_con_int, mutex;
 /**
  * Advertising Data
  */
-#if (P2P_SERVER1 != 0)
-static const char local_name[] = { AD_TYPE_COMPLETE_LOCAL_NAME , 'P', '2', 'P', 'S', 'R', 'V', '1'};
-uint8_t manuf_data[14] = {
-    sizeof(manuf_data)-1, AD_TYPE_MANUFACTURER_SPECIFIC_DATA,
-    0x01/*SKD version */,
-    CFG_DEV_ID_P2P_SERVER1 /* STM32WB - P2P Server 1*/,
-    0x00 /* GROUP A Feature  */,
-    0x00 /* GROUP A Feature */,
-    0x00 /* GROUP B Feature */,
-    0x00 /* GROUP B Feature */,
-    0x00, /* BLE MAC start -MSB */
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00, /* BLE MAC stop */
-};
-#endif
-/**
- * Advertising Data
- */
-#if (P2P_SERVER2 != 0)
-static const char local_name[] = { AD_TYPE_COMPLETE_LOCAL_NAME, 'P', '2', 'P', 'S', 'R', 'V', '2'};
-uint8_t manuf_data[14] = {
-    sizeof(manuf_data)-1, AD_TYPE_MANUFACTURER_SPECIFIC_DATA,
-    0x01/*SKD version */,
-    CFG_DEV_ID_P2P_SERVER2 /* STM32WB - P2P Server 2*/,
-    0x00 /* GROUP A Feature  */,
-    0x00 /* GROUP A Feature */,
-    0x00 /* GROUP B Feature */,
-    0x00 /* GROUP B Feature */,
-    0x00, /* BLE MAC start -MSB */
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00, /* BLE MAC stop */
-};
-
-#endif
-
-#if (P2P_SERVER3 != 0)
-static const char local_name[] = { AD_TYPE_COMPLETE_LOCAL_NAME, 'P', '2', 'P', 'S', 'R', 'V', '3'};
-uint8_t manuf_data[14] = {
-    sizeof(manuf_data)-1, AD_TYPE_MANUFACTURER_SPECIFIC_DATA,
-    0x01/*SKD version */,
-    CFG_DEV_ID_P2P_SERVER3 /* STM32WB - P2P Server 3*/,
-    0x00 /* GROUP A Feature  */,
-    0x00 /* GROUP A Feature */,
-    0x00 /* GROUP B Feature */,
-    0x00 /* GROUP B Feature */,
-    0x00, /* BLE MAC start -MSB */
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00, /* BLE MAC stop */
-};
-#endif
-
-#if (P2P_SERVER4 != 0)
-static const char local_name[] = { AD_TYPE_COMPLETE_LOCAL_NAME, 'P', '2', 'P', 'S', 'R', 'V', '4'};
-uint8_t manuf_data[14] = {
-    sizeof(manuf_data)-1, AD_TYPE_MANUFACTURER_SPECIFIC_DATA,
-    0x01/*SKD version */,
-    CFG_DEV_ID_P2P_SERVER4 /* STM32WB - P2P Server 4*/,
-    0x00 /* GROUP A Feature  */,
-    0x00 /* GROUP A Feature */,
-    0x00 /* GROUP B Feature */,
-    0x00 /* GROUP B Feature */,
-    0x00, /* BLE MAC start -MSB */
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00, /* BLE MAC stop */
-};
-#endif
-
-#if (P2P_SERVER5 != 0)
-static const char local_name[] = { AD_TYPE_COMPLETE_LOCAL_NAME, 'P', '2', 'P', 'S', 'R', 'V', '5'};
-uint8_t manuf_data[14] = {
-    sizeof(manuf_data)-1, AD_TYPE_MANUFACTURER_SPECIFIC_DATA,
-    0x01/*SKD version */,
-    CFG_DEV_ID_P2P_SERVER5 /* STM32WB - P2P Server 5*/,
-    0x00 /* GROUP A Feature  */,
-    0x00 /* GROUP A Feature */,
-    0x00 /* GROUP B Feature */,
-    0x00 /* GROUP B Feature */,
-    0x00, /* BLE MAC start -MSB */
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00, /* BLE MAC stop */
-};
-#endif
-
-#if (P2P_SERVER6 != 0)
-static const char local_name[] = { AD_TYPE_COMPLETE_LOCAL_NAME, 'P', '2', 'P', 'S', 'R', 'V', '6'};
-uint8_t manuf_data[14] = {
-    sizeof(manuf_data)-1, AD_TYPE_MANUFACTURER_SPECIFIC_DATA,
-    0x01/*SKD version */,
-    CFG_DEV_ID_P2P_SERVER6 /* STM32WB - P2P Server 1*/,
-    0x00 /* GROUP A Feature  */,
-    0x00 /* GROUP A Feature */,
-    0x00 /* GROUP B Feature */,
-    0x00 /* GROUP B Feature */,
-    0x00, /* BLE MAC start -MSB */
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00, /* BLE MAC stop */
-};
-#endif
 
 /* USER CODE BEGIN PV */
 
@@ -354,9 +233,6 @@ static void Ble_Tl_Init( void );
 static void Ble_Hci_Gap_Gatt_Init(void);
 static const uint8_t* BleGetBdAddress( void );
 static void Adv_Request( APP_BLE_ConnStatus_t New_Status );
-static void Adv_Cancel( void );
-static void Adv_Cancel_Req( void );
-static void Switch_OFF_GPIO( void );
 #if(L2CAP_REQUEST_NEW_CONN_PARAM != 0)
 static void BLE_SVC_L2CAP_Conn_Update(uint16_t Connection_Handle);
 static void Connection_Interval_Update_Req( void );
@@ -441,7 +317,6 @@ void APP_BLE_Init( void )
   /**
    * From here, all initialization are BLE application specific
    */
-  UTIL_SEQ_RegTask( 1<<CFG_TASK_ADV_CANCEL_ID, UTIL_SEQ_RFU, Adv_Cancel);
 #if (L2CAP_REQUEST_NEW_CONN_PARAM != 0 )
   UTIL_SEQ_RegTask( 1<<CFG_TASK_CONN_UPDATE_REG_ID, UTIL_SEQ_RFU, Connection_Interval_Update_Req);
 #endif
@@ -462,19 +337,22 @@ void APP_BLE_Init( void )
 #endif
 
   /**
-   * Create timer to handle the Advertising Stop
-   */
-  HW_TS_Create(CFG_TIM_PROC_ID_ISR, &(BleApplicationContext.Advertising_mgr_timer_Id), hw_ts_SingleShot, Adv_Cancel_Req);
-  /**
-   * Create timer to handle the Led Switch OFF
-   */
-  HW_TS_Create(CFG_TIM_PROC_ID_ISR, &(BleApplicationContext.SwitchOffGPIO_timer_Id), hw_ts_SingleShot, Switch_OFF_GPIO);
-
-  /**
    * Make device discoverable
    */
-  BleApplicationContext.BleApplicationContext_legacy.advtServUUID[0] = NULL;
+
+
+// TODO: consider moving those statements somewhere else.
   BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen = 0;
+
+  BleApplicationContext.BleApplicationContext_legacy.advtServUUID[BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen] = 0x07; // TODO: use Macro
+  BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen++;
+
+  // Advertise the wearable service
+  BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen +=
+  Get_Wearable_Service_UUID((uint8_t*) BleApplicationContext.BleApplicationContext_legacy.advtServUUID + BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen);
+
+  /// Add a terminating zero just for cleanliness
+  BleApplicationContext.BleApplicationContext_legacy.advtServUUID[BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen] = 0;
 
   /* Initialize intervals for reconnexion without intervals update */
   AdvIntervalMin = CFG_FAST_CONN_ADV_INTERVAL_MIN;
@@ -527,11 +405,9 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification( void *pckt )
       /**
        * SPECIFIC to P2P Server APP
        */
-//      handleNotification.P2P_Evt_Opcode = PEER_DISCON_HANDLE_EVT;
-//      handleNotification.ConnectionHandle = BleApplicationContext.BleApplicationContext_legacy.connectionHandle;
-//      P2PS_APP_Notification(&handleNotification); // todo: Implement call backs for connection and disconnection.
-      /* USER CODE BEGIN EVT_DISCONN_COMPLETE */
 
+      /* USER CODE BEGIN EVT_DISCONN_COMPLETE */
+      Wearable_On_Disconnect();
       /* USER CODE END EVT_DISCONN_COMPLETE */
     }
 
@@ -595,8 +471,6 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification( void *pckt )
            */
           connection_complete_event = (hci_le_connection_complete_event_rp0 *) meta_evt->data;
 
-          HW_TS_Stop(BleApplicationContext.Advertising_mgr_timer_Id);
-
           APP_DBG_MSG("HCI_LE_CONNECTION_COMPLETE_SUBEVT_CODE for connection handle 0x%x\n", connection_complete_event->Connection_Handle);
           if (BleApplicationContext.Device_Connection_Status == APP_BLE_LP_CONNECTING)
           {
@@ -612,11 +486,8 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification( void *pckt )
           /**
            * SPECIFIC to P2P Server APP
            */
-//          handleNotification.P2P_Evt_Opcode = PEER_CONN_HANDLE_EVT;
-//          handleNotification.ConnectionHandle = BleApplicationContext.BleApplicationContext_legacy.connectionHandle;
-//          P2PS_APP_Notification(&handleNotification); // todo: Implement call backs for connection and disconnection.
           /* USER CODE BEGIN HCI_EVT_LE_CONN_COMPLETE */
-
+          Wearable_On_Connect();
           /* USER CODE END HCI_EVT_LE_CONN_COMPLETE */
         }
         break; /* HCI_LE_CONNECTION_COMPLETE_SUBEVT_CODE */
@@ -718,9 +589,7 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification( void *pckt )
 #if(RADIO_ACTIVITY_EVENT != 0)
         case ACI_HAL_END_OF_RADIO_ACTIVITY_VSEVT_CODE:
         /* USER CODE BEGIN RADIO_ACTIVITY_EVENT*/
-          BSP_LED_On(LED_GREEN);
-          HW_TS_Start(BleApplicationContext.SwitchOffGPIO_timer_Id, (uint32_t)LED_ON_TIMEOUT);
-        /* USER CODE END RADIO_ACTIVITY_EVENT*/
+        /* USER CODE END RADIO_ACTIVITY_EVENT */
           break; /* ACI_HAL_END_OF_RADIO_ACTIVITY_VSEVT_CODE */
 #endif
 
@@ -747,20 +616,6 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification( void *pckt )
 APP_BLE_ConnStatus_t APP_BLE_Get_Server_Connection_Status(void)
 {
     return BleApplicationContext.Device_Connection_Status;
-}
-
-
-void APP_BLE_Key_Button2_Action(void)
-{
-#if (L2CAP_REQUEST_NEW_CONN_PARAM != 0 )    
-  UTIL_SEQ_SetTask( 1<<CFG_TASK_CONN_UPDATE_REG_ID, CFG_SCH_PRIO_0);
-#endif
-  
-  return;
-}
-
-void APP_BLE_Key_Button3_Action(void)
-{
 }
 
 /* USER CODE END FD*/
@@ -802,14 +657,6 @@ static void Ble_Hci_Gap_Gatt_Init(void){
   aci_hal_write_config_data(CONFIG_DATA_PUBADDR_OFFSET,
                             CONFIG_DATA_PUBADDR_LEN,
                             (uint8_t*) bd_addr);
-
-  /* BLE MAC in ADV Packet */
-  manuf_data[ sizeof(manuf_data)-6] = bd_addr[5];
-  manuf_data[ sizeof(manuf_data)-5] = bd_addr[4];
-  manuf_data[ sizeof(manuf_data)-4] = bd_addr[3];
-  manuf_data[ sizeof(manuf_data)-3] = bd_addr[2];
-  manuf_data[ sizeof(manuf_data)-2] = bd_addr[1];
-  manuf_data[ sizeof(manuf_data)-1] = bd_addr[0];
 
   /**
    * Static random Address
@@ -856,9 +703,9 @@ static void Ble_Hci_Gap_Gatt_Init(void){
 
   if (role > 0)
   {
-    const char *name = "P2PSRV1";
+    const char *name = "STM32 Wearable Sensor"; // TODO: put that together with the local name array
     aci_gap_init(role, 0,
-                 APPBLE_GAP_DEVICE_NAME_LENGTH,
+                 strlen(name),
                  &gap_service_handle, &gap_dev_name_char_handle, &gap_appearance_char_handle);
 
     if (aci_gatt_update_char_value(gap_service_handle, gap_dev_name_char_handle, 0, strlen(name), (uint8_t *) name))
@@ -932,12 +779,6 @@ static void Adv_Request(APP_BLE_ConnStatus_t New_Status)
     Max_Inter = CFG_LP_CONN_ADV_INTERVAL_MAX;
   }
 
-    /**
-     * Stop the timer, it will be restarted for a new shot
-     * It does not hurt if the timer was not running
-     */
-    HW_TS_Stop(BleApplicationContext.Advertising_mgr_timer_Id);
-
     APP_DBG_MSG("First index in %d state \n", BleApplicationContext.Device_Connection_Status);
 
     if ((New_Status == APP_BLE_LP_ADV)
@@ -957,6 +798,24 @@ static void Adv_Request(APP_BLE_ConnStatus_t New_Status)
     }
 
     BleApplicationContext.Device_Connection_Status = New_Status;
+
+
+
+    char local_name[] = {0, AD_TYPE_COMPLETE_LOCAL_NAME, 'S', 'T', 'M', '3', '2', ' ', 'W', 'e', 'a', 'r', 'a', 'b', 'l', 'e', ' ', 'S', 'e', 'n', 's', 'o', 'r'};
+    local_name[0] = sizeof(local_name) -1;
+
+    // TODO: clean
+    // the advertising is packet is too small to contain both the device name
+    // and service UUID.
+    // So we use the scan response too.
+    // However, the app could not find the wearable when the service UUID was in the
+    // the scan response. The app uses the service UUID to filter the devices.
+    // I thought it might be better to have the service UUID in the advertising data itself rather
+    // than the scan response data.
+    // That meant putting the device name in the scan response data.
+    // This worked.
+    hci_le_set_scan_response_data(sizeof(local_name), (uint8_t*) local_name);
+
     /* Start Fast or Low Power Advertising */
     ret = aci_gap_set_discoverable(
         ADV_IND,
@@ -964,22 +823,21 @@ static void Adv_Request(APP_BLE_ConnStatus_t New_Status)
         Max_Inter,
         PUBLIC_ADDR,
         NO_WHITE_LIST_USE, /* use white list */
-        sizeof(local_name),
-        (uint8_t*) &local_name,
+        0,
+        NULL,
         BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen,
         BleApplicationContext.BleApplicationContext_legacy.advtServUUID,
         0,
         0);
 
+
     /* Update Advertising data */
-    ret = aci_gap_update_adv_data(sizeof(manuf_data), (uint8_t*) manuf_data);
     if (ret == BLE_STATUS_SUCCESS)
     {
       if (New_Status == APP_BLE_FAST_ADV)
       {
         APP_DBG_MSG("Successfully Start Fast Advertising \n" );
-        /* Start Timer to STOP ADV - TIMEOUT */
-        HW_TS_Start(BleApplicationContext.Advertising_mgr_timer_Id, INITIAL_ADV_TIMEOUT);
+
       }
       else
       {
@@ -1058,55 +916,9 @@ const uint8_t* BleGetBdAddress( void )
  *SPECIFIC FUNCTIONS FOR P2P SERVER
  *
  *************************************************************/
-static void Adv_Cancel( void )
-{
-/* USER CODE BEGIN Adv_Cancel_1 */
-  BSP_LED_Off(LED_GREEN);
-/* USER CODE END Adv_Cancel_1 */
-
-  if (BleApplicationContext.Device_Connection_Status != APP_BLE_CONNECTED_SERVER)
-
-  {
-
-    tBleStatus result = 0x00;
-
-    result = aci_gap_set_non_discoverable();
-
-    BleApplicationContext.Device_Connection_Status = APP_BLE_IDLE;
-    if (result == BLE_STATUS_SUCCESS)
-    {
-      APP_DBG_MSG("  \r\n\r");APP_DBG_MSG("** STOP ADVERTISING **  \r\n\r");
-    }
-    else
-    {
-      APP_DBG_MSG("** STOP ADVERTISING **  Failed \r\n\r");
-    }
-
-  }
-
 /* USER CODE BEGIN Adv_Cancel_2 */
 
 /* USER CODE END Adv_Cancel_2 */
-  return;
-}
-
-static void Adv_Cancel_Req( void )
-{
-/* USER CODE BEGIN Adv_Cancel_Req_1 */
-
-/* USER CODE END Adv_Cancel_Req_1 */
-  UTIL_SEQ_SetTask(1 << CFG_TASK_ADV_CANCEL_ID, CFG_SCH_PRIO_0);
-/* USER CODE BEGIN Adv_Cancel_Req_2 */
-
-/* USER CODE END Adv_Cancel_Req_2 */
-  return;
-}
-
-static void Switch_OFF_GPIO(){
-/* USER CODE BEGIN Switch_OFF_GPIO */
-  BSP_LED_Off(LED_GREEN);
-/* USER CODE END Switch_OFF_GPIO */
-}
 
 #if(L2CAP_REQUEST_NEW_CONN_PARAM != 0)
 void BLE_SVC_L2CAP_Conn_Update(uint16_t Connection_Handle)
