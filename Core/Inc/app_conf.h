@@ -145,13 +145,8 @@
 #define P2P_SERVER5    0
 #define P2P_SERVER6    0
 
-#define CFG_DEV_ID_P2P_SERVER1                  (0x83)
-#define CFG_DEV_ID_P2P_SERVER2                  (0x84)
-#define CFG_DEV_ID_P2P_SERVER3                  (0x87)
-#define CFG_DEV_ID_P2P_SERVER4                  (0x88)
-#define CFG_DEV_ID_P2P_SERVER5                  (0x89)
-#define CFG_DEV_ID_P2P_SERVER6                  (0x8A)
-#define CFG_DEV_ID_P2P_ROUTER                   (0x85)
+#define CFG_DEV_ID_STM32_WEARABLE_SENSOR        (0x83)
+
 
 #define  RADIO_ACTIVITY_EVENT   1          /* 1 for OOB Demo */
 

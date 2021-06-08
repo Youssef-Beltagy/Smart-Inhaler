@@ -1,12 +1,12 @@
-#include "common_blesvc.h"
 #include "wearable_ble.h"
+#include "common_blesvc.h"
+#include "app_ble.h"
 #include <stdio.h>
 #include "dht_11.h"
 
 #define SERVICE_UUID "25380284e1b6489abbcf97d8f7470aa4"
 #define WEARABLE_DATA_CHARACTERISTIC_UUID "c3856cfa4af64d0da9a05ed875d937cc"
 
-// ybeltagy to Sarah: feel free to modify this struct. It has some requirements, but I will take care of those.
 typedef struct{
 	float temperature;// 4 bytes - little endian
 	float humidity;   // 4 bytes - little endian
@@ -106,6 +106,18 @@ static SVCCTL_EvtAckStatus_t Wearable_BLE_Event_Handler(void *Event)
   return(return_value);
 }/* end SVCCTL_EvtAckStatus_t */
 
+uint8_t isWearableConnected(void){
+	return APP_BLE_Get_Server_Connection_Status() == APP_BLE_CONNECTED_SERVER;
+}
+
+void Wearable_On_Connect(void){
+
+}
+
+void Wearable_On_Disconnect(void){
+
+}
+
 
 static uint8_t charToInt(char c){
 
@@ -116,7 +128,7 @@ static uint8_t charToInt(char c){
 	return 0xff; //error;
 }
 
-static void charArrayTo128UUID(char * charArrayPtr, uint8_t* uuidPtr){
+static void Char_Array_To_128UUID(char * charArrayPtr, uint8_t* uuidPtr){
 
 	uint8_t maxSize = 16;
     for (uint8_t count = 0; count < maxSize; count++) {
@@ -129,6 +141,11 @@ static void charArrayTo128UUID(char * charArrayPtr, uint8_t* uuidPtr){
 
     }
 
+}
+
+uint8_t Get_Wearable_Service_UUID(uint8_t* uuidPtr){
+	Char_Array_To_128UUID(SERVICE_UUID, uuidPtr);
+	return 16;
 }
 
 /**
@@ -157,7 +174,7 @@ void Wearable_Sensor_Init(void)
      *
      */
   	Char_UUID_t  uuid128;
-  	charArrayTo128UUID(SERVICE_UUID , (uint8_t*)&uuid128);
+  	Char_Array_To_128UUID(SERVICE_UUID , (uint8_t*)&uuid128);
     aci_gatt_add_service(UUID_TYPE_128,
                       (Service_UUID_t *) &uuid128,
                       PRIMARY_SERVICE,
@@ -167,7 +184,7 @@ void Wearable_Sensor_Init(void)
     /**
      *  Add LED Characteristic
      */
-  	charArrayTo128UUID( WEARABLE_DATA_CHARACTERISTIC_UUID , (uint8_t*)&uuid128);
+  	Char_Array_To_128UUID( WEARABLE_DATA_CHARACTERISTIC_UUID , (uint8_t*)&uuid128);
     aci_gatt_add_char(wearable_context.service_handler,
                       UUID_TYPE_128, &uuid128,
                       sizeof(wearable_data_t),
