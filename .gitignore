@@ -28,15 +28,13 @@
 # https://www.embeddedrelated.com/showthread/comp.arch.embedded/272022-1.php
 Debug/
 Release/
-#html/ Don't ignore html folders because they can contain documentation
 Backup/
-#*.bak
-# todo: consider adding lock files
 
+.ds_store
 
 # Appeared after building for the first time
-# ignore .settings file because it keeps changing for every dev. Fix later if it causes problems.
 .settings
+.extSettings
 
 # Appeared after launching the program for the first time
 *.launch
