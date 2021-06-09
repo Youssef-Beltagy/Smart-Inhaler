@@ -93,7 +93,7 @@
                                     									
                                     <listOptionValue builtIn="false" value="../User/Core"/>
                                     									
-                                    <listOptionValue builtIn="false" value="../../STM32_WPAN/App"/>
+                                    <listOptionValue builtIn="false" value="../Config"/>
                                     									
                                     <listOptionValue builtIn="false" value="../Drivers/STM32WBxx_HAL_Driver/Inc"/>
                                     									
