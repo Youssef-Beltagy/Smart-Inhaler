@@ -54,11 +54,6 @@
 			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Utilities/sequencer/stm32_seq.c</locationURI>
 		</link>
 		<link>
-			<name>Drivers/CMSIS/system_stm32wbxx.c</name>
-			<type>1</type>
-			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Core/Src/system_stm32wbxx.c</locationURI>
-		</link>
-		<link>
 			<name>Drivers/STM32WBxx_HAL_Driver/stm32wbxx_hal.c</name>
 			<type>1</type>
 			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_hal.c</locationURI>
@@ -249,12 +244,12 @@
 			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Drivers/BSP/P-NUCLEO-WB55.Nucleo/stm32wbxx_nucleo.c</locationURI>
 		</link>
 		<link>
-			<name>User/STM32_WPAN/App/app_ble.c</name>
+			<name>Application/User/STM32_WPAN/App/app_ble.c</name>
 			<type>1</type>
 			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/STM32_WPAN/App/app_ble.c</locationURI>
 		</link>
 		<link>
-			<name>User/STM32_WPAN/Target/hw_ipcc.c</name>
+			<name>Application/User/STM32_WPAN/Target/hw_ipcc.c</name>
 			<type>1</type>
 			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/STM32_WPAN/Target/hw_ipcc.c</locationURI>
 		</link>
