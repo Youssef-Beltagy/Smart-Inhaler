@@ -44,16 +44,6 @@
 			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/readme.txt</locationURI>
 		</link>
 		<link>
-			<name>Utilities/stm32_lpm.c</name>
-			<type>1</type>
-			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Utilities/lpm/tiny_lpm/stm32_lpm.c</locationURI>
-		</link>
-		<link>
-			<name>Utilities/stm32_seq.c</name>
-			<type>1</type>
-			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Utilities/sequencer/stm32_seq.c</locationURI>
-		</link>
-		<link>
 			<name>Middlewares/STM32_WPAN/ble_gap_aci.c</name>
 			<type>1</type>
 			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Middlewares/ST/STM32_WPAN/ble/core/auto/ble_gap_aci.c</locationURI>
