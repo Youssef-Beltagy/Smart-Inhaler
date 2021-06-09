@@ -95,9 +95,9 @@
                                     									
                                     <listOptionValue builtIn="false" value="../../STM32_WPAN/App"/>
                                     									
-                                    <listOptionValue builtIn="false" value="../../Drivers/STM32WBxx_HAL_Driver/Inc"/>
+                                    <listOptionValue builtIn="false" value="../Drivers/STM32WBxx_HAL_Driver/Inc"/>
                                     									
-                                    <listOptionValue builtIn="false" value="../../Drivers/STM32WBxx_HAL_Driver/Inc/Legacy"/>
+                                    <listOptionValue builtIn="false" value="../Drivers/STM32WBxx_HAL_Driver/Inc/Legacy"/>
                                     									
                                     <listOptionValue builtIn="false" value="../../Utilities/lpm/tiny_lpm"/>
                                     									
@@ -121,15 +121,15 @@
                                     									
                                     <listOptionValue builtIn="false" value="../../Middlewares/ST/STM32_WPAN/ble/svc/Src"/>
                                     									
-                                    <listOptionValue builtIn="false" value="../../Drivers/CMSIS/Device/ST/STM32WBxx/Include"/>
+                                    <listOptionValue builtIn="false" value="../Drivers/CMSIS/Device/ST/STM32WBxx/Include"/>
                                     									
                                     <listOptionValue builtIn="false" value="../../Utilities/sequencer"/>
                                     									
                                     <listOptionValue builtIn="false" value="../../Middlewares/ST/STM32_WPAN/ble"/>
                                     									
-                                    <listOptionValue builtIn="false" value="../../Drivers/CMSIS/Include"/>
+                                    <listOptionValue builtIn="false" value="../Drivers/CMSIS/Include"/>
                                     									
-                                    <listOptionValue builtIn="false" value="../../Drivers/BSP/P-NUCLEO-WB55.Nucleo"/>
+                                    <listOptionValue builtIn="false" value="../Drivers/BSP/P-NUCLEO-WB55.Nucleo"/>
                                     								
                                 </option>
                                 								
@@ -287,9 +287,9 @@
                                     									
                                     <listOptionValue builtIn="false" value="../../STM32_WPAN/App"/>
                                     									
-                                    <listOptionValue builtIn="false" value="../../Drivers/STM32WBxx_HAL_Driver/Inc"/>
+                                    <listOptionValue builtIn="false" value="../Drivers/STM32WBxx_HAL_Driver/Inc"/>
                                     									
-                                    <listOptionValue builtIn="false" value="../../Drivers/STM32WBxx_HAL_Driver/Inc/Legacy"/>
+                                    <listOptionValue builtIn="false" value="../Drivers/STM32WBxx_HAL_Driver/Inc/Legacy"/>
                                     									
                                     <listOptionValue builtIn="false" value="../../Utilities/lpm/tiny_lpm"/>
                                     									
@@ -313,15 +313,15 @@
                                     									
                                     <listOptionValue builtIn="false" value="../../Middlewares/ST/STM32_WPAN/ble/svc/Src"/>
                                     									
-                                    <listOptionValue builtIn="false" value="../../Drivers/CMSIS/Device/ST/STM32WBxx/Include"/>
+                                    <listOptionValue builtIn="false" value="../Drivers/CMSIS/Device/ST/STM32WBxx/Include"/>
                                     									
                                     <listOptionValue builtIn="false" value="../../Utilities/sequencer"/>
                                     									
                                     <listOptionValue builtIn="false" value="../../Middlewares/ST/STM32_WPAN/ble"/>
                                     									
-                                    <listOptionValue builtIn="false" value="../../Drivers/CMSIS/Include"/>
+                                    <listOptionValue builtIn="false" value="../Drivers/CMSIS/Include"/>
                                     									
-                                    <listOptionValue builtIn="false" value="../../Drivers/BSP/P-NUCLEO-WB55.Nucleo"/>
+                                    <listOptionValue builtIn="false" value="../Drivers/BSP/P-NUCLEO-WB55.Nucleo"/>
                                     									
                                     <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/Application/User/Data}&quot;"/>
                                     								
