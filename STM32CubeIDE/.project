@@ -244,67 +244,17 @@
 			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/tl_mbox.c</locationURI>
 		</link>
 		<link>
-			<name>Application/User/Core/app_debug.c</name>
-			<type>1</type>
-			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Core/Src/app_debug.c</locationURI>
-		</link>
-		<link>
-			<name>Application/User/Core/app_entry.c</name>
-			<type>1</type>
-			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Core/Src/app_entry.c</locationURI>
-		</link>
-		<link>
-			<name>Application/User/Core/dht_11.c</name>
-			<type>1</type>
-			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Core/Src/dht_11.c</locationURI>
-		</link>
-		<link>
-			<name>Application/User/Core/hw_timerserver.c</name>
-			<type>1</type>
-			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Core/Src/hw_timerserver.c</locationURI>
-		</link>
-		<link>
-			<name>Application/User/Core/hw_uart.c</name>
-			<type>1</type>
-			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Core/Src/hw_uart.c</locationURI>
-		</link>
-		<link>
-			<name>Application/User/Core/main.c</name>
-			<type>1</type>
-			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Core/Src/main.c</locationURI>
-		</link>
-		<link>
-			<name>Application/User/Core/stm32_lpm_if.c</name>
-			<type>1</type>
-			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Core/Src/stm32_lpm_if.c</locationURI>
-		</link>
-		<link>
-			<name>Application/User/Core/stm32wbxx_hal_msp.c</name>
-			<type>1</type>
-			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Core/Src/stm32wbxx_hal_msp.c</locationURI>
-		</link>
-		<link>
-			<name>Application/User/Core/stm32wbxx_it.c</name>
-			<type>1</type>
-			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Core/Src/stm32wbxx_it.c</locationURI>
-		</link>
-		<link>
-			<name>Application/User/Core/wearable_ble.c</name>
-			<type>1</type>
-			<location>$%7BPARENT-1-PROJECT_LOC%7D/Core/Src/wearable_ble.c</location>
-		</link>
-		<link>
 			<name>Drivers/BSP/P-NUCLEO-WB55.Nucleo/stm32wbxx_nucleo.c</name>
 			<type>1</type>
 			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/Drivers/BSP/P-NUCLEO-WB55.Nucleo/stm32wbxx_nucleo.c</locationURI>
 		</link>
 		<link>
-			<name>Application/User/STM32_WPAN/App/app_ble.c</name>
+			<name>User/STM32_WPAN/App/app_ble.c</name>
 			<type>1</type>
 			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/STM32_WPAN/App/app_ble.c</locationURI>
 		</link>
 		<link>
-			<name>Application/User/STM32_WPAN/Target/hw_ipcc.c</name>
+			<name>User/STM32_WPAN/Target/hw_ipcc.c</name>
 			<type>1</type>
 			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/STM32_WPAN/Target/hw_ipcc.c</locationURI>
 		</link>
