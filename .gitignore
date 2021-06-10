@@ -32,9 +32,5 @@ Backup/
 
 .ds_store
 
-# Appeared after building for the first time
-.settings
-.extSettings
-
 # Appeared after launching the program for the first time
 *.launch
