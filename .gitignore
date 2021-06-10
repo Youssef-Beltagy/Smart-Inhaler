@@ -5,5 +5,9 @@ Backup/
 
 .ds_store
 
+.settings
+
+*.launch
+
 
 
