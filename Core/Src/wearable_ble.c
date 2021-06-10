@@ -3,6 +3,7 @@
 #include "app_ble.h"
 #include <stdio.h>
 #include "dht_11.h"
+#include "PM_Sensor.h"
 
 #define SERVICE_UUID "25380284e1b6489abbcf97d8f7470aa4"
 #define WEARABLE_DATA_CHARACTERISTIC_UUID "c3856cfa4af64d0da9a05ed875d937cc"
@@ -10,7 +11,8 @@
 typedef struct{
 	float temperature;// 4 bytes - little endian
 	float humidity;   // 4 bytes - little endian
-	char  character;  // todo: update to PM2.5
+	uint16_t  particle_0_5_count;  // todo: update to PM2.5
+	char character;   //
 	char  digit;      // 1 byte
 } wearable_data_t;
 
@@ -32,12 +34,15 @@ static wearable_data_t getWearableData(){
 	data.temperature = dht11_data.Temperature;
 	data.humidity = dht11_data.Humidity;
 
+	// PM2.5 sensor data
+	struct PMS_AQI_data pm_data;
+	read_PM_Sensor(&pm_data);
+	data.particle_0_5_count = pm_data.particles_05um;
+
 	// Character Dummy Data
 	static char chr = 'A';
 	data.character = chr;
 	chr = (chr - 'A' + 1)%26 + 'A';
-
-
 
 	static char dig = '0';
 	data.digit = dig;
