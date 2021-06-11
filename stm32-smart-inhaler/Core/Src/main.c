@@ -75,7 +75,8 @@ DMA_HandleTypeDef hdma_usart1_tx;
 RTC_HandleTypeDef hrtc;
 
 /* USER CODE BEGIN PV */
-
+PWR_PVDTypeDef sConfigPVD;
+__IO uint8_t flag = 2;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -92,6 +93,8 @@ static void Reset_IPCC( void );
 static void Reset_BackupDomain( void );
 static void Init_Exti( void );
 static void Config_HSE(void);
+static void PVD_Config(void);
+uint8_t get_battery_level(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -143,10 +146,14 @@ int main(void)
   MX_RTC_Init();
   /* USER CODE BEGIN 2 */
 
+  /* Configure the PVD */
+  	PVD_Config();
+
   /* USER CODE END 2 */
 
   /* Init code for STM32_WPAN */
   APPE_Init();
+
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 	while(1)
@@ -460,6 +467,56 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+/**
+  * @brief  Configures the PVD resources.
+  * @param  None
+  * @retval None
+  */
+static void PVD_Config(void) {
+	/* Configure the NVIC for PVD*/
+	HAL_NVIC_SetPriority(PVD_PVM_IRQn, 1, 1);
+	HAL_NVIC_EnableIRQ(PVD_PVM_IRQn);
+
+	/* Configure the PVD Level to 5 and generate an interrupt on rising and falling
+     edges(PVD detection level set to 2.8V */
+	sConfigPVD.PVDLevel = PWR_PVDLEVEL_5; //2.8 V
+	sConfigPVD.Mode = PWR_PVD_MODE_IT_RISING_FALLING;
+	HAL_PWR_ConfigPVD(&sConfigPVD);
+
+	/* Enable the PVD Output */
+	HAL_PWR_EnablePVD();
+}
+
+
+/**
+  * @brief  PWR PVD interrupt callback
+  * @param  none
+  * @retval none
+  */
+void HAL_PWR_PVDCallback(void) {
+	flag = flag-1;
+	HAL_PWR_DisablePVD();
+
+	if (flag == 1) {
+		HAL_NVIC_SetPriority(PVD_PVM_IRQn, 1, 1);
+		HAL_NVIC_EnableIRQ(PVD_PVM_IRQn);
+		sConfigPVD.PVDLevel = PWR_PVDLEVEL_4; //2.6 V
+		sConfigPVD.Mode = PWR_PVD_MODE_IT_RISING_FALLING;
+		HAL_PWR_ConfigPVD(&sConfigPVD);
+		HAL_PWR_EnablePVD();
+	}
+}
+
+/**
+  * @brief  get battery level
+  * @retval returns the value of the PVD flag
+  * 2 indicates battery level greater than 2.8V
+  * 1 indicates battery level between 2.6V - 2.8V
+  * 0 indicates battery level below 2.6V
+  */
+uint8_t get_battery_level(void) {
+	return (flag);
+}
 
 void PeriphClock_Config(void)
 {
