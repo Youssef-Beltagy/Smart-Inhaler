@@ -7,8 +7,6 @@
 
 #include "PM_Sensor.h"
 
-static PMS_AQI_data default_PMS = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-
 // must have this defined in main.c
 extern I2C_HandleTypeDef hi2c1;
 
@@ -20,57 +18,52 @@ extern UART_HandleTypeDef huart1;
  *
  * Returns true if checksum makes sense, false if not
  */
-bool parse_PMSAQIdata(uint8_t *buffer, struct PMS_AQI_data *PM_data) {
-	uint16_t sum = 0;
+uint8_t static parse_pm_sensor_data(uint8_t *input_buffer_ptr, struct PMS_AQI_data *output_pm_data_ptr) {
 
-	// get checksum ready
-	for (uint8_t i = 0; i < PMS_BUF_LENGTH - 2; i++) {
-		sum += buffer[i];
-	}
+	if(input_buffer_ptr[0] != 0x42 || input_buffer_ptr[1] != 0x4d) return 0;
 
 	// Re-arrange bytes to fit exactly in our PMSAQIdata struct
-	// - The data comes in endian'd, this solves it so it works on all platforms
-	uint16_t buffer_u16[PMS_BUF_LENGTH / 2];
-	for (uint8_t i = 0; i < PMS_BUF_LENGTH / 2; i++) {
-		buffer_u16[i] = buffer[2 + i * 2 + 1];
-		buffer_u16[i] += (buffer[2 + i * 2] << 8);
+	// - The data comes in big endian, this solves it so it works on all platforms
+	uint8_t* bufOffset2 = input_buffer_ptr + 2;
+	for (uint8_t i = 0; i < sizeof(PMS_AQI_data) / 2; i++) {
+		((uint16_t*)output_pm_data_ptr)[i]  = bufOffset2[i * 2] << 8;
+		((uint16_t*)output_pm_data_ptr)[i] += bufOffset2[i * 2 + 1];
 	}
 
-	// pack it into the data struct
-	*PM_data = default_PMS; // initialize to default
-	memcpy((void *)&*PM_data, (void *)buffer_u16, PMS_BUF_LENGTH - 2);
+	uint16_t sum = 0;
+	// get checksum ready
+	for (uint8_t i = 0; i < PMS_BUF_LENGTH - 2; i++) {
+		sum += input_buffer_ptr[i];
+	}
 
 	// does the checksum make sense?
-	if (sum != PM_data->checksum) {
-		return false;
-	}
+	if (sum != output_pm_data_ptr->checksum) return 0;
 
-	return true;
+
+	return 1;
 }
 
 /**
  * Reads PM sensor and populates input PM data struct
  */
-bool read_PM_Sensor(struct PMS_AQI_data *PM_data) {
+uint8_t read_pm_sensor_data(struct PMS_AQI_data *pm_data_output_ptr) {
+
 	HAL_StatusTypeDef ret;
 	uint8_t buf[PMS_BUF_LENGTH];
 
 	// Tell PM sensor that we want to read
 	buf[0] = PMS_REG;
-	ret = HAL_I2C_Master_Transmit(&hi2c1, PMS_ADDR, buf, 1, HAL_MAX_DELAY);
+	ret = HAL_I2C_Master_Transmit(&hi2c1, PMS_ADDR, buf, 1, 1);
 
-	if ( ret == HAL_OK ) {
+	if(ret != HAL_OK) return 0;
 
-		// Read PMS_BUF_LENGTH bytes (PMS_BUF_LENGTH = 32 is the standard Plantower packet size) from PM sensor
-		ret = HAL_I2C_Master_Receive(&hi2c1, PMS_ADDR, buf, PMS_BUF_LENGTH, HAL_MAX_DELAY);
-		if ( ret == HAL_OK ) {
+	// Read PMS_BUF_LENGTH bytes (PMS_BUF_LENGTH = 32 is the standard Plantower packet size) from PM sensor
+	ret = HAL_I2C_Master_Receive(&hi2c1, PMS_ADDR, buf, PMS_BUF_LENGTH, 1);
 
-			if (parse_PMSAQIdata(buf, PM_data)) { // populate data struct from buffer
-				return true;
-			}
-		}
-	}
-	return false;
+	if ( ret != HAL_OK ) return 0;
+
+	return parse_pm_sensor_data(buf, pm_data_output_ptr);
+
 }
 
 /**

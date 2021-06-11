@@ -13,7 +13,6 @@
 #define SRC_PM_SENSOR_H_
 
 #include "stdint.h"
-#include "stdbool.h"
 #include "string.h"
 #include "stdio.h"
 
@@ -47,7 +46,7 @@ typedef struct PMS_AQI_data {
  * Reads PM sensor and populates input PM data struct
  * - returns false if some kind of error happened, true if everything went fine
  */
-bool read_PM_Sensor(struct PMS_AQI_data *PM_data);
+uint8_t read_pm_sensor_data(struct PMS_AQI_data *PM_data);
 
 /**
  * print PMS data to UART1

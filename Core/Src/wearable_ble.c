@@ -5,25 +5,28 @@
 #include "dht_11.h"
 #include "PM_Sensor.h"
 
-#define SERVICE_UUID "25380284e1b6489abbcf97d8f7470aa4"
-#define WEARABLE_DATA_CHARACTERISTIC_UUID "c3856cfa4af64d0da9a05ed875d937cc"
+#define SERVICE_UUID 						"25380284e1b6489abbcf97d8f7470aa4"
+#define WEARABLE_DATA_CHARACTERISTIC_UUID 	"c3856cfa4af64d0da9a05ed875d937cc"
 
 typedef struct{
-	float temperature;// 4 bytes - little endian
-	float humidity;   // 4 bytes - little endian
-	uint16_t  particle_0_5_count;  // todo: update to PM2.5
-	char character;   //
-	char  digit;      // 1 byte
+	float temperature;				// 4 bytes - little endian
+	float humidity;   				// 4 bytes - little endian
+	int32_t  particle_0_5_count; 	// 4 bytes - little endian
+	char character;   				// 1 byte
+	char  digit;      				// 1 byte
 } wearable_data_t;
 
 typedef struct{
   uint16_t	service_handler;				        /**< Service handle */
   uint16_t	data_characteristic_handler;	  /**< Characteristic handle */
-}Wearable_Context_t;
+} Wearable_Context_t;
 
 PLACE_IN_SECTION("BLE_DRIVER_CONTEXT") static Wearable_Context_t wearable_context;
 
+
 static wearable_data_t getWearableData(){
+
+	uint8_t ret_code = 0;
 
 	//Making dummy data.
 	wearable_data_t data;
@@ -34,10 +37,22 @@ static wearable_data_t getWearableData(){
 	data.temperature = dht11_data.Temperature;
 	data.humidity = dht11_data.Humidity;
 
+
 	// PM2.5 sensor data
 	struct PMS_AQI_data pm_data;
-	read_PM_Sensor(&pm_data);
-	data.particle_0_5_count = pm_data.particles_05um;
+	for(uint8_t i = 0; i < 2 ; i++){ // Linear retry logic
+		ret_code = read_pm_sensor_data(&pm_data);
+		if(ret_code) break;
+		HAL_Delay(5 + 5*i);
+	}
+
+	if(ret_code){ // success
+		data.particle_0_5_count = pm_data.particles_05um;
+	}else{
+		data.particle_0_5_count = 0xFFFFFFFF;
+	}
+
+
 
 	// Character Dummy Data
 	static char chr = 'A';
@@ -52,7 +67,6 @@ static wearable_data_t getWearableData(){
 	return data;
 }
 
-// todo: I want to confirm where this is called from.
 /**
  * @brief  Event handler
  * @param  Event: Address of the buffer holding the Event
