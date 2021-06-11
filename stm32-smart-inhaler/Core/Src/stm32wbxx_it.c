@@ -331,5 +331,15 @@ void RTC_WKUP_IRQHandler(void)
   HW_TS_RTC_Wakeup_Handler();
 }
 
+/**
+  * @brief  This function handles the PVD Output interrupt request.
+  * @param  None
+  * @retval None
+  */
+void PVD_PVM_IRQHandler(void)
+{
+  HAL_PWREx_PVD_PVM_IRQHandler();
+}
+
 /* USER CODE END 1 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
