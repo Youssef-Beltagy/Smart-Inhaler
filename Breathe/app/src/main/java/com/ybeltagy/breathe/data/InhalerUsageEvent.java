@@ -10,11 +10,7 @@ import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
-// UTC/Greenwich ISO-8601 Timestamp
-
 import java.time.Instant;
-
-// todo: consider reording the variable declarations so they are in the same order as in the export feature.
 
 /**
  * Entity (used in Room database) that represents an inhaler usage event.  Contains:
@@ -22,13 +18,14 @@ import java.time.Instant;
  * <p>
  * The following objects are "embedded" (represents an object we would like to decompose into its
  * sub-fields within a table) ->
- * - a WearableData object: environmental conditions from smart pin/wearable at the time of
- * the InhalerUsageEvent, if the information is available
  * <p>
  * - a DiaryEntry object: user comments and tags for the InhalerUsageEvent, if the info is available
  * <p>
- * - a WeatherData object: weather data from the Climacell API at the time of the InhalerUsageEvent,
- * if the information is available
+ * - a WearableData object: environmental conditions from smart pin/wearable at the time of
+ * the InhalerUsageEvent, if the information is available
+ * <p>
+ * - a WeatherData object: weather data from the Tomorrow.io API at the time of the InhalerUsageEvent,
+ * if the information is available (https://docs.tomorrow.io/reference/welcome)
  * <p>
  */
 @RequiresApi(api = Build.VERSION_CODES.O)
@@ -38,50 +35,50 @@ public class InhalerUsageEvent {
     @NonNull // this can never be null
     // name of the column in Room that stores timeStamp
     @ColumnInfo(name = "Inhaler_Usage_Event_UTC_ISO_8601_date_time")
-    private Instant inhalerUsageEventTimeStamp;
+    private Instant inhalerUsageEventTimeStamp = DataFinals.DEFAULT_INSTANT;
     // Note: the java.time package and the Instant class seem like the correct way to store
     // our dates for Java 8
     // (https://medium.com/decisionbrain/dates-time-in-modern-java-4ed9d5848a3e)
 
     @Embedded
-    private WeatherData weatherData;
-    @Embedded
     private DiaryEntry diaryEntry;
     @Embedded
     private WearableData wearableData;
+    @Embedded
+    private WeatherData weatherData;
 
     /**
-     * TODO: We probably should delete this and use the constructor with only the timestamp
-     * because we would never realistically use this (unless we are overwriting all of our
-     * objects at once for some reason).
      * - the @Ignore annotation is used so the Room database explicitly knows to use the
      * constructor with only the Instant timeStamp input parameter to construct InhalerUsageEvents
+     * <p>
      * This annotation is necessary or the program will not compile.
      *
-     * @param inhalerUsageEventTimeStamp
-     * @param weatherData
-     * @param diaryEntry
-     * @param wearableData
+     * @param inhalerUsageEventTimeStamp when the inhaler usage event occurred
+     * @param diaryEntry  object containing any user-entered message
+     *                    and tag (RESCUE or PREVENTATIVE)
+     * @param wearableData object containing local environmental data from the smart wearable from
+     *                     the time of the inhaler usage event
+     * @param weatherData object containing weather data from the Internet from the user's GPS
+     *                    location at the time of the inhaler usage event
      */
     @Ignore
-    public InhalerUsageEvent(@NonNull Instant inhalerUsageEventTimeStamp, WeatherData weatherData,
-                             DiaryEntry diaryEntry, WearableData wearableData) {
+    public InhalerUsageEvent(@NonNull Instant inhalerUsageEventTimeStamp, DiaryEntry diaryEntry,
+                             WearableData wearableData, WeatherData weatherData) {
         setInhalerUsageEventTimeStamp(inhalerUsageEventTimeStamp);
-        setWeatherData(weatherData);
         setDiaryEntry(diaryEntry);
         setWearableData(wearableData);
+        setWeatherData(weatherData);
     }
 
     /**
      * The Room database uses this constructor as it is not marked with an @Ignore annotation
      *
-     * @param inhalerUsageEventTimeStamp
+     * @param inhalerUsageEventTimeStamp when the inhaler usage event occurred
      */
     public InhalerUsageEvent(@NonNull Instant inhalerUsageEventTimeStamp) {
         this(inhalerUsageEventTimeStamp,
-                new WeatherData(),
-                new DiaryEntry(),
-                new WearableData());
+                new DiaryEntry(), new WearableData(), new WeatherData()
+        );
     }
 
     // Note: getter methods are required by Room so it can instantiate InhalerUsageEvent objects
@@ -92,14 +89,6 @@ public class InhalerUsageEvent {
 
     public void setInhalerUsageEventTimeStamp(@NonNull Instant inhalerUsageEventTimeStamp) {
         this.inhalerUsageEventTimeStamp = inhalerUsageEventTimeStamp;
-    }
-
-    public WeatherData getWeatherData() {
-        return weatherData;
-    }
-
-    public void setWeatherData(WeatherData weatherData) {
-        this.weatherData = weatherData;
     }
 
     public DiaryEntry getDiaryEntry() {
@@ -116,5 +105,13 @@ public class InhalerUsageEvent {
 
     public void setWearableData(WearableData wearableData) {
         this.wearableData = wearableData;
+    }
+
+    public WeatherData getWeatherData() {
+        return weatherData;
+    }
+
+    public void setWeatherData(WeatherData weatherData) {
+        this.weatherData = weatherData;
     }
 }

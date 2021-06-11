@@ -215,8 +215,8 @@ public class BreatheDaoTest {
         // create some inhaler usage events
         for (int i = 0; i < 10; i++) {
             Instant aTime = now.plus(i, ChronoUnit.DAYS);
-            InhalerUsageEvent tInhalerUsageEvent = new InhalerUsageEvent(aTime, null,
-                    null, new WearableData(aTime.plus(3, ChronoUnit.MINUTES)));
+            InhalerUsageEvent tInhalerUsageEvent = new InhalerUsageEvent(aTime, null, new WearableData(aTime.plus(3, ChronoUnit.MINUTES)), null
+            );
             tBreatheDao.insert(tInhalerUsageEvent);
         }
         assertEquals(tBreatheDao.getAnySingleInhalerUsageEvent().size(), 1);
@@ -229,8 +229,8 @@ public class BreatheDaoTest {
         for (int i = 0; i < 10; i++) {
             Instant aTime = now.minus(i, ChronoUnit.DAYS);
             InhalerUsageEvent tInhalerUsageEvent = new InhalerUsageEvent
-                    (aTime, null, null, new WearableData(
-                    aTime.plus(3, ChronoUnit.MINUTES)));
+                    (aTime, null, new WearableData(
+                    aTime.plus(3, ChronoUnit.MINUTES)), null);
             tBreatheDao.insert(tInhalerUsageEvent);
         }
 
