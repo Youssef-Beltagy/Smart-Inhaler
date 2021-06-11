@@ -55,14 +55,14 @@ public class GPSWorker extends ListenableWorker {
                             + location.getLatitude() + " , " + location.getLongitude());
                             completer.set(Result.success(createGPSOutput(location)));
                         } else {
-                            Log.d(GPS_WORKER_LOG_TAG, "Location was null....");
+                            Log.d(GPS_WORKER_LOG_TAG, "Location was null");
                         }
                 })
                 .addOnFailureListener(
                         exception -> {
                             Log.e(GPS_WORKER_LOG_TAG, "Exception occurred : "
                                     + exception.getMessage());
-                            completer.set(Result.failure(Data.EMPTY));
+                            completer.set(Result.retry());
                         }
                 ));
     }

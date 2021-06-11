@@ -3,7 +3,6 @@ package com.ybeltagy.breathe.collection;
 import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
-import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.work.BackoffPolicy;
@@ -17,11 +16,10 @@ import com.ybeltagy.breathe.data.DiaryEntry;
 import com.ybeltagy.breathe.data.InhalerUsageEvent;
 import com.ybeltagy.breathe.data.WearableData;
 import com.ybeltagy.breathe.data.WeatherData;
-import com.ybeltagy.breathe.ui.MainActivity;
+
 import com.ybeltagy.breathe.weather_data_collection.GPSWorker;
 import com.ybeltagy.breathe.weather_data_collection.TaskDataFinals;
 import com.ybeltagy.breathe.weather_data_collection.WeatherAPIWorker;
-import com.ybeltagy.breathe.weather_data_collection.WeatherDataSaveToDBWorker;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -61,9 +59,8 @@ public class BreatheRepository {
     }
 
     /**
-     * TODO: maybe we should never use this because it "clobbers" our existing IUEs (unless we
-     * can also retrieve the existing inhalerUsageEvent, update the data and use the same
-     * inhalerUsageEvent object as the input to this function) (might want to delete it)
+     * CAUTION: Using this "clobbers" our existing IUE's inner objects; use only if you wish this
+     * to happen
      * <p>
      * wrapper for BreatheDao update method
      * - uses Executor Service (non-UI thread)
@@ -141,9 +138,6 @@ public class BreatheRepository {
 
         insertIUE(iue);
 
-        //fixme: this workrequest does not retry. There is probably something wrong with the parameters.
-        // Something like if I want to retry, I have to specify that in the response.
-
         // Get WearableData
         // - check if timestamp is <= 5 minutes old - if it is, get environmental data
         //   from the smart wearable
@@ -195,25 +189,20 @@ public class BreatheRepository {
                         TimeUnit.MILLISECONDS).build();
 
         //  create work request for online weather data for the GPS location
+        //  and save it to the database
+        Data requestWeather = new Data.Builder()
+                .putString(TaskDataFinals.KEY_TIMESTAMP, timestamp.toString())
+                .putBoolean( // true, save it to the database
+                        TaskDataFinals.KEY_SAVE_WEATHER, true).build();
+
         OneTimeWorkRequest weatherAPIRequest =
                 new OneTimeWorkRequest.Builder(WeatherAPIWorker.class)
-                        .setInputData(new Data.Builder().putString(
-                                TaskDataFinals.KEY_TIMESTAMP, timestamp.toString()).build())
-                        .build();
-
-        // create work request to save weatherData object to the database
-        OneTimeWorkRequest saveWeatherRequest =
-                new OneTimeWorkRequest.Builder(WeatherDataSaveToDBWorker.class)
-                        .setInputData(new Data.Builder().putString(
-                                TaskDataFinals.KEY_TIMESTAMP, timestamp.toString()).build())
-                        // note: also gets input from weatherAPIRequest String output
-                        // fixme: might as well have weatherAPIRequest pass the timestamp.
+                        .setInputData(requestWeather)
                         .build();
 
         dataFlowManager
                 .beginWith(gpsRequest)
                 .then(weatherAPIRequest)
-                .then(saveWeatherRequest)
                 .enqueue();
     }
 }

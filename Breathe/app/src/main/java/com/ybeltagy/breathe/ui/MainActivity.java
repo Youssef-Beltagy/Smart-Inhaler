@@ -98,10 +98,14 @@ public class MainActivity extends AppCompatActivity {
                         TimeUnit.MILLISECONDS).build();
 
         //  create work request for online weather data for the GPS location
+        Data requestWeather = new Data.Builder()
+                .putString(TaskDataFinals.KEY_TIMESTAMP, Instant.now().toString())
+                .putBoolean( // false, don't save to the database
+                                TaskDataFinals.KEY_SAVE_WEATHER, false).build();
+
        OneTimeWorkRequest weatherAPIRequest =
                 new OneTimeWorkRequest.Builder(WeatherAPIWorker.class)
-                        .setInputData( new Data.Builder().putString(
-                        TaskDataFinals.KEY_TIMESTAMP, Instant.now().toString()).build())
+                        .setInputData(requestWeather)
                         .build();
 
         dataFlowManager.beginWith(gpsRequest).then(weatherAPIRequest).enqueue();
