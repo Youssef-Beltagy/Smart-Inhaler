@@ -173,8 +173,9 @@ public interface BreatheDao {
     List<InhalerUsageEvent> loadAllInhalerUsageEventsBetweenDatesTest(Instant firstDate,
                                                                       Instant secondDate);
 
-    // IMPORTANT: this is here for testing use only; it should not be used in the app itself
-    // This deletes all InhalerUsageEvents from the InhalerUsageEvent_table
+    /**
+     * This deletes all InhalerUsageEvents from the InhalerUsageEvent_table
+     */
     @Query("DELETE FROM InhalerUsageEvent_table")
     void deleteAll();
 }

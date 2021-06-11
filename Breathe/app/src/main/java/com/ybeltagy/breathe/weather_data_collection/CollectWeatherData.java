@@ -22,7 +22,6 @@ import okhttp3.Response;
  */
 public class CollectWeatherData {
 
-    //todo: consider implementing a check to ensure the timestamp is sooner than six hours as an optimization
     protected static String apiKey;
 
     // API fields

@@ -44,8 +44,7 @@ public class WeatherAPIWorker extends Worker {
     @Override
     @SuppressLint("NewApi")
     public Result doWork() {
-        // TODO: should this be a serialized Location object instead of a double array of latitude
-        //       and longitude?
+
         // Input data - latitude and longitude
         double[] latLongArray = getInputData().getDoubleArray(TaskDataFinals.KEY_GPS_RESULT);
 

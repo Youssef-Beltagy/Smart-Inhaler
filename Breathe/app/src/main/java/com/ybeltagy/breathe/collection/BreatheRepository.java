@@ -3,6 +3,7 @@ package com.ybeltagy.breathe.collection;
 import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
+import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.work.BackoffPolicy;
@@ -16,12 +17,14 @@ import com.ybeltagy.breathe.data.DiaryEntry;
 import com.ybeltagy.breathe.data.InhalerUsageEvent;
 import com.ybeltagy.breathe.data.WearableData;
 import com.ybeltagy.breathe.data.WeatherData;
+import com.ybeltagy.breathe.ui.MainActivity;
 import com.ybeltagy.breathe.weather_data_collection.GPSWorker;
 import com.ybeltagy.breathe.weather_data_collection.TaskDataFinals;
 import com.ybeltagy.breathe.weather_data_collection.WeatherAPIWorker;
 import com.ybeltagy.breathe.weather_data_collection.WeatherDataSaveToDBWorker;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -35,7 +38,7 @@ import java.util.concurrent.TimeUnit;
 public class BreatheRepository {
     private final BreatheDao breatheDao;
     private final LiveData<List<InhalerUsageEvent>> allInhalerUsageEvents;
-
+    private static final String tag = BreatheRepository.class.getName();
 
     public BreatheRepository(Application app) {
         BreatheRoomDatabase breatheDB = BreatheRoomDatabase.getDatabase(app); // get handle to database
@@ -59,8 +62,8 @@ public class BreatheRepository {
 
     /**
      * TODO: maybe we should never use this because it "clobbers" our existing IUEs (unless we
-     *  can also retrieve the existing inhalerUsageEvent, update the data and use the same
-     *  inhalerUsageEvent object as the input to this function) (might want to delete it)
+     * can also retrieve the existing inhalerUsageEvent, update the data and use the same
+     * inhalerUsageEvent object as the input to this function) (might want to delete it)
      * <p>
      * wrapper for BreatheDao update method
      * - uses Executor Service (non-UI thread)
@@ -124,23 +127,46 @@ public class BreatheRepository {
 
     /**
      * Saves the IUE into the database and uses the workmanager to collect the other data.
-     * <P>
+     * <p>
      * Unfortunately, the behavior of the workmanager once the app closes is
      * <a href=https://stackoverflow.com/questions/50682061/android-is-workmanager-running-when-app-is-closed>not well defined.</a>
+     *
      * @param timestamp the IUE timestamp
-     * @param context the calling context
+     * @param context   the calling context
      */
     @SuppressLint("NewApi")
-    public void startDataCollection(Instant timestamp, Context context){
+    public void startDataCollection(Instant timestamp, Context context) {
 
-        // fixme: this method looks weird with part of its logic implemented direclty in it and another in a helper.
-        //  refactor later.
         InhalerUsageEvent iue = new InhalerUsageEvent(timestamp);
 
         insertIUE(iue);
 
         //fixme: this workrequest does not retry. There is probably something wrong with the parameters.
         // Something like if I want to retry, I have to specify that in the response.
+
+        // Get WearableData
+        // - check if timestamp is <= 5 minutes old - if it is, get environmental data
+        //   from the smart wearable
+        Instant now = Instant.now();
+        Instant wearableLimit = now.minus(5, ChronoUnit.MINUTES);
+        if (!timestamp.isBefore(wearableLimit)) {
+            wearableDataHelper(timestamp, context);
+        }
+
+        // Get WeatherData for this IUE:
+        // - check if timestamp is <= 6 hours old (+ a 5 min cushion in case it takes a bit
+        //   for the weather request to be made and/or retry); if it's older,
+        //   we can't get historical weather data for it
+        // - may be unnecessary but also check if this timestamp is erroneously from the future
+        //   because then we won't be able to get weather data for it
+        Instant weatherLimit = now.minus(6, ChronoUnit.HOURS)
+                .plus(5, ChronoUnit.MINUTES);
+        if (!timestamp.isBefore(weatherLimit) && timestamp.isBefore(now)) {
+            weatherDataHelper(timestamp, context);
+        }
+    }
+
+    private void wearableDataHelper(Instant timestamp, Context context) {
         WorkRequest wearableWorkRequest =
                 new OneTimeWorkRequest
                         .Builder(WearableWorker.class)
@@ -153,18 +179,12 @@ public class BreatheRepository {
                                         TaskDataFinals.KEY_TIMESTAMP, timestamp.toString()).build())
                         // todo: Merge the weather data package and this package. It is not a good idea to refer to a final in another package.
                         .build();
-
         WorkManager
                 .getInstance(context)
                 .enqueue(wearableWorkRequest);
-
-        // get WeatherData for this IUE
-        getAndSaveWeatherDataHelper(timestamp, context);
-
     }
 
-    @SuppressLint("NewApi")
-    private void getAndSaveWeatherDataHelper(Instant timestamp, Context context) {
+    private void weatherDataHelper(Instant timestamp, Context context) {
         // create work request for GPS
         WorkManager dataFlowManager = WorkManager.getInstance(context);
         OneTimeWorkRequest gpsRequest = new OneTimeWorkRequest
@@ -177,18 +197,18 @@ public class BreatheRepository {
         //  create work request for online weather data for the GPS location
         OneTimeWorkRequest weatherAPIRequest =
                 new OneTimeWorkRequest.Builder(WeatherAPIWorker.class)
-                        .setInputData( new Data.Builder().putString(
+                        .setInputData(new Data.Builder().putString(
                                 TaskDataFinals.KEY_TIMESTAMP, timestamp.toString()).build())
                         .build();
 
         // create work request to save weatherData object to the database
         OneTimeWorkRequest saveWeatherRequest =
                 new OneTimeWorkRequest.Builder(WeatherDataSaveToDBWorker.class)
-                .setInputData( new Data.Builder().putString(
-                        TaskDataFinals.KEY_TIMESTAMP, timestamp.toString()).build())
+                        .setInputData(new Data.Builder().putString(
+                                TaskDataFinals.KEY_TIMESTAMP, timestamp.toString()).build())
                         // note: also gets input from weatherAPIRequest String output
                         // fixme: might as well have weatherAPIRequest pass the timestamp.
-                .build();
+                        .build();
 
         dataFlowManager
                 .beginWith(gpsRequest)
@@ -196,5 +216,4 @@ public class BreatheRepository {
                 .then(saveWeatherRequest)
                 .enqueue();
     }
-
 }
