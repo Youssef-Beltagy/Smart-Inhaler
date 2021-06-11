@@ -2,17 +2,13 @@
 #include "common_blesvc.h"
 #include "app_ble.h"
 #include <stdio.h>
-#include "dht_11.h"
 
 #define SERVICE_UUID "25380284e1b6489abbcf97d8f7470aa4"
 #define WEARABLE_DATA_CHARACTERISTIC_UUID "c3856cfa4af64d0da9a05ed875d937cc"
 
 typedef struct{
-	float temperature;// 4 bytes - little endian
-	float humidity;   // 4 bytes - little endian
-	char  character;  // todo: update to PM2.5
-	char  digit;      // 1 byte
-} wearable_data_t;
+	uint32_t timestamp;      // 4 bytes
+} IUE_t;
 
 typedef struct{
   uint16_t	service_handler;				        /**< Service handle */
@@ -21,27 +17,14 @@ typedef struct{
 
 PLACE_IN_SECTION("BLE_DRIVER_CONTEXT") static Wearable_Context_t wearable_context;
 
-static wearable_data_t getWearableData(){
+static IUE_t getWearableData(){
 
 	//Making dummy data.
-	wearable_data_t data;
+	IUE_t data;
 
-	//DHT 11 Data
-	DHT_11_Data dht11_data;
-	DHT_GetData (&dht11_data);
-	data.temperature = dht11_data.Temperature;
-	data.humidity = dht11_data.Humidity;
+	static uint32_t counter = 0;
 
-	// Character Dummy Data
-	static char chr = 'A';
-	data.character = chr;
-	chr = (chr - 'A' + 1)%26 + 'A';
-
-
-
-	static char dig = '0';
-	data.digit = dig;
-	dig = (dig - '0' + 1)%10 + '0';
+	data.timestamp = counter++;
 
 
 	return data;
@@ -74,7 +57,7 @@ static SVCCTL_EvtAckStatus_t Wearable_BLE_Event_Handler(void *Event)
 			{
 				//https://community.st.com/s/question/0D53W000003xw7LSAQ/basic-ble-reading-for-stm32wb
 
-				static wearable_data_t data; // fixme: it is annoying and unnecessary to protect this against concurrency. Will think a bit about this later.
+				static IUE_t data; // fixme: it is annoying and unnecessary to protect this against concurrency. Will think a bit about this later.
 
 				data = getWearableData();
 
@@ -82,7 +65,7 @@ static SVCCTL_EvtAckStatus_t Wearable_BLE_Event_Handler(void *Event)
 				aci_gatt_update_char_value(wearable_context.service_handler,
 						wearable_context.data_characteristic_handler,
 															0, /* charValOffset */
-															sizeof(wearable_data_t), /* charValueLen */
+															sizeof(IUE_t), /* charValueLen */
 															(uint8_t*) (&data));
 				aci_gatt_allow_read(read_permit_req->Connection_Handle); // todo: consider switching the order.
 
@@ -156,9 +139,6 @@ uint8_t Get_Wearable_Service_UUID(uint8_t* uuidPtr){
 void Wearable_Sensor_Init(void)
 {
 
-	DHT_Initialize();
-
-
   /**
    *	Register the event handler to the BLE controller
    */
@@ -187,7 +167,7 @@ void Wearable_Sensor_Init(void)
   	Char_Array_To_128UUID( WEARABLE_DATA_CHARACTERISTIC_UUID , (uint8_t*)&uuid128);
     aci_gatt_add_char(wearable_context.service_handler,
                       UUID_TYPE_128, &uuid128,
-                      sizeof(wearable_data_t),
+                      sizeof(IUE_t),
                       CHAR_PROP_READ,
 					  ATTR_PERMISSION_AUTHEN_READ,
 					  GATT_NOTIFY_READ_REQ_AND_WAIT_FOR_APPL_RESP, /* gattEvtMask */
