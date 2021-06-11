@@ -33,7 +33,7 @@
 
 /* Private includes -----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <time.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -61,7 +61,10 @@ PLACE_IN_SECTION("MB_MEM2") ALIGN(4) static uint8_t SystemSpareEvtBuffer[sizeof(
 PLACE_IN_SECTION("MB_MEM2") ALIGN(4) static uint8_t BleSpareEvtBuffer[sizeof(TL_PacketHeader_t) + TL_EVT_HDR_SIZE + 255];
 
 /* USER CODE BEGIN PV */
-
+struct tm currTime;
+RTC_TimeTypeDef currentTime;
+RTC_DateTypeDef currentDate;
+uint32_t theTimestamp;
 /* USER CODE END PV */
 
 /* Private functions prototypes-----------------------------------------------*/
@@ -71,6 +74,7 @@ static void APPE_SysStatusNot( SHCI_TL_CmdStatus_t status );
 static void APPE_SysUserEvtRx( void * pPayload );
 
 /* USER CODE BEGIN PFP */
+uint32_t get_timestamp( void );
 /* USER CODE END PFP */
 
 /* Functions Definition ------------------------------------------------------*/
@@ -241,5 +245,26 @@ void shci_cmd_resp_wait(uint32_t timeout)
 }
 
 /* USER CODE BEGIN FD_WRAP_FUNCTIONS */
+/**
+  * @brief  This function creates a timestamp using the RTC
+  * @param  None
+  * @retval 32 bit integer (decimal) timestamp in epoch time
+  */
+uint32_t get_timestamp( void )
+{
+	HAL_RTC_GetTime(&hrtc, &currentTime, RTC_FORMAT_BIN);
+	HAL_RTC_GetDate(&hrtc, &currentDate, RTC_FORMAT_BIN);
+
+	currTime.tm_year = currentDate.Year + 100;  // In fact: 2000 + 18 - 1900
+	currTime.tm_mday = currentDate.Date;
+	currTime.tm_mon  = currentDate.Month - 1;
+
+	currTime.tm_hour = currentTime.Hours;
+	currTime.tm_min  = currentTime.Minutes;
+	currTime.tm_sec  = currentTime.Seconds;
+
+	theTimestamp = (uint32_t) mktime(&currTime);
+	return (theTimestamp);
+}
 /* USER CODE END FD_WRAP_FUNCTIONS */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

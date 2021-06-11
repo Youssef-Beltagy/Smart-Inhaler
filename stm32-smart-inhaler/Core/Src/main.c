@@ -391,7 +391,8 @@ static void MX_RTC_Init(void)
 {
 
   /* USER CODE BEGIN RTC_Init 0 */
-
+	RTC_TimeTypeDef sTime = {0};
+	RTC_DateTypeDef sDate = {0};
   /* USER CODE END RTC_Init 0 */
 
   /* USER CODE BEGIN RTC_Init 1 */
@@ -412,6 +413,42 @@ static void MX_RTC_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN RTC_Init 2 */
+  /* Set Date and Time (if not already done before)*/
+  	/* Read the Back Up Register 0 Data */
+  	if (HAL_RTCEx_BKUPRead(&hrtc, RTC_BKP_DR0) != 0x32F2)
+  	{
+  		/* USER CODE END Check_RTC_BKUP */
+
+  		/** Initialize RTC and set the Time and Date
+  		 */
+  		sTime.Hours = 0x11;
+  		sTime.Minutes = 0x30;
+  		sTime.Seconds = 0x20;
+  		sTime.SubSeconds = 0x0;
+  		sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
+  		sTime.StoreOperation = RTC_STOREOPERATION_RESET;
+
+  		if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BCD) != HAL_OK) {
+  			Error_Handler();
+  		}
+
+  		sDate.WeekDay = RTC_WEEKDAY_THURSDAY;
+  		sDate.Month = RTC_MONTH_JUNE;
+  		sDate.Date = 0x10;
+  		sDate.Year = 0x21;
+
+  		if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BCD) != HAL_OK)   {
+  			Error_Handler();
+  		}
+
+  		/* USER CODE BEGIN RTC_Init 2 */
+  		/* Writes a data in a RTC Backup data Register0 */
+  		HAL_RTCEx_BKUPWrite(&hrtc, RTC_BKP_DR0, 0x32F2);
+  	}
+
+  	/* Clear source Reset Flag */
+  	__HAL_RCC_CLEAR_RESET_FLAGS();
+
   /* Disable RTC registers write protection */
   LL_RTC_DisableWriteProtection(RTC);
 
