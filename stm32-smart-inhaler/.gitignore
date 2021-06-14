@@ -1,0 +1,13 @@
+# https://www.embeddedrelated.com/showthread/comp.arch.embedded/272022-1.php
+Debug/
+Release/
+Backup/
+
+.ds_store
+
+.settings
+
+*.launch
+
+
+
