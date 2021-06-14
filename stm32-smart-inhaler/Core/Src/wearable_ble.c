@@ -1,6 +1,7 @@
 #include "wearable_ble.h"
 #include "common_blesvc.h"
 #include "app_ble.h"
+#include "pvd.h"
 #include <stdio.h>
 
 #define SERVICE_UUID "25380284e1b6489abbcf97d8f7470aa4"
@@ -139,10 +140,12 @@ uint8_t Get_Wearable_Service_UUID(uint8_t* uuidPtr){
 void Wearable_Sensor_Init(void)
 {
 
-  /**
-   *	Register the event handler to the BLE controller
-   */
-  SVCCTL_RegisterSvcHandler(Wearable_BLE_Event_Handler);
+	init_pvd();
+
+	/**
+	*	Register the event handler to the BLE controller
+	*/
+	SVCCTL_RegisterSvcHandler(Wearable_BLE_Event_Handler);
 
     /**
      *  Wearable Data Service
