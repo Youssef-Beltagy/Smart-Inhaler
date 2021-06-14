@@ -400,6 +400,7 @@ static void MX_RTC_Init(void)
   /* USER CODE END RTC_Init 1 */
   /** Initialize RTC Only
   */
+	//TODO: is this the best place to put this?
   hrtc.Instance = RTC;
   hrtc.Init.HourFormat = RTC_HOURFORMAT_24;
   hrtc.Init.AsynchPrediv = CFG_RTC_ASYNCH_PRESCALER;
@@ -413,6 +414,7 @@ static void MX_RTC_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN RTC_Init 2 */
+  // //TODO: Is this the best place to initialize the RTC?
   /* Set Date and Time (if not already done before)*/
   	/* Read the Back Up Register 0 Data */
   	if (HAL_RTCEx_BKUPRead(&hrtc, RTC_BKP_DR0) != 0x32F2)
@@ -452,7 +454,7 @@ static void MX_RTC_Init(void)
   /* Disable RTC registers write protection */
   LL_RTC_DisableWriteProtection(RTC);
 
-  LL_RTC_WAKEUP_SetClock(RTC, CFG_RTC_WUCKSEL_DIVIDER);
+  LL_RTC_WAKEUP_SetClock(RTC, CFG_RTC_WUCKSEL_DIVIDER); //TODO: This seems unnecessary.
 
   /* Enable RTC registers write protection */
   LL_RTC_EnableWriteProtection(RTC);
