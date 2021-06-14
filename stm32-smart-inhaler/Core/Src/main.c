@@ -75,6 +75,7 @@ DMA_HandleTypeDef hdma_usart1_tx;
 RTC_HandleTypeDef hrtc;
 
 /* USER CODE BEGIN PV */
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -91,7 +92,6 @@ static void Reset_IPCC( void );
 static void Reset_BackupDomain( void );
 static void Init_Exti( void );
 static void Config_HSE(void);
-uint8_t get_battery_level(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -142,11 +142,11 @@ int main(void)
   MX_RF_Init();
   MX_RTC_Init();
   /* USER CODE BEGIN 2 */
+
   /* USER CODE END 2 */
 
   /* Init code for STM32_WPAN */
   APPE_Init();
-
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 	while(1)
@@ -458,6 +458,8 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
 }
+
+/* USER CODE BEGIN 4 */
 
 void PeriphClock_Config(void)
 {
