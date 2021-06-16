@@ -3,10 +3,10 @@
 **
 **  File        : LinkerScript.ld
 **
-**  Author		: STM32CubeIDE
+**  Author      : STM32CubeIDE
 **
 **  Abstract    : Linker script for STM32WB55xG Device
-**                      1024Kbytes ROM
+**                      1024Kbytes FLASH
 **                      256Kbytes RAM
 **
 **                Set heap size, stack size and stack location according
@@ -119,12 +119,14 @@ SECTIONS
   _sidata = LOADADDR(.data);
 
   /* Initialized data sections goes into RAM, load LMA copy after code */
-  .data : 
+  .data :
   {
     . = ALIGN(4);
     _sdata = .;        /* create a global symbol at data start */
     *(.data)           /* .data sections */
     *(.data*)          /* .data* sections */
+    *(.RamFunc)        /* .RamFunc sections */
+    *(.RamFunc*)       /* .RamFunc* sections */
 
     . = ALIGN(4);
     _edata = .;        /* define a global symbol at data end */
