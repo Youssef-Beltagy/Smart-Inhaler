@@ -36,7 +36,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "wearable_ble.h"
+#include "inhaler_ble.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/

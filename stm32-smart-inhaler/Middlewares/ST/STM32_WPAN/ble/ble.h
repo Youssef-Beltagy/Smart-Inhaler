@@ -51,7 +51,7 @@ extern "C" {
 #include "svc/Inc/lls.h"
 #include "svc/Inc/tps.h"
 #include "svc/Inc/motenv_stm.h"
-#include "wearable_ble.h"
+#include "inhaler_ble.h"
 #include "svc/Inc/otas_stm.h"
 #include "svc/Inc/mesh.h"  
 #include "svc/Inc/template_stm.h"  
