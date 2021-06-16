@@ -145,7 +145,7 @@
 #define P2P_SERVER5    0
 #define P2P_SERVER6    0
 
-#define CFG_DEV_ID_STM32_WEARABLE_SENSOR        (0x83)
+#define CFG_DEV_ID_STM32_SMART_INHALER        (0x83)
 
 
 #define  RADIO_ACTIVITY_EVENT   1          /* 1 for OOB Demo */
@@ -171,9 +171,6 @@
 #define L2CAP_TIMEOUT_MULTIPLIER        0x1F4
 
 /* USER CODE BEGIN Specific_Parameters */
-#define PUSH_BUTTON_SW1_EXTI_IRQHandler                         EXTI4_IRQHandler
-#define PUSH_BUTTON_SW2_EXTI_IRQHandler                         EXTI0_IRQHandler
-
 /* USER CODE END Specific_Parameters */
 
 /******************************************************************************
@@ -269,7 +266,7 @@
 /**
  * Maximum duration of the connection event when the device is in Slave mode in units of 625/256 us (~2.44 us)
  */
-#define CFG_BLE_MAX_CONN_EVENT_LENGTH  (0xFFFFFFFF)
+#define CFG_BLE_MAX_CONN_EVENT_LENGTH  (0xFFFF)
 
 /**
  * Viterbi Mode

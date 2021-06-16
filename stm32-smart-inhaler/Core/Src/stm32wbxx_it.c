@@ -305,33 +305,6 @@ void DMA2_Channel4_IRQHandler(void)
 
 /* USER CODE BEGIN 1 */
 /**
- * @brief  This function handles External line
- *         interrupt request.
- * @param  None
- * @retval None
- */
-void PUSH_BUTTON_SW1_EXTI_IRQHandler(void)
-{
-  HAL_GPIO_EXTI_IRQHandler(BUTTON_SW1_PIN);
-}
-
-/**
- * @brief  This function handles External line
- *         interrupt request.
- * @param  None
- * @retval None
- */
-void PUSH_BUTTON_SW2_EXTI_IRQHandler(void)
-{
-  HAL_GPIO_EXTI_IRQHandler(BUTTON_SW2_PIN);
-}
-
-void RTC_WKUP_IRQHandler(void)
-{
-  HW_TS_RTC_Wakeup_Handler();
-}
-
-/**
   * @brief  This function handles the PVD Output interrupt request.
   * @param  None
   * @retval None
