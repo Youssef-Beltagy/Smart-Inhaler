@@ -47,7 +47,7 @@
 #include "dbg_trace.h"
 #include "hw_conf.h"
 #include "otp.h"
-#include "FRAM.h"
+#include "fram.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/

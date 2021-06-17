@@ -1,3 +1,4 @@
+#include <fram.h>
 #include "inhaler_ble.h"
 #include "common_blesvc.h"
 #include "app_ble.h"
@@ -11,7 +12,6 @@
 #define SERVICE_UUID "e814c25d7107459eb25d23fec96d49da"
 #define TIME_CHARACTERISTIC_UUID "015529f7554c4138a71e40a2dfede10a"
 #define IUE_CHARACTERISTIC_UUID "d7dc7c5048ce45a49c3e243a5bb75608"
-
 
 typedef struct{
   uint16_t	service_handler;				        /**< Service handle */

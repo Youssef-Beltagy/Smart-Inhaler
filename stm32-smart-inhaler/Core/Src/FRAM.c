@@ -1,4 +1,4 @@
-#include "FRAM.h"
+#include "fram.h"
 
 #define ADDRESS_LENGTH_IN_BYTES 3      // for CY15B104QN
 #define FRAM_DATA_SIZE_IN_BYTES 1      // for CY15B104QN
