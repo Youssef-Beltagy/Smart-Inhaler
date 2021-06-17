@@ -164,6 +164,12 @@ uint8_t push(IUE_t IUEToAdd) {
 
 
 IUE_t pop() {
+
+	if (get_stack_size() == 0) {
+		IUE_t empty_IUE = {0};
+		return empty_IUE;
+	}
+
 	IUE_t topIUE = peek();
 
 	// update stack size
@@ -237,16 +243,12 @@ uint8_t wakeup_fram(){
 
 	uint8_t return_code = TRUE;
 
-	//Send dummy data twice to wake up the FRAM.
+	//Send dummy data to wake up the FRAM.
 	HAL_GPIO_WritePin(CS_PORT, CS_PIN_NUM, GPIO_PIN_RESET);
 	return_code = return_code && HAL_SPI_Transmit(&hspi1, (uint8_t *)&FRAM_RDSR, 1, 100);
 	HAL_GPIO_WritePin(CS_PORT, CS_PIN_NUM, GPIO_PIN_SET);
 
-	HAL_GPIO_WritePin(CS_PORT, CS_PIN_NUM, GPIO_PIN_RESET);
-	return_code = return_code && HAL_SPI_Transmit(&hspi1, (uint8_t *)&FRAM_RDSR, 1, 100);
-	HAL_GPIO_WritePin(CS_PORT, CS_PIN_NUM, GPIO_PIN_SET);
-
-	//Actually, one time should be enough (this was tested), but this is just to be safe.
+	HAL_Delay(1); // FRAM datasheet says 450 uS delay to wake up from hibernate.
 
 	return return_code;
 

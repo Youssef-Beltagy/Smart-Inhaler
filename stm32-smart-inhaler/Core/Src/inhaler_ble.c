@@ -25,31 +25,59 @@ PLACE_IN_SECTION("BLE_DRIVER_CONTEXT") static Inhaler_Context_t inhaler_context;
 
 void record_iue(void){
 
-	// Record an IUE in FRAM Stack
-	// Set the send_iue task
+	IUE_t iue = {0};
 
-	static uint8_t num = 0;
+	iue.timestamp = get_timestamp();
 
+	static uint32_t num = 0; // TODO: delete
 	num++;
+	iue.count = num;
+
+	wakeup_fram();
+
+	push(iue);
+
+	hibernate_fram();
+
+	UTIL_SEQ_SetTask(1 << CFG_TASK_SEND_IUE, CFG_SCH_PRIO_0);
 
 }
 
 void send_iue(void){
 
-	// Check inhaler connected
-	// Check Indications enabled.
-	// Update data if inhaler is connected
+	if(!inhaler_context.inhaler_connected || !inhaler_context.iue_indications_enabled) return;
 
-	static uint8_t num = 0;
+	wakeup_fram();
 
-		num++;
+	IUE_t iue = peek();
+
+	uint32_t stack_size = get_stack_size();
+
+	hibernate_fram();
+
+	if(stack_size == 0) return;
+
+	aci_gatt_update_char_value(inhaler_context.service_handler,
+								inhaler_context.iue_characteristic_handler,
+								0, /* charValOffset */
+								sizeof(IUE_t), /* charValueLen */
+								(uint8_t*) (&iue));
+
+
+	// FIXME: This function can be optimized to avoid waking the FRAM unnecessarily.
 
 }
 
 void pop_iue(){
-	// Pop_iue from the stack
 
-	// set the send_iue task
+	wakeup_fram();
+
+	pop();
+
+	hibernate_fram();
+
+	UTIL_SEQ_SetTask(1 << CFG_TASK_SEND_IUE, CFG_SCH_PRIO_0);
+
 }
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
@@ -124,7 +152,8 @@ static SVCCTL_EvtAckStatus_t inhaler_handler(evt_blecore_aci * blecore_evt){
 					// Indications have been enabled.
 					inhaler_context.iue_indications_enabled = TRUE;
 
-					// TODO: set the send_iue task.
+					UTIL_SEQ_SetTask(1 << CFG_TASK_SEND_IUE, CFG_SCH_PRIO_0);
+
 				}
 				else
 				{
@@ -136,7 +165,23 @@ static SVCCTL_EvtAckStatus_t inhaler_handler(evt_blecore_aci * blecore_evt){
 		}
 		break;
 
+		case ACI_GATT_SERVER_CONFIRMATION_VSEVT_CODE:
+		{
 
+			//TODO: Is there a way to confirm this server confirmation came from an the iue characteristic indication?
+			// I tried using aci_gatt_server_confirmation_even_rp0, but it didn't have the information I needed to confirm what caused this
+			// server confirmation.
+			//aci_gatt_server_confirmation_event_rp0* server_confirmation = (aci_gatt_server_confirmation_event_rp0*)blecore_evt->data;
+
+			//FIXME: Assumes this server confirmation is for an indication and pop the last recorded IUE.
+			// Notice that if an indication was sent, an iue was recorded, and then a server response received,
+			// the wrong iue will be popped and the same iue will be sent twice.
+			// This is a non-trivial issue to handle (I have limited time) and it is unlikely to happen seeing
+			// that IUEs are recorded when a user pushes a button. BLE communication is fast enough that the
+			// server response and everything will be happen before the user presses twice.
+			UTIL_SEQ_SetTask(1 << CFG_TASK_POP_IUE, CFG_SCH_PRIO_0);
+		}
+		break;
 
 		default:
 		break;
@@ -230,6 +275,9 @@ void Wearable_Sensor_Init(void)
 
 	UTIL_SEQ_RegTask( 1<<CFG_TASK_RECORD_IUE, UTIL_SEQ_RFU, record_iue);
 	UTIL_SEQ_RegTask( 1<<CFG_TASK_SEND_IUE, UTIL_SEQ_RFU, send_iue);
+	UTIL_SEQ_RegTask( 1<<CFG_TASK_POP_IUE, UTIL_SEQ_RFU, pop_iue);
+
+
 
 	init_pvd();
 
