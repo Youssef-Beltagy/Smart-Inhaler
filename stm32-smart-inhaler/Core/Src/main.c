@@ -47,6 +47,7 @@
 #include "dbg_trace.h"
 #include "hw_conf.h"
 #include "otp.h"
+#include "FRAM.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -153,9 +154,10 @@ int main(void)
   APPE_Init();
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  test_fram();
 	while(1)
 	{
-		UTIL_SEQ_Run( UTIL_SEQ_DEFAULT );
+		//UTIL_SEQ_Run( UTIL_SEQ_DEFAULT );
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -485,7 +487,7 @@ static void MX_SPI1_Init(void)
   hspi1.Instance = SPI1;
   hspi1.Init.Mode = SPI_MODE_MASTER;
   hspi1.Init.Direction = SPI_DIRECTION_2LINES;
-  hspi1.Init.DataSize = SPI_DATASIZE_4BIT;
+  hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
   hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
   hspi1.Init.NSS = SPI_NSS_SOFT;

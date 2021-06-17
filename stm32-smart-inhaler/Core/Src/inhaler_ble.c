@@ -5,16 +5,13 @@
 #include <stdio.h>
 #include "stm32wbxx_hal.h"
 #include "stm32_seq.h"
+#include "inhaler_utilities.h"
 #include "rtc.h" // TODO: Move all of the includes somewhere else.
 
 #define SERVICE_UUID "e814c25d7107459eb25d23fec96d49da"
 #define TIME_CHARACTERISTIC_UUID "015529f7554c4138a71e40a2dfede10a"
 #define IUE_CHARACTERISTIC_UUID "d7dc7c5048ce45a49c3e243a5bb75608"
 
-typedef struct{
-	uint32_t timestamp;      // 4 bytes
-	uint32_t count;
-} IUE_t;
 
 typedef struct{
   uint16_t	service_handler;				        /**< Service handle */
