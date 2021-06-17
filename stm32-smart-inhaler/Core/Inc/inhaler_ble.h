@@ -8,11 +8,6 @@ extern "C" {
 
 #include <stdint.h>
 
-#ifndef FALSE
-#define FALSE 0
-#define TRUE 1 // TODO: centralize all the TRUE/FALSE definitions
-#endif
-
 void Wearable_Sensor_Init(void);
 
 void Wearable_On_Connect(void);

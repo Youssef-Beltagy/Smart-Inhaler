@@ -8,8 +8,19 @@
 #ifndef CORE_INC_INHALER_UTILITIES_H_
 #define CORE_INC_INHALER_UTILITIES_H_
 
+#include "stm32wbxx_hal.h"
+#include "app_common.h"
+#include <time.h>
+#include <stdio.h>
+#include <string.h>
+
+#ifndef FALSE
 #define FALSE 0
-#define TRUE 1
+#endif
+
+#ifndef TRUE
+#define TRUE !FALSE
+#endif
 
 typedef struct{
 	uint32_t timestamp;      // 4 bytes
@@ -23,7 +34,7 @@ void print_bytes(uint8_t *buffer_to_print,uint16_t buffer_to_print_size);
 
 /**
  * Converts a uint32_t to a Big Endian byte array. Will truncate the LSB if
- * lenght_of_byte_array is smaller than 4.
+ * size is smaller than 4.
  *
  * the "be" in the function is for "Big Endian"
  */
@@ -34,7 +45,7 @@ void to_be_bytes(uint32_t number_to_convert, uint8_t *array_buf, uint8_t length_
  *
  * The "be" in the function name is for big endian.
  *
- * If lenght_of_byte_array is smaller than 4, the LSB (higher indices) will be ignored.
+ * If size is smaller than 4, the LSB (higher indices) will be ignored.
  *
  * Assumes a size from 0 to 4, inclusive.
  */
