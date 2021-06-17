@@ -232,7 +232,6 @@ static void BLE_StatusNot( HCI_TL_CmdStatus_t status );
 static void Ble_Tl_Init( void );
 static void Ble_Hci_Gap_Gatt_Init(void);
 static const uint8_t* BleGetBdAddress( void );
-static void Adv_Request( APP_BLE_ConnStatus_t New_Status );
 #if(L2CAP_REQUEST_NEW_CONN_PARAM != 0)
 static void BLE_SVC_L2CAP_Conn_Update(uint16_t Connection_Handle);
 static void Connection_Interval_Update_Req( void );
@@ -358,11 +357,6 @@ void APP_BLE_Init( void )
   AdvIntervalMin = CFG_FAST_CONN_ADV_INTERVAL_MIN;
   AdvIntervalMax = CFG_FAST_CONN_ADV_INTERVAL_MAX;
 
-  /**
-   * Start to Advertise to be connected by P2P Client
-   */
-   Adv_Request(APP_BLE_FAST_ADV);
-
 /* USER CODE BEGIN APP_BLE_Init_2 */
 
 /* USER CODE END APP_BLE_Init_2 */
@@ -398,9 +392,6 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification( void *pckt )
 
         APP_DBG_MSG("\r\n\r** DISCONNECTION EVENT WITH CLIENT \n");
       }
-
-      /* restart advertising */
-      Adv_Request(APP_BLE_FAST_ADV);
 
       /**
        * SPECIFIC to P2P Server APP
@@ -763,7 +754,7 @@ static void Ble_Hci_Gap_Gatt_Init(void){
    }
 }
 
-static void Adv_Request(APP_BLE_ConnStatus_t New_Status)
+void Adv_Request(APP_BLE_ConnStatus_t New_Status)
 {
   tBleStatus ret = BLE_STATUS_INVALID_PARAMS;
   uint16_t Min_Inter, Max_Inter;

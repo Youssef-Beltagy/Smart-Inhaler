@@ -72,6 +72,9 @@ extern "C" {
 
   APP_BLE_ConnStatus_t APP_BLE_Get_Server_Connection_Status(void);
 
+  void Adv_Request( APP_BLE_ConnStatus_t New_Status );
+
+
 /* USER CODE BEGIN EF */
 
 
