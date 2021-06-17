@@ -40,11 +40,6 @@ IUE_t peek();
 uint8_t clear(uint8_t clean);
 
 /**
- * Initializes the fram.
- */
-uint8_t init_fram();
-
-/**
  * Puts the FRAM in hibernate mode to save energy.
  */
 uint8_t hibernate_fram();

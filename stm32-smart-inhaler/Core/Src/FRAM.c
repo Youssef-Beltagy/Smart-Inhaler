@@ -29,7 +29,7 @@ static const uint8_t FRAM_RDSR = 0x05; // read status register
 static const uint8_t FRAM_WRITE = 0x02; // write memory data
 static const uint8_t FRAM_READ = 0x03; // read data memory
 //static const uint8_t FRAM_DPD = 0xBA; // enter deep power-down
-//static const uint8_t FRAM_HBN = 0xB9; // enter hibernate mode
+static const uint8_t FRAM_HBN = 0xB9; // enter hibernate mode
 
 // *** FRAM instructions end ***
 static void write_FRAM(uint32_t address,  uint8_t *input_buf, uint32_t write_size) {
@@ -188,8 +188,74 @@ IUE_t peek() {
 	return top_IUE;
 }
 
+/**
+ * Clears the fram stack. Clears the fram if clean == TRUE. Otherwise, just trims the data.
+ *
+ */
+uint8_t clear(uint8_t clean){
+
+	/**
+	 * Always returns true for now. In the future, write_FRAM should return a status code.
+	 *
+	 * clear would return the logical AND of all those status codes.
+	 */
+
+	write_stack_size_FRAM(0);
+
+	if(!clean) return TRUE;
+
+	uint32_t clean_size = MAX_ADDRESS + 1;
+
+	uint8_t clean_block[16] = {0};// clean 16 bytes at a time.
+
+	for(uint32_t cleaned = 0; cleaned < clean_size; cleaned += sizeof(clean_block)){
+		write_FRAM(STACK_SIZE_ADDRESS + cleaned, clean_block, 16);
+	}
+
+	return TRUE;
+
+}
+
+/**
+ * Puts the FRAM in hibernate mode to save energy.
+ */
+uint8_t hibernate_fram(){
+
+	uint8_t return_code;
+	// Send the hibernate op-code
+	HAL_GPIO_WritePin(CS_PORT, CS_PIN_NUM, GPIO_PIN_RESET);
+	return_code = HAL_SPI_Transmit(&hspi1, (uint8_t *)&FRAM_HBN, 1, 100);
+	HAL_GPIO_WritePin(CS_PORT, CS_PIN_NUM, GPIO_PIN_SET);
+
+	return return_code;
+}
+
+/**
+ * Wakes the fram from the hibernate mode.
+ */
+uint8_t wakeup_fram(){
+
+	uint8_t return_code = TRUE;
+
+	//Send dummy data twice to wake up the FRAM.
+	HAL_GPIO_WritePin(CS_PORT, CS_PIN_NUM, GPIO_PIN_RESET);
+	return_code = return_code && HAL_SPI_Transmit(&hspi1, (uint8_t *)&FRAM_RDSR, 1, 100);
+	HAL_GPIO_WritePin(CS_PORT, CS_PIN_NUM, GPIO_PIN_SET);
+
+	HAL_GPIO_WritePin(CS_PORT, CS_PIN_NUM, GPIO_PIN_RESET);
+	return_code = return_code && HAL_SPI_Transmit(&hspi1, (uint8_t *)&FRAM_RDSR, 1, 100);
+	HAL_GPIO_WritePin(CS_PORT, CS_PIN_NUM, GPIO_PIN_SET);
+
+	//Actually, one time should be enough (this was tested), but this is just to be safe.
+
+	return return_code;
+
+}
+
 
 void test_fram(){
+
+	clear(TRUE);
 
 	uint8_t uart_buf[120];
 	int uart_buf_len;
@@ -238,6 +304,10 @@ void test_fram(){
 		uart_buf_len = sprintf((char *)uart_buf, "\r\n------------------------------------------------------------------------------------------");
 		HAL_UART_Transmit(&huart1, uart_buf,uart_buf_len, 100);
 
+		hibernate_fram();
+		HAL_Delay(100);
+		wakeup_fram();
+
 		// print out status register
 		uart_buf_len = sprintf((char *)uart_buf, "\r\n--> Status Register is ");
 		HAL_UART_Transmit(&huart1, uart_buf,uart_buf_len, 100);
@@ -265,6 +335,15 @@ void test_fram(){
 		HAL_UART_Transmit(&huart1, uart_buf,uart_buf_len, 100);
 		print_status_register();
 
+
+		// dump memory
+		uart_buf_len = sprintf((char *)uart_buf, "\r\n------------------------------------------------------------------------------------------");
+		HAL_UART_Transmit(&huart1, uart_buf,uart_buf_len, 100);
+
+		uart_buf_len = sprintf((char *)uart_buf, "\r\n--> Dumping memory until address : %X", (unsigned int)until_address);
+		HAL_UART_Transmit(&huart1, uart_buf,uart_buf_len, 100);
+		print_FRAM_until_address(until_address);
+
 		uart_buf_len = sprintf((char *)uart_buf, "\r\n------------------------------------------------------------------------------------------");
 		HAL_UART_Transmit(&huart1, uart_buf,uart_buf_len, 100);
 
@@ -280,7 +359,6 @@ void test_fram(){
 		read_FRAM(test_addr, test_read_size, spi_buf);
 		print_bytes(spi_buf, test_read_size);
 
-
 		uart_buf_len = sprintf((char *)uart_buf, "\r\n-------------------- Testing SPI1_DataStorage / stack functionality ----------------------");
 		HAL_UART_Transmit(&huart1, uart_buf,uart_buf_len, 100);
 
@@ -294,8 +372,7 @@ void test_fram(){
 		uart_buf_len = sprintf((char *)uart_buf, "\r\n--> Testing push() for %d entries", num_pushes);
 		HAL_UART_Transmit(&huart1, uart_buf,uart_buf_len, 100);
 
-		int i = 0;
-		for (i; i < num_pushes; i++) {
+		for (int i = 0; i < num_pushes; i++) {
 			IUE_t push_IUE;
 			push_IUE.timestamp = i*10000 + 11; // set some placeholder time stamps
 			push(push_IUE);
@@ -340,6 +417,8 @@ void test_fram(){
 		HAL_UART_Transmit(&huart1, uart_buf,uart_buf_len, 100);
 
 		print_stack_size_FRAM();
+
+		clear(TRUE);
 
 
 }

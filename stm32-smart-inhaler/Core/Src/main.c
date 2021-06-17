@@ -154,10 +154,9 @@ int main(void)
   APPE_Init();
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  test_fram();
 	while(1)
 	{
-		//UTIL_SEQ_Run( UTIL_SEQ_DEFAULT );
+		UTIL_SEQ_Run( UTIL_SEQ_DEFAULT );
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
