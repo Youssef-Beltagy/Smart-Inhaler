@@ -13,8 +13,8 @@
 #define TIME_CHARACTERISTIC_UUID 	"015529f7554c4138a71e40a2dfede10a"
 #define IUE_CHARACTERISTIC_UUID 	"d7dc7c5048ce45a49c3e243a5bb75608"
 
-#define LED_TICK                	(500*1000/CFG_TS_TICK_VAL) /**< 500ms */
-#define LED_NUM_BLINKS				3
+#define LED_TICK                	(100*1000/CFG_TS_TICK_VAL) /**< 200ms */
+#define LED_NUM_BLINKS				5
 #define ADV_TIMOUT        			(10*1000*1000/CFG_TS_TICK_VAL) /**< 10s */
 
 typedef struct{
@@ -326,9 +326,6 @@ static SVCCTL_EvtAckStatus_t gatt_event_handler(void *Event)
 void Wearable_On_Connect(void){
 	inhaler_context.inhaler_connected = TRUE;
 	HW_TS_Stop(inhaler_context.advertisement_timer_handler);
-
-	uint8_t result = aci_gap_set_non_discoverable(); // TODO: delete
-
 }
 
 void Wearable_On_Disconnect(void){
