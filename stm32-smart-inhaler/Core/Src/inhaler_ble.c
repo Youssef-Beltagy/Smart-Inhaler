@@ -9,9 +9,13 @@
 #include "inhaler_utilities.h"
 #include "rtc.h" // TODO: Move all of the includes somewhere else.
 
-#define SERVICE_UUID "e814c25d7107459eb25d23fec96d49da"
-#define TIME_CHARACTERISTIC_UUID "015529f7554c4138a71e40a2dfede10a"
-#define IUE_CHARACTERISTIC_UUID "d7dc7c5048ce45a49c3e243a5bb75608"
+#define SERVICE_UUID			 	"e814c25d7107459eb25d23fec96d49da"
+#define TIME_CHARACTERISTIC_UUID 	"015529f7554c4138a71e40a2dfede10a"
+#define IUE_CHARACTERISTIC_UUID 	"d7dc7c5048ce45a49c3e243a5bb75608"
+
+#define LED_TICK                	(500*1000/CFG_TS_TICK_VAL) /**< 500ms */
+#define LED_NUM_BLINKS				3
+#define ADV_TIMOUT        			(10*1000*1000/CFG_TS_TICK_VAL) /**< 10s */
 
 typedef struct{
   uint16_t	service_handler;				        /**< Service handle */
@@ -19,9 +23,124 @@ typedef struct{
   uint16_t	iue_characteristic_handler;
   uint8_t	inhaler_connected;
   uint8_t	iue_indications_enabled;
+  uint8_t	advertisement_timer_handler;
+  uint8_t	blink_led_timer_handler;
 }Inhaler_Context_t;
 
 PLACE_IN_SECTION("BLE_DRIVER_CONTEXT") static Inhaler_Context_t inhaler_context;
+
+uint32_t pick_and_initialize_led(void){
+
+	GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+	uint8_t battery_status = get_battery_status();
+
+	if(battery_status == BATTERY_DEAD){
+
+		/*Configure GPIO pin : PB12 -- RED LED */
+		GPIO_InitStruct.Pin = GPIO_PIN_12;
+
+
+	}else if(battery_status == BATTERY_ALMOST_DEAD){
+
+		/*Configure GPIO pin : PB14 -- Yellow LED */
+		GPIO_InitStruct.Pin = GPIO_PIN_14;
+
+	}else{ 	// BATTERY_FULL
+
+		/*Configure GPIO pin : PB13 -- Green LED */
+		GPIO_InitStruct.Pin = GPIO_PIN_13;
+	}
+
+
+	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+	return GPIO_InitStruct.Pin;
+
+}
+
+static uint8_t led_counter = 0;
+void blink_led(void){
+
+	static uint32_t pin = 0;
+
+	if(led_counter == 0){
+		HW_TS_Start(inhaler_context.blink_led_timer_handler, (uint32_t)LED_TICK);
+		// The timeserver automatically stops and restarts the timer if it is already running
+
+		if(pin != 0){
+			HAL_GPIO_WritePin(GPIOB, pin, GPIO_PIN_RESET);
+		}
+
+		pin = pick_and_initialize_led();
+
+	}
+
+	led_counter++;
+
+	HAL_GPIO_WritePin(GPIOB, pin, led_counter % 2);
+
+	if(led_counter == LED_NUM_BLINKS * 2){
+		//turn off LED
+		HW_TS_Stop(inhaler_context.blink_led_timer_handler);
+		led_counter = 0;
+	}
+
+}
+
+void adv_start(void){
+
+	//fixme:
+	if(!inhaler_context.inhaler_connected){
+		Adv_Request(APP_BLE_FAST_ADV);
+		HW_TS_Start(inhaler_context.advertisement_timer_handler, (uint32_t)ADV_TIMOUT);
+		// The time server automatically stops and restarts a timer if it was already running.
+	}
+
+	led_counter = 0; //reset the LED blinks
+	blink_led(); // fixme: May misbehave with the sequencer.
+
+}
+
+void adv_cancel(){
+
+	// FIXME: what if a connection happens right as the adv_cancel timer is set?
+	// and the adv_cancel function is called before the on_connect function?
+	// Will calling aci_gap_set_non_discoverable cut the connection or will it be ignored?
+
+
+	// After experimenting, it seems okay to call aci_gap_set_non_discoverable after a connection was made.
+	if (!inhaler_context.inhaler_connected)
+	{
+
+		tBleStatus result = 0x00;
+
+		result = aci_gap_set_non_discoverable();
+
+		if (result == BLE_STATUS_SUCCESS)
+		{
+		  APP_DBG_MSG("  \r\n\r");
+		  APP_DBG_MSG("** STOP ADVERTISING **  \r\n\r");
+		}
+		else
+		{
+		  APP_DBG_MSG("** STOP ADVERTISING **  Failed \r\n\r");
+		}
+
+	}
+
+}
+
+void blink_led_req(){
+	UTIL_SEQ_SetTask( 1<<CFG_TASK_BLINK_LED, CFG_SCH_PRIO_0);
+}
+
+void adv_cancel_req(void){
+	UTIL_SEQ_SetTask( 1<<CFG_TASK_ADV_CANCEL_ID, CFG_SCH_PRIO_0);
+}
 
 void record_iue(void){
 
@@ -31,7 +150,7 @@ void record_iue(void){
 
 	static uint32_t num = 0; // TODO: delete
 	num++;
-	iue.count = num;
+	iue.count = num << 24;
 
 	wakeup_fram();
 
@@ -82,29 +201,15 @@ void pop_iue(){
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 
-	static uint8_t num = 0;
 	if(GPIO_Pin == GPIO_PIN_12){
-		//SW1
+		//SW1 -- Inhaler button
 		UTIL_SEQ_SetTask(1 << CFG_TASK_RECORD_IUE, CFG_SCH_PRIO_0);
-		num++;
+		UTIL_SEQ_SetTask( 1<<CFG_TASK_ADV_START, CFG_SCH_PRIO_0);
 	}else if (GPIO_Pin == GPIO_PIN_0){
-		//SW2
+		//SW2 -- Multi-purpose button
 		UTIL_SEQ_SetTask(1 << CFG_TASK_SEND_IUE, CFG_SCH_PRIO_0);
-		num += 10;
+		UTIL_SEQ_SetTask( 1<<CFG_TASK_ADV_START, CFG_SCH_PRIO_0);
 	}
-}
-
-static IUE_t getWearableData(){
-
-	IUE_t data;
-
-	static uint32_t counter = 0;
-	counter++;
-
-	data.timestamp = get_timestamp();
-	data.count = counter << 24;
-
-	return data;
 }
 
 static SVCCTL_EvtAckStatus_t inhaler_handler(evt_blecore_aci * blecore_evt){
@@ -120,9 +225,7 @@ static SVCCTL_EvtAckStatus_t inhaler_handler(evt_blecore_aci * blecore_evt){
 			{
 				//https://community.st.com/s/question/0D53W000003xw7LSAQ/basic-ble-reading-for-stm32wb
 
-				static IUE_t data;
-
-				data = getWearableData();
+				static IUE_t data = {0};
 
 				aci_gatt_update_char_value(inhaler_context.service_handler,
 						inhaler_context.timer_characteristic_handler,
@@ -220,12 +323,12 @@ static SVCCTL_EvtAckStatus_t gatt_event_handler(void *Event)
   return(return_value);
 }/* end SVCCTL_EvtAckStatus_t */
 
-uint8_t isWearableConnected(void){
-	return APP_BLE_Get_Server_Connection_Status() == APP_BLE_CONNECTED_SERVER;
-}
-
 void Wearable_On_Connect(void){
 	inhaler_context.inhaler_connected = TRUE;
+	HW_TS_Stop(inhaler_context.advertisement_timer_handler);
+
+	uint8_t result = aci_gap_set_non_discoverable(); // TODO: delete
+
 }
 
 void Wearable_On_Disconnect(void){
@@ -273,16 +376,31 @@ void Wearable_Sensor_Init(void)
 
 	// TODO: Make an init function that sets up everything other than BLE and have it called called first.
 
+	init_pvd();
+
+	/**
+	 * Register tasks in the sequencer
+	 */
 	UTIL_SEQ_RegTask( 1<<CFG_TASK_RECORD_IUE, UTIL_SEQ_RFU, record_iue);
 	UTIL_SEQ_RegTask( 1<<CFG_TASK_SEND_IUE, UTIL_SEQ_RFU, send_iue);
 	UTIL_SEQ_RegTask( 1<<CFG_TASK_POP_IUE, UTIL_SEQ_RFU, pop_iue);
+	UTIL_SEQ_RegTask( 1<<CFG_TASK_ADV_CANCEL_ID, UTIL_SEQ_RFU, adv_cancel);
+	UTIL_SEQ_RegTask( 1<<CFG_TASK_BLINK_LED, UTIL_SEQ_RFU, blink_led);
+	UTIL_SEQ_RegTask( 1<<CFG_TASK_ADV_START, UTIL_SEQ_RFU, adv_start);
 
-
-
-	init_pvd();
 
 	inhaler_context.inhaler_connected = FALSE;
 	inhaler_context.iue_indications_enabled = FALSE;
+
+	/**
+	* Create timer to handle the Advertising Stop
+	*/
+	HW_TS_Create(CFG_TIM_PROC_ID_ISR, &(inhaler_context.advertisement_timer_handler), hw_ts_SingleShot, adv_cancel_req);
+
+	/**
+	* Create timer to handle the blinking the LED Switch
+	*/
+	HW_TS_Create(CFG_TIM_PROC_ID_ISR, &(inhaler_context.blink_led_timer_handler), hw_ts_Repeated, blink_led_req);
 
 	/**
 	*	Register the event handler to the BLE controller
@@ -306,8 +424,8 @@ void Wearable_Sensor_Init(void)
                       6,
                       &(inhaler_context.service_handler));
 
-    /**
-     *  Add LED Characteristic
+    /** TODO: this characteristic can be updated and used later to set the inhaler calendar through the phone.
+     * Timer characteristic
      */
   	Char_Array_To_128UUID( TIME_CHARACTERISTIC_UUID , (uint8_t*)&uuid128);
     aci_gatt_add_char(inhaler_context.service_handler,
@@ -320,7 +438,9 @@ void Wearable_Sensor_Init(void)
                       1, /* isVariable */ // TODO: consider making this 0 to represent it is not variable.
                       &(inhaler_context.timer_characteristic_handler));
 
-
+    /**
+     * The iue characteristic to send iues to the phone.
+     */
   	Char_Array_To_128UUID( IUE_CHARACTERISTIC_UUID , (uint8_t*)&uuid128);
   	aci_gatt_add_char(inhaler_context.service_handler,
   	                      UUID_TYPE_128, &uuid128,
