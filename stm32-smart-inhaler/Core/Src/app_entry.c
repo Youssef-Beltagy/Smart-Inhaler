@@ -221,6 +221,13 @@ void UTIL_SEQ_Idle( void )
 void UTIL_SEQ_EvtIdle( UTIL_SEQ_bm_t task_id_bm, UTIL_SEQ_bm_t evt_waited_bm )
 {
   UTIL_SEQ_Run( UTIL_SEQ_DEFAULT );
+
+  // FIXME: It doesn't make sense all tasks are allowed to run.
+  // Could this be a bug carried from the P2P_server example?
+  // Investigate and ensure it doesn't cause recursive calls.
+
+  // This might really cause recursive calls if a task is set somewhere, then waits on an event and then set again.
+  // Well, maybe this isn't such a big deal, knowing the sequencer doesn't work well with events in the first place.
 }
 
 void shci_notify_asynch_evt(void* pdata)
