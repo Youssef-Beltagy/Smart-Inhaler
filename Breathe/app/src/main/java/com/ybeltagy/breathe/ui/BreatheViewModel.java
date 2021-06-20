@@ -44,6 +44,11 @@ public class BreatheViewModel extends AndroidViewModel {
     @SuppressLint("NewApi")
     public void simulateIUE(Context context){
         breatheRepository.startDataCollection(Instant.now(), context);
+        //TODO: is passing a context really the best idea?
+    }
+
+    public void clearIUEs(){
+        breatheRepository.clearIUEs();
     }
 
 }

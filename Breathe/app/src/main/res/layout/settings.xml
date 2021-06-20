@@ -22,10 +22,17 @@
         app:layout_constraintTop_toBottomOf="@+id/toolbar">
 
         <Button
+            android:id="@+id/scan_inhaler_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onConnectToInhalerButtonClick"
+            android:text="@string/connect_to_inhaler" />
+
+        <Button
             android:id="@+id/scan_wearable_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="onScanButtonClick"
+            android:onClick="onConnectToWearableButtonClick"
             android:text="@string/connect_to_wearable" />
 
         <Button
@@ -35,20 +42,27 @@
             android:onClick="exportAllIUEs"
             android:text="@string/export_data_as_csv" />
 
+        <Button
+            android:id="@+id/clear_iue_data_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="clearIUEs"
+            android:text="@string/clear_iues" />
+
         <!-- delete later. Leave hardcoded string-->
         <Button
             android:id="@+id/simulate_iue_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="onSimulateIUEButtonClick"
-            android:text="Simulate IUE" />
+            android:text="@string/simulate_iue" />
 
         <Button
             android:id="@+id/test_wearable_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="testWearableData"
-            android:text="Test wearable" />
+            android:text="@string/test_wearable" />
     </LinearLayout>
 
 

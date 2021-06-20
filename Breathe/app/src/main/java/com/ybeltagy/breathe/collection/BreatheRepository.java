@@ -132,11 +132,17 @@ public class BreatheRepository {
      * @param context   the calling context
      */
     @SuppressLint("NewApi")
-    public void startDataCollection(Instant timestamp, Context context) {
+    public static void startDataCollection(Instant timestamp, Context context){ //fixme: made static temporarily
 
         InhalerUsageEvent iue = new InhalerUsageEvent(timestamp);
 
-        insertIUE(iue);
+        // fixme: replace back after changing from static
+        //insertIUE(iue);
+        (new Thread() {
+            public void run() {
+                BreatheRoomDatabase.getDatabase(context).breatheDao().insert(iue);
+            }
+        }).start();
 
         // Get WearableData
         // - check if timestamp is <= 5 minutes old - if it is, get environmental data
@@ -156,11 +162,11 @@ public class BreatheRepository {
         Instant weatherLimit = now.minus(6, ChronoUnit.HOURS)
                 .plus(5, ChronoUnit.MINUTES);
         if (!timestamp.isBefore(weatherLimit) && timestamp.isBefore(now)) {
-            weatherDataHelper(timestamp, context);
+            getAndSaveWeatherDataHelper(timestamp, context);
         }
     }
 
-    private void wearableDataHelper(Instant timestamp, Context context) {
+    private static void wearableDataHelper(Instant timestamp, Context context) {
         WorkRequest wearableWorkRequest =
                 new OneTimeWorkRequest
                         .Builder(WearableWorker.class)
@@ -178,7 +184,8 @@ public class BreatheRepository {
                 .enqueue(wearableWorkRequest);
     }
 
-    private void weatherDataHelper(Instant timestamp, Context context) {
+    @SuppressLint("NewApi")
+    private static void getAndSaveWeatherDataHelper(Instant timestamp, Context context) {
         // create work request for GPS
         WorkManager dataFlowManager = WorkManager.getInstance(context);
         OneTimeWorkRequest gpsRequest = new OneTimeWorkRequest
@@ -204,5 +211,12 @@ public class BreatheRepository {
                 .beginWith(gpsRequest)
                 .then(weatherAPIRequest)
                 .enqueue();
+    }
+
+    public void clearIUEs(){
+
+        BreatheRoomDatabase.dbWriteExecutor.execute(() ->
+                breatheDao.deleteAll());
+
     }
 }

@@ -173,6 +173,7 @@ public interface BreatheDao {
     List<InhalerUsageEvent> loadAllInhalerUsageEventsBetweenDatesTest(Instant firstDate,
                                                                       Instant secondDate);
 
+    //TODO: make name more appropriate.
     /**
      * This deletes all InhalerUsageEvents from the InhalerUsageEvent_table
      */

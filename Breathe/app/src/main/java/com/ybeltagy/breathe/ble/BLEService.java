@@ -12,15 +12,13 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.ybeltagy.breathe.data.WearableData;
 
 import java.util.Set;
 
-import no.nordicsemi.android.ble.callback.FailCallback;
-import no.nordicsemi.android.ble.callback.SuccessCallback;
+import no.nordicsemi.android.ble.BleManager;
 
 /**
  * Attempts to make a BLE connection with the wearable sensor and the smart inhaler.
@@ -36,12 +34,18 @@ public class BLEService extends Service {
     /**
      * Debugging tag
      */
-    private static String tag = "WearableBLEService";
+    private static final String tag = BLEService.class.getName();
 
     /**
-     * BLEManager for the wearable.
+     * BLEManager for the wearable. Represents a wearable.
      */
     private static volatile WearableBLEManager wearableBLEManager = null;
+    // FIXME: Avoid using static for wearable/inhaler ble managers and instead implement the onBind functionality.
+
+    /**
+     * BLEManager for the inhaler. Represents an inhaler.
+     */
+    private static volatile InhalerBLEManager inhalerBLEManager = null;
 
     /**
      * This receiver reports when Bluetooth is enabled or disabled.
@@ -49,7 +53,7 @@ public class BLEService extends Service {
     private static BroadcastReceiver bleStateReceiver = null;
 
     /**
-     * Represents the device's hardware.
+     * Represents the device's hardware BLE
      */
     BluetoothAdapter bluetoothAdapter = null;
 
@@ -105,6 +109,14 @@ public class BLEService extends Service {
 
         // unregister the BluetoothStateReceiver.
         this.unregisterReceiver(bleStateReceiver);
+
+
+        // disconnect from connected devices.
+        cleanupBLEManager(wearableBLEManager);
+        wearableBLEManager = null;
+
+        cleanupBLEManager(inhalerBLEManager);
+        inhalerBLEManager = null;
     }
 
     /**
@@ -127,9 +139,24 @@ public class BLEService extends Service {
 
         Log.d(tag, "I'm in onStartCommand");
 
-
-
+        /**
+         * Found a device
+         *      Disconnects from the current device.
+         *      Save the newly found device in the shared preferences.
+         *      Connects with the newly found device.
+         */
         if(intent.getAction() != null && intent.getAction().equals(BLEFinals.ACTION_CONNECT_TO_WEARABLE)){
+
+
+
+            BluetoothDevice wearableSensor = intent.getParcelableExtra(BLEFinals.WEARABLE_BLUETOOTH_DEVICE_KEY);
+            cleanupBLEManager(wearableBLEManager); // disconnect from any connected device.
+            wearableBLEManager = null;
+            saveBLEDevice(BLEFinals.WEARABLE_BLUETOOTH_DEVICE_KEY, wearableSensor); // save the wearable mac address in the shared preferences
+            connectToWearable(wearableSensor); // connect to the newly found one.
+
+        }else if (intent.getAction() != null && intent.getAction().equals(BLEFinals.ACTION_CONNECT_TO_INHALER)){
+
             /**
              * Found a device
              *      Disconnects from the current device.
@@ -137,24 +164,33 @@ public class BLEService extends Service {
              *      Connects with the newly found device.
              */
 
-            BluetoothDevice wearableSensor = intent.getParcelableExtra(BLEFinals.WEARABLE_BLUETOOTH_DEVICE_KEY);
-            cleanUpWearableBLEManager(); // disconnect from any connected device.
-            saveWearable(wearableSensor); // save the wearable mac address in the shared preferences
-            connectToWearable(wearableSensor); // connect to the newly found one.
+            BluetoothDevice inhaler = intent.getParcelableExtra(BLEFinals.INHALER_BLUETOOTH_DEVICE_KEY);
+            cleanupBLEManager(inhalerBLEManager); // disconnect from any connected device.
+            inhalerBLEManager = null;
+            saveBLEDevice(BLEFinals.INHALER_BLUETOOTH_DEVICE_KEY, inhaler); // save the wearable mac address in the shared preferences
+            connectToInhaler(inhaler); // connect to the newly found one.
 
-        }else if (intent.getAction() != null && intent.getAction().equals(BLEFinals.ACTION_BLUETOOTH_DISABLED)){
+        } else if (intent.getAction() != null && intent.getAction().equals(BLEFinals.ACTION_BLUETOOTH_DISABLED)){
             /**
              * Bluetooth disabled
-             *      Disconnects from the current device.
+             *      Disconnects from the current devices.
              */
 
-            cleanUpWearableBLEManager(); // disconnect from any connected device.
+            cleanupBLEManager(wearableBLEManager); // disconnect from any connected device.
+            wearableBLEManager = null;
+
+            cleanupBLEManager(inhalerBLEManager);
+            inhalerBLEManager = null;
         }else{
             /**
              * Boot or Bluetooth Enabled or the app is opened
              *      Attempt to connect to the bonded wearable sensor if the wearableBLEManager is not already connected.
              */
-            connectToWearable(findBondedAndSavedWearable());
+
+            connectToWearable(findBondedAndSavedBLEDevice(BLEFinals.WEARABLE_BLUETOOTH_DEVICE_KEY));
+
+            connectToInhaler(findBondedAndSavedBLEDevice(BLEFinals.INHALER_BLUETOOTH_DEVICE_KEY));
+
         }
 
         // If we get killed after returning from here, restart with the intent
@@ -165,7 +201,7 @@ public class BLEService extends Service {
     /**
      * This method shows which methods should be used to end this service.
      * Since this service is meant to run all the time, this method is never used.
-     * It is still included here as a reference if the peripheral solves the autoconnection issue.
+     * It is still included here as a reference if the peripheral solves the auto connection issue.
      */
     private void stopThisService(){
         stopForeground(true); // TODO: there are weird edge cases here. -- look at example again
@@ -176,8 +212,10 @@ public class BLEService extends Service {
      * Synchronously queries the wearable sensor for wearable data and returns the result.
      * This call is blocking so don't do it in the main UI thread.
      * @return the current wearable data or null
+     * @deprecated Needs static BLEmanagers which cause annoying warnings
      */
     public static WearableData getWearableData(){
+        Log.d(tag, "Attempting to get wearable data");
         if(wearableBLEManager == null || !wearableBLEManager.isConnected()) return null;
 
         return wearableBLEManager.getWeatherData();
@@ -205,11 +243,10 @@ public class BLEService extends Service {
     /**
      * Saves the address of the wearable sensor into the shared preference for future attempts to connect.
      * Then connects to the wearable sensor.
-     * @param wearableSensor
      */
-    private void saveWearable(BluetoothDevice wearableSensor){
+    private void saveBLEDevice(String key, BluetoothDevice bleDevice){
         SharedPreferences.Editor preferencesEditor = sharedPreferences.edit();
-        preferencesEditor.putString(BLEFinals.WEARABLE_BLUETOOTH_DEVICE_KEY, wearableSensor.getAddress());
+        preferencesEditor.putString(key, bleDevice.getAddress());
         preferencesEditor.apply();
     }
 
@@ -217,23 +254,23 @@ public class BLEService extends Service {
      * Attempts to connect to the wearable sensor if its mac address is saved in the shared preferences
      * and it is bonded.
      */
-    private BluetoothDevice findBondedAndSavedWearable(){
-        String macAddress = sharedPreferences.getString(BLEFinals.WEARABLE_BLUETOOTH_DEVICE_KEY, null);
+    private BluetoothDevice findBondedAndSavedBLEDevice(String key){
+        String macAddress = sharedPreferences.getString(key, null);
 
         if(macAddress == null) return null;
 
-        BluetoothDevice wearableSensor = findDeviceInBondedDevices(macAddress);
+        BluetoothDevice bluetoothDevice = findDeviceInBondedDevices(macAddress);
 
-        if(wearableSensor == null) return null; // this line is unnecessary, but clarifies the behavior of the method.
+        if(bluetoothDevice == null) return null; // this line is unnecessary, but clarifies the behavior of the method.
 
-        return wearableSensor;
+        return bluetoothDevice;
 
     }
 
     /**
      * If wearableBLEManager is null, Connects to the wearableSensor parameter assuming it really is the wearable sensor.
      * If wearableBLEManager is not null, does nothing.
-     * @param wearableSensor
+     * @param wearableSensor the Bluetooth device to connect to
      */
     private void connectToWearable(BluetoothDevice wearableSensor){
 
@@ -254,43 +291,71 @@ public class BLEService extends Service {
 
         wearableBLEManager.connect(wearableSensor)
                 .useAutoConnect(true)
-                .done(device -> Log.d(tag, "Wearable connected: " + device))
+                .done(device -> {
+                    Log.d(tag, "Wearable connected: " + device);
+                    Toast.makeText(this, "Wearable: " + wearableSensor.getName() + " Connected", Toast.LENGTH_SHORT).show();
+                })
                 .enqueue();
 
     }
 
     /**
-     * Disconnects from the current wearable device and closes wearableBLEManager.
-     * Sets wearableBLEManager to null.
+     * If inhalerBLEManager is null, Connects to the inhaler parameter assuming it really is the inhaler.
+     * If inhalerBLEManager is not null, does nothing.
+     * @param inhaler the bluetooth device to connect to.
      */
-    private void cleanUpWearableBLEManager(){
+    private void connectToInhaler(BluetoothDevice inhaler){
+
+        if(inhaler == null) return;
+
+        if(inhalerBLEManager != null){
+            Log.d(tag, "Inhaler BLE manager is not null");
+            return;
+        }
+
+        inhalerBLEManager = new InhalerBLEManager(this);
+        //todo: is it better to reuse the manager or to make a new one?
+        // Since every manager is usually used exclusively for one device, I'm not sure reusing the manager is a good idea.
+        // Even if it is somewhat inefficient, I feel safer creating a new manager.
+
+        inhalerBLEManager.setConnectionObserver(new BLEConnectionObserver()); // todo: consider deleting. Mostly used for debugging.
+
+
+        inhalerBLEManager.connect(inhaler)
+                .useAutoConnect(true)
+                .done(device -> {
+                    Log.d(tag, "Inhaler Connected: " + device);
+                    Toast.makeText(this, "Inhaler: " + inhaler.getName() + " Connected", Toast.LENGTH_SHORT).show();
+                })
+                .enqueue();
+
+    }
+
+    /**
+     * Disconnects from the current wearable device and closes peripheralBLEManager.
+     * Sets peripheralBLEManager to null.
+     * @param peripheralBLEManager the BleManager which should be disconnected.
+     */
+    private void cleanupBLEManager(BleManager peripheralBLEManager){
         // From the BleMulticonnectProfileService implemented in: https://github.com/NordicSemiconductor/Android-nRF-Toolbox
         // It seems a BLEManager connects with only one device.
         // Before connecting to a new device, disconnect from the first one.
         //todo: to test this, I need two wearable sensors.
-        if(wearableBLEManager == null) return;
+        if(peripheralBLEManager == null) return;
 
-        if(wearableBLEManager.isConnected()){// If the device is connected.
-            wearableBLEManager.disconnect(). // disconnect from it.
-                    done(new SuccessCallback() {
-                        @Override
-                        public void onRequestCompleted(@NonNull BluetoothDevice device) {
-                            Log.d(tag, "WearableBLEManager Successfully disconnected");
-                            wearableBLEManager.close(); // close the manager whether the disconnection was a success or failure
-                        }
+        if(peripheralBLEManager.isConnected()){// If the device is connected.
+            peripheralBLEManager.disconnect(). // disconnect from it.
+                    done( device ->  {
+                        Log.d(tag, device.getName() + " BLEManager Successfully disconnected");
+                        peripheralBLEManager.close(); // close the manager whether the disconnection was a success or failure
                     }).
-                    fail(new FailCallback() {
-                        @Override
-                        public void onRequestFailed(@NonNull BluetoothDevice device, int status) {
-                            Log.d(tag, "WearableBLEManager Failed to disconnected");
-                            wearableBLEManager.close(); // close the manager whether the disconnection was a success or failure
-                        }
+                    fail( (device, status) -> {
+                        Log.d(tag, device.getName() + " BLEManager Failed to disconnected");
+                        peripheralBLEManager.close(); // close the manager whether the disconnection was a success or failure
                     });
         }else{ // If the device was not connected, close the manager.
-            wearableBLEManager.close();
+            peripheralBLEManager.close();
         }
-
-        wearableBLEManager = null;
     }
 
 }

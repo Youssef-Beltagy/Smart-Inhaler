@@ -8,10 +8,11 @@
     Only necessary because we use scanning. Once peripheral can bond through
     the Android settings, this permission will no longer be required.-->
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+
     <!-- Allows applications to connect to paired bluetooth devices -->
     <uses-permission android:name="android.permission.BLUETOOTH" />
 
-    <!-- To discover devices | We need either this or ACCESS_COARSE_LOCATION for GPS -->
+    <!-- To discover bluetooth devices | We need either this or ACCESS_COARSE_LOCATION for GPS too -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <!--Requires that the phone be BLE capable for the app to be installed-->
@@ -20,6 +21,7 @@
     <!--to use a foreground service-->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 
+    <!--Allows the app to receive a broadcast when booting is over-->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
     <!-- To check the network before making an HTTP request-->
@@ -27,6 +29,7 @@
 
     <!-- Needed for accessing the network-->
     <uses-permission android:name="android.permission.INTERNET" />
+
 
     <!-- Permissions end -->
 
@@ -52,7 +55,7 @@
             </intent-filter>
         </receiver>
 
-        <!--This service attempts to establish a connection with the wearable sensor.-->
+        <!--This service attempts to establish a connection with the wearable/inhaler.-->
         <service android:name=".ble.BLEService"
             android:directBootAware="true"
             android:enabled="true"
@@ -61,6 +64,7 @@
             android:label="BLE service" >
         </service>
 
+        <!-- the main activity which is launched when the app is opened -->
         <activity
             android:name=".ui.MainActivity">
             <intent-filter>
@@ -69,6 +73,7 @@
             </intent-filter>
         </activity>
 
+        <!-- the diary entry activity-->
         <activity
             android:name=".ui.DiaryEntryActivity"
             android:label="@string/diary_label"
@@ -78,6 +83,7 @@
                 android:value="com.ybeltagy.breathe.ui.MainActivity" />
         </activity>
 
+        <!-- the settings page activity -->
         <activity
             android:name=".ui.SettingsActivity"
             android:label="@string/settings_label"
@@ -91,6 +97,7 @@
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
 
+        <!-- the content provider for the file used in the export feature-->
         <provider
             android:authorities="com.ybeltagy.breathe.fileprovider"
             android:name="androidx.core.content.FileProvider"
@@ -100,6 +107,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths"></meta-data>
         </provider>
+
     </application>
 
 </manifest>

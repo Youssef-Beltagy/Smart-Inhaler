@@ -1,7 +1,6 @@
 package com.ybeltagy.breathe.ble;
 
 
-import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
@@ -17,8 +16,6 @@ import java.nio.ByteOrder;
 import java.util.UUID;
 
 import no.nordicsemi.android.ble.BleManager;
-import no.nordicsemi.android.ble.callback.DataReceivedCallback;
-import no.nordicsemi.android.ble.data.Data;
 
 public class WearableBLEManager extends BleManager {
 
@@ -27,7 +24,7 @@ public class WearableBLEManager extends BleManager {
      */
 
     public final static UUID SERVICE_UUID = UUID.fromString(BLEFinals.WEARABLE_SERVICE_UUID_STRING);
-    public final static UUID WEARABLE_DATA_CHAR = UUID.fromString(BLEFinals.WEARABLE_DATA_CHAR_STRING);
+    public final static UUID WEARABLE_DATA_CHAR_UUID = UUID.fromString(BLEFinals.WEARABLE_DATA_CHAR_UUID_STRING);
 
     private static final String tag = "WearableBLEManager";
 
@@ -52,35 +49,36 @@ public class WearableBLEManager extends BleManager {
 
         try{
             readCharacteristic(wearableDataCharacteristic)
-                    .with(new DataReceivedCallback() { // todo: consider making a DataReceivedCallback class.
-                        @Override
-                        public void onDataReceived(@NonNull BluetoothDevice device, @NonNull Data data) {
+                    .with( (device, data) -> { // Data received Callback
 
-                            //Parse the input in Little_endian because the esp32 is a little endian device.
-                            ByteBuffer buf = ByteBuffer.wrap(data.getValue()).order(ByteOrder.LITTLE_ENDIAN);
+                        //TODO: Add support for the PM2.5 Sensor data.
 
-                            // get the temperature in little endian
-                            wearableData.setTemperature(buf.getFloat());
+                        if(data == null || data.getValue() == null) return;
 
-                            // get the humidity in little endian
-                            wearableData.setHumidity(buf.getFloat());
+                        //Parse the input in Little_endian because the esp32/stm32 are little endian
+                        ByteBuffer buf = ByteBuffer.wrap(data.getValue()).order(ByteOrder.LITTLE_ENDIAN);
 
-                            // get the character (converts from UTF-8 in the message to Java's UTF-16)
-                            wearableData.setCharacter(
-                                    (char)buf.get()
-                            );
+                        // get the temperature in little endian
+                        wearableData.setTemperature(buf.getFloat());
 
-                            // get the digit (converts from UTF-8 in the message to Java's UTF-16)
-                            wearableData.setDigit(
-                                    (char)buf.get()
-                            );
+                        // get the humidity in little endian
+                        wearableData.setHumidity(buf.getFloat());
 
-                            Log.d(tag, "Wearable Data!");
-                            Log.d(tag, "Temperature: " + wearableData.getTemperature());
-                            Log.d(tag, "Humidity: " + wearableData.getHumidity());
-                            Log.d(tag, "Character: " + wearableData.getCharacter());
-                            Log.d(tag, "Digit: " + wearableData.getDigit());
-                        }
+                        // get the character (converts from UTF-8 in the message to Java's UTF-16)
+                        wearableData.setCharacter(
+                                (char) buf.get()
+                        );
+
+                        // get the digit (converts from UTF-8 in the message to Java's UTF-16)
+                        wearableData.setDigit(
+                                (char) buf.get()
+                        );
+
+                        Log.d(tag, "Wearable Data!");
+                        Log.d(tag, "Temperature: " + wearableData.getTemperature());
+                        Log.d(tag, "Humidity: " + wearableData.getHumidity());
+                        Log.d(tag, "Character: " + wearableData.getCharacter());
+                        Log.d(tag, "Digit: " + wearableData.getDigit());
                     }).await();
         }catch (Exception e){
             Log.d(tag, e.toString());
@@ -107,7 +105,7 @@ public class WearableBLEManager extends BleManager {
 
             if (service == null) return false;
 
-            wearableDataCharacteristic = service.getCharacteristic(WEARABLE_DATA_CHAR);
+            wearableDataCharacteristic = service.getCharacteristic(WEARABLE_DATA_CHAR_UUID);
 
             if (wearableDataCharacteristic == null)
                 return false;
@@ -141,9 +139,12 @@ public class WearableBLEManager extends BleManager {
                     .done(callback -> Log.d(tag, "Target initialized - callback" + callback.toString()))
                     .enqueue();
 
+            readCharacteristic(wearableDataCharacteristic).enqueue();
+            // Make a read request to guarantee bonding for the stm32 wearable
+
             // TODO: to meet a stretch goal, you may need to enable Ble notificaionts/indications here.
-            //  Often you need to enable notifications and set required
-            // MTU or write some initial data. Do it here.
+            //  You need to enable notifications and set required
+            //  MTU or write some initial data. Do it here.
         }
 
         /**

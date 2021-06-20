@@ -89,7 +89,7 @@ public class SettingsActivity extends AppCompatActivity {
      * The service UUID of the wearable sensor is used to filter for it.
      * @param view
      */
-    public void onScanButtonClick(View view) {
+    public void onConnectToWearableButtonClick(View view) {
         scanForWearableSensor();
     }
 
@@ -160,9 +160,22 @@ public class SettingsActivity extends AppCompatActivity {
         // Bluetooth is supported but not enabled.
         Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
         Toast.makeText(this, "Please enable Bluetooth", Toast.LENGTH_SHORT).show();
-        startActivityForResult(enableBtIntent, 0);
+        startActivityForResult(enableBtIntent, 0); // fixme: startActivityForResult is now deprecated.
 
         return false;
     }
 
+    public void onConnectToInhalerButtonClick(View view) {
+        if(!hasLocationPermissions()) return;
+
+        if(!isBluetoothEnabled()) return;
+
+        BLEScanner.scanForInhaler(this);
+    }
+
+    public void clearIUEs(View view){
+        breatheViewModel.clearIUEs();
+        //TODO: If you use shared preferences to store the remaining IUES, consider updating it here.
+        // Or maybe it is better to split them apart.
+    }
 }

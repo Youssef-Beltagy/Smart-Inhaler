@@ -8,8 +8,13 @@ import androidx.annotation.NonNull;
 
 import no.nordicsemi.android.ble.observer.ConnectionObserver;
 
-//todo: not really useful. Consider deleting.
+//FIXME: Since we are not doing anything fancy depending on the connection callbacks,
+// This class is not useful. However, because in the future, a future team might want to use it,
+// we will leave it
 
+/**
+ * Contain callback methods for BLE connection updates.
+ */
 public class BLEConnectionObserver implements ConnectionObserver {
 
     private static final String tag = "BLEConnectionObserver";

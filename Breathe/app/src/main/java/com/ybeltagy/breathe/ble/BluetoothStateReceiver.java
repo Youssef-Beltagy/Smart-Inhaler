@@ -13,13 +13,14 @@ public class BluetoothStateReceiver extends BroadcastReceiver {
     /**
      * Debugging tag
      */
-    private static final String tag = "BluetoothStateReceiver";
+    private static final String tag = BluetoothStateReceiver.class.getName();
 
-    // Listens to https://developer.android.com/reference/android/bluetooth/BluetoothAdapter#ACTION_STATE_CHANGED
+    //
     /**
-     * Tell the BLEService when Bluetooth is enabled or disabled.
-     * @param context
-     * @param intent
+     * Listens to https://developer.android.com/reference/android/bluetooth/BluetoothAdapter#ACTION_STATE_CHANGED
+     * Tells the BLEService when Bluetooth is enabled or disabled.
+     * @param context the calling context of the broadcast
+     * @param intent the calling intent
      */
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -31,7 +32,7 @@ public class BluetoothStateReceiver extends BroadcastReceiver {
         Log.d(tag, "State: " + state);
         Log.d(tag, "Intent Extras: " + intent.getExtras().toString());
 
-        Toast.makeText(context, "Action: " + action + " S: " + state, Toast.LENGTH_SHORT);
+        Toast.makeText(context, "Action: " + action + " S: " + state, Toast.LENGTH_SHORT).show();
 
         if (state == BluetoothAdapter.STATE_ON) {
             Intent bluetoothEnabledIntent = new Intent(context, BLEService.class);

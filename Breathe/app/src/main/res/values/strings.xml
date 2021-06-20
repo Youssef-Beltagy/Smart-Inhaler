@@ -11,4 +11,8 @@
     <string name="settings_label">Settings</string>
     <string name="connect_to_wearable">Connect to wearable</string>
     <string name="export_data_as_csv">Export data as csv</string>
+    <string name="connect_to_inhaler">Connect to inhaler</string>
+    <string name="clear_iues">Clear IUEs</string>
+    <string name="simulate_iue">Simulate IUE</string>
+    <string name="test_wearable">Test wearable</string>
 </resources>
