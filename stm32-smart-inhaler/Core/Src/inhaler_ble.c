@@ -494,7 +494,7 @@ void Inhaler_Init(void)
                       8,
                       &(inhaler_context.service_handler));
 
-    /** TODO: this characteristic can be updated and used later to set the inhaler calendar through the phone.
+    /**
      * Timer characteristic
      */
   	Char_Array_To_128UUID( TIME_CHARACTERISTIC_UUID , (uint8_t*)&uuid128);

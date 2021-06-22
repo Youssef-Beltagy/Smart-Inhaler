@@ -408,15 +408,6 @@
 #define CFG_RTC_ASYNCH_PRESCALER (0x7F)
 #define CFG_RTC_SYNCH_PRESCALER (0x00FF)
 
-// TODO: Investigate later
-/**
- * WAS
-#define CFG_RTCCLK_DIV  (16)
-#define CFG_RTC_WUCKSEL_DIVIDER (0)
-#define CFG_RTC_ASYNCH_PRESCALER (0x0F)
-#define CFG_RTC_SYNCH_PRESCALER (0x7FFF)
- */
-
 #else
 
 #if (CFG_RTCCLK_DIVIDER_CONF == 2)

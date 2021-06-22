@@ -426,7 +426,8 @@ static void MX_RTC_Init(void)
   	{
   		/** Initialize RTC and set the Time and Date
   		 */
-  		//FIXME: BE AWARE THAT YOU MAY NEED TO MANUALLY MODIFY THE DATEQ
+  		//FIXME: BE AWARE THAT YOU MAY NEED TO MANUALLY MODIFY THE offset!
+  		//If the next team starts in Autum/Winter, you need to change the offset to 8.
   		get_compile_time(&sDate, &sTime, 7);
 //  		sTime.Minutes = 48;
 //  		sTime.Seconds = 50;
@@ -452,7 +453,7 @@ static void MX_RTC_Init(void)
   /* Disable RTC registers write protection */
   LL_RTC_DisableWriteProtection(RTC);
 
-  LL_RTC_WAKEUP_SetClock(RTC, CFG_RTC_WUCKSEL_DIVIDER); //TODO: This seems unnecessary.
+  LL_RTC_WAKEUP_SetClock(RTC, CFG_RTC_WUCKSEL_DIVIDER); //TODO: Confirm what exactly this is used for. Probably the time server.
 
   /* Enable RTC registers write protection */
   LL_RTC_EnableWriteProtection(RTC);
@@ -534,8 +535,6 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOC_CLK_ENABLE(); //TODO: consider deleting unnecessary port initializations.
   __HAL_RCC_GPIOA_CLK_ENABLE(); //Unfortunately, with the current hardware, all of these ports are used
   __HAL_RCC_GPIOB_CLK_ENABLE(); //It is possible to optimize Port B's initialization because it only controls LEDs.
-
-  
 
   /*Configure GPIO pin : PA4 */
   GPIO_InitStruct.Pin = GPIO_PIN_4;

@@ -17,10 +17,10 @@ extern SPI_HandleTypeDef hspi1;
 extern UART_HandleTypeDef huart1;
 
 //TODO: remove uses of huart1 from here if you have time. Even if it is only for testing.
-//TODO: This is not good abstraction of concerns.
+//This is not good abstraction of concerns.
 
 //TODO: handle SPI and HAL status codes more appropriately. For example, return an error code on failure.
-//TODO: this needs to be carefully thought through.
+// this needs to be carefully thought through.
 
 // *** Memory (currently CY15X104Q FRAM) instructions begin ***
 static const uint8_t FRAM_WREN = 0x06; // set write enable latch

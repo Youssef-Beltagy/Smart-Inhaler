@@ -7,7 +7,7 @@
 // Timeserver is initialized in app_entry and uses the rtc
 // Prescaler is defined in app_conf.h
 
-extern RTC_HandleTypeDef hrtc; //TODO: Consider passing this as a parameter rather than using extern.
+extern RTC_HandleTypeDef hrtc;
 
 /**
  * Sets the rtc using a timestamp
