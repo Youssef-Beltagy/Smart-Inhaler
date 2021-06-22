@@ -14,7 +14,19 @@
 /**
  * Gets the current time from the RTC as an epoch timestamp.
  */
-int64_t get_timestamp();
+int64_t get_timestamp(uint8_t in_millis);
+
+/**
+ * Sets the rtc using a timestamp
+ * Returns TRUE on success; False on Failure
+ */
+uint8_t rtc_set_timestamp(time_t timestamp);
+
+/**
+ * Sets the rtc using date and time objects
+ * Returns TRUE on success; False on Failure
+ */
+uint8_t rtc_set_datetime(RTC_DateTypeDef date, RTC_TimeTypeDef time);
 
 /**
  * Populates sDate and sTime using the timestamp.

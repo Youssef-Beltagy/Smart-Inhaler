@@ -165,7 +165,7 @@ void record_iue(void){
 
 	IUE_t iue = {0};
 
-	iue.timestamp = get_timestamp();
+	iue.timestamp = get_timestamp(TRUE);
 
 	wakeup_fram();
 
@@ -245,17 +245,66 @@ static SVCCTL_EvtAckStatus_t inhaler_handler(evt_blecore_aci * blecore_evt){
 			{
 				//https://community.st.com/s/question/0D53W000003xw7LSAQ/basic-ble-reading-for-stm32wb
 
-				static IUE_t data = {0};
+				static int64_t cur_timestamp = 0;
+
+				cur_timestamp = get_timestamp(FALSE);// send the data in little endian.
 
 				aci_gatt_update_char_value(inhaler_context.service_handler,
 						inhaler_context.timer_characteristic_handler,
 															0, /* charValOffset */
-															sizeof(IUE_t), /* charValueLen */
-															(uint8_t*) (&data));
+															sizeof(cur_timestamp), /* charValueLen */
+															(uint8_t*) (&cur_timestamp));
 
 				aci_gatt_allow_read(read_permit_req->Connection_Handle);
 
 				 return_value = SVCCTL_EvtNotAck;
+			}
+
+		}
+		break;
+
+		case ACI_GATT_WRITE_PERMIT_REQ_VSEVT_CODE:
+		{
+			return_value = SVCCTL_EvtAckFlowEnable;
+
+			uint8_t result = FALSE;
+
+			aci_gatt_write_permit_req_event_rp0* write_request_req = (aci_gatt_write_permit_req_event_rp0*) blecore_evt->data;;
+			if(write_request_req->Attribute_Handle == (inhaler_context.timer_characteristic_handler + 1)
+					&& write_request_req->Data_Length == sizeof(int64_t))
+			{	// Write to the clock characteristic.
+				//Assume a 64 bit timestamp was sent in big endian
+				uint8_t* arr = write_request_req->Data;
+				int64_t timestamp = 0;
+
+				for(int i = 0; i < sizeof(int64_t); i++){ // receive the data in little endian
+					timestamp <<= 8;
+					timestamp += arr[sizeof(int64_t) - i - 1];
+				}
+
+				 result = rtc_set_timestamp(timestamp);
+
+			}
+
+			if(result){
+
+				/* received a correct value for HRM control point char */
+				  result = aci_gatt_write_resp(write_request_req->Connection_Handle,
+									  write_request_req->Attribute_Handle,
+									  0x00, /* write_status = 0 (no error))*/
+									  0x00, /* err_code TODO: specify later or find a a standard*/
+									  write_request_req->Data_Length,
+									  (uint8_t *)(write_request_req->Data));
+
+			}else{
+				// Failed to write event.
+				/* received value of HRM control point char is incorrect */
+				  aci_gatt_write_resp(write_request_req->Connection_Handle,
+						  	  	  	  write_request_req->Attribute_Handle,
+									  0x01, /* write_status = 1 (error))*/
+									  0x01, /* err_code TODO: specify later or find a standard*/
+									  write_request_req->Data_Length,
+									  (uint8_t *)(write_request_req->Data));
 			}
 
 		}
@@ -451,10 +500,10 @@ void Inhaler_Init(void)
   	Char_Array_To_128UUID( TIME_CHARACTERISTIC_UUID , (uint8_t*)&uuid128);
     aci_gatt_add_char(inhaler_context.service_handler,
                       UUID_TYPE_128, &uuid128,
-                      sizeof(IUE_t),
-                      CHAR_PROP_READ,
-					  ATTR_PERMISSION_AUTHEN_READ,
-					  GATT_NOTIFY_READ_REQ_AND_WAIT_FOR_APPL_RESP, /* gattEvtMask */
+                      sizeof(int64_t),
+                      CHAR_PROP_READ | CHAR_PROP_WRITE,
+					  ATTR_PERMISSION_AUTHEN_READ | ATTR_PERMISSION_AUTHEN_WRITE,
+					  GATT_NOTIFY_READ_REQ_AND_WAIT_FOR_APPL_RESP|GATT_NOTIFY_WRITE_REQ_AND_WAIT_FOR_APPL_RESP, /* gattEvtMask */
                       10, /* encryKeySize */
                       1, /* isVariable */
                       &(inhaler_context.timer_characteristic_handler));

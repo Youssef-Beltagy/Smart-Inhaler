@@ -10,6 +10,31 @@
 extern RTC_HandleTypeDef hrtc; //TODO: Consider passing this as a parameter rather than using extern.
 
 /**
+ * Sets the rtc using a timestamp
+ * Returns TRUE on success; False on Failure
+ */
+uint8_t rtc_set_timestamp(time_t timestamp){
+	RTC_DateTypeDef date;
+	RTC_TimeTypeDef time;
+
+	timestamp_to_rtc_datetime(&date, &time, timestamp);
+
+	return rtc_set_datetime(date, time);
+
+}
+
+/**
+ * Sets the rtc using date and time objects
+ * Returns TRUE on success; False on Failure
+ */
+uint8_t rtc_set_datetime(RTC_DateTypeDef date, RTC_TimeTypeDef time){
+	uint8_t result = TRUE;
+	result = result && (HAL_OK ==  HAL_RTC_SetTime(&hrtc, &time, RTC_FORMAT_BIN));
+	result = result && (HAL_OK == HAL_RTC_SetDate(&hrtc, &date, RTC_FORMAT_BIN));
+	return result;
+}
+
+/**
  * Populates sDate and sTime using the timestamp.
  *
  * The format is Binary and not BCD.
@@ -165,8 +190,12 @@ void get_compile_time(RTC_DateTypeDef * date_ptr, RTC_TimeTypeDef * time_ptr, in
 
 /**
  * Gets the current time from the RTC as an epoch timestamp.
+ *
+ * returns the timestamp in seconds if in_millis is FALSE
+ *
+ * if in_millis is true, returns the timestamp in milliseconds
  */
-int64_t get_timestamp( void )
+int64_t get_timestamp( uint8_t in_millis )
 {
 
 	//TODO: Confirm the sleep modes don't ruin the shadow registers.
@@ -184,9 +213,11 @@ int64_t get_timestamp( void )
 
 	int64_t theTimestamp = rtc_datetime_to_timestamp(date, time, 0);
 
-	// convert to epoch milliseconds
-	theTimestamp *= 1000;
-	theTimestamp += (time.SecondFraction - time.SubSeconds) * 1000 / (time.SecondFraction + 1);
+	if(in_millis){
+		// convert to epoch milliseconds
+		theTimestamp *= 1000;
+		theTimestamp += (time.SecondFraction - time.SubSeconds) * 1000 / (time.SecondFraction + 1);
+	}
 
 	return (theTimestamp);
 }

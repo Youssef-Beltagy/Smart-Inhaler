@@ -431,19 +431,13 @@ static void MX_RTC_Init(void)
 //  		sTime.Minutes = 48;
 //  		sTime.Seconds = 50;
 //  		sTime.SubSeconds = 0;
-  		sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
-  		sTime.StoreOperation = RTC_STOREOPERATION_RESET;
-
-  		if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN) != HAL_OK) {
-  			Error_Handler();
-  		}
-
-
+//  		sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
+//  		sTime.StoreOperation = RTC_STOREOPERATION_RESET;
 //  		sDate.WeekDay = RTC_WEEKDAY_TUESDAY; // I can't know the week day from the Macro.
 //  		sDate.Month = 6;
 //  		sDate.Date = 21;
 //  		sDate.Year = 21;
-  		if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BIN) != HAL_OK)   {
+  		if(!rtc_set_datetime(sDate, sTime)){
   			Error_Handler();
   		}
 
