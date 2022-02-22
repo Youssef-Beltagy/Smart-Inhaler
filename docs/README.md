@@ -20,10 +20,10 @@ When requested, the application creates a CSV file recording the date and time o
 To learn more about the inhaler, wearable sensor, or the app, please go to its respective page. To Set up your development environment, please go to the getting started page.
 
 ## Pages
+- [Getting Started](getting_started)
 - [Inhaler](inhaler)
 - [Wearable Sensor](wearable_sensor)
 - [Android App](android_app)
-- [Getting Started](getting_started)
 - [Low Power Optimizations and Measurements](low_power)
 
 ## Team members
